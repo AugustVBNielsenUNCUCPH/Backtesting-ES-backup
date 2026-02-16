@@ -1,0 +1,303 @@
+---
+title: "Teststørrelser power, t fordeling"
+output: html_document
+date: "2026-02-11"
+---
+
+```{r setup, include=TRUE}
+set.seed(2027)
+
+library(cvar)
+
+# ES værdier og VaR værdier for t-fordeling med cvar-pakken
+alpha_0.025 <- 0.025
+alpha_0.01 <- 0.01
+
+nu_3 <- 3
+nu_5 <- 5
+nu_10 <- 10
+nu_100 <- 100
+
+tau_3   <- sqrt((nu_3  - 2) / nu_3)
+tau_5   <- sqrt((nu_5  - 2) / nu_5)
+tau_10  <- sqrt((nu_10 - 2) / nu_10)
+tau_100 <- sqrt((nu_100 - 2) / nu_100)
+
+# t fordeling
+VaR_nu_3_alph_0.01 <- VaR(qt, p = alpha_0.01, df = nu_3)
+VaR_nu_5_alph_0.01 <- VaR(qt, p = alpha_0.01, df = nu_5)
+VaR_nu_10_alph_0.01 <- VaR(qt, p = alpha_0.01, df = nu_10)
+VaR_nu_100_alph_0.01 <- VaR(qt, p = alpha_0.01, df = nu_100)
+
+VaR_nu_3 <- VaR(qt, p = alpha_0.025, df = nu_3)
+VaR_nu_5 <- VaR(qt, p = alpha_0.025, df = nu_5)
+VaR_nu_10 <- VaR(qt, p = alpha_0.025, df = nu_10)
+VaR_nu_100 <- VaR(qt, p = alpha_0.025, df = nu_100)
+
+ES_nu_3 <- ES(qt, p = alpha_0.025, df = nu_3)
+ES_nu_5 <- ES(qt, p = alpha_0.025, df = nu_5)
+ES_nu_10 <- ES(qt, p = alpha_0.025, df = nu_10)
+ES_nu_100 <- ES(qt, p = alpha_0.025, df = nu_100)
+
+# Standardiseret t fordeling
+VaR_stdt_nu_3   <- VaR(qt, p = alpha_0.025, df = nu_3) * tau_3
+VaR_stdt_nu_5   <- VaR(qt, p = alpha_0.025, df = nu_5) * tau_5
+VaR_stdt_nu_10  <- VaR(qt, p = alpha_0.025, df = nu_10) * tau_10
+VaR_stdt_nu_100 <- VaR(qt, p = alpha_0.025, df = nu_100) * tau_100
+
+VaR_stdt_nu_3_alph_0.01   <- VaR(qt, p = alpha_0.01, df = nu_3) * tau_3
+VaR_stdt_nu_5_alph_0.01   <- VaR(qt, p = alpha_0.01, df = nu_5) * tau_5
+VaR_stdt_nu_10_alph_0.01  <- VaR(qt, p = alpha_0.01, df = nu_10) * tau_10
+VaR_stdt_nu_100_alph_0.01 <- VaR(qt, p = alpha_0.01, df = nu_100) * tau_100
+
+ES_stdt_nu_3   <- ES(qt, p = alpha_0.025, df = nu_3) * tau_3
+ES_stdt_nu_5   <- ES(qt, p = alpha_0.025, df = nu_5) * tau_5
+ES_stdt_nu_10  <- ES(qt, p = alpha_0.025, df = nu_10) * tau_10
+ES_stdt_nu_100 <- ES(qt, p = alpha_0.025, df = nu_100) * tau_100
+
+cat(
+  "==============================\n",
+  "Almindelig t-fordeling\n",
+  "==============================\n",
+  sprintf("VaR (2.5%%):  nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n",
+          VaR_nu_3, VaR_nu_5, VaR_nu_10, VaR_nu_100),
+  sprintf("ES  (2.5%%):  nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n",
+          ES_nu_3, ES_nu_5, ES_nu_10, ES_nu_100),
+  sprintf("VaR (1%%):    nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n\n",
+          VaR_nu_3_alph_0.01, VaR_nu_5_alph_0.01,
+          VaR_nu_10_alph_0.01, VaR_nu_100_alph_0.01),
+
+  "==============================\n",
+  "Standardiseret t-fordeling\n",
+  "==============================\n",
+  sprintf("VaR (2.5%%):  nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n",
+          VaR_stdt_nu_3, VaR_stdt_nu_5, VaR_stdt_nu_10, VaR_stdt_nu_100),
+  sprintf("ES  (2.5%%):  nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n",
+          ES_stdt_nu_3, ES_stdt_nu_5, ES_stdt_nu_10, ES_stdt_nu_100),
+  sprintf("VaR (1%%):    nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n",
+          VaR_stdt_nu_3_alph_0.01, VaR_stdt_nu_5_alph_0.01,
+          VaR_stdt_nu_10_alph_0.01, VaR_stdt_nu_100_alph_0.01))
+
+```
+
+```{r}
+
+# Simuler X for t fordeling og standardiseret t fordeling
+T <- 250 # Observationer (250 handelsdage på ét år)
+M <- 100000 # 100.000 simulationer 
+
+
+# t fordeling 
+X_t_100 <- matrix(rt(T * M, df = nu_100), nrow = M, ncol = T)
+X_t_10 <- matrix(rt(T * M, df = nu_10), nrow = M, ncol = T)
+X_t_5 <- matrix(rt(T * M, df = nu_5), nrow = M, ncol = T)
+X_t_3 <- matrix(rt(T * M, df = nu_3), nrow = M, ncol = T)
+
+# Standardiseret t fordeling
+X_stdt_100 <- matrix(rt(T * M, df = nu_100), nrow = M, ncol = T) * tau_100
+X_stdt_10 <- matrix(rt(T * M, df = nu_10), nrow = M, ncol = T) * tau_10
+X_stdt_5 <- matrix(rt(T * M, df = nu_5), nrow = M, ncol = T) * tau_5
+X_stdt_3 <- matrix(rt(T * M, df = nu_3), nrow = M, ncol = T) * tau_3
+
+
+# t fordeling, Fixed VaR_2.5%
+## Forskydninger
+Forskydning_100_10 <- VaR_nu_10 - VaR_nu_100
+Forskydning_100_5 <- VaR_nu_5 - VaR_nu_100
+Forskydning_100_3 <- VaR_nu_3 - VaR_nu_100
+
+Forskydning_10_5 <- VaR_nu_5 - VaR_nu_10
+Forskydning_10_3 <- VaR_nu_3 - VaR_nu_10
+
+# Under H_0 med nu = 100
+X_t_fixedVaR_100 <- matrix(rt(T * M, df = nu_100), nrow = M, ncol = T)
+X_t_fixedVaR_100_10 <- matrix(rt(T * M, df = nu_10), nrow = M, ncol = T) + Forskydning_100_10
+X_t_fixedVaR_100_5 <- matrix(rt(T * M, df = nu_5), nrow = M, ncol = T) + Forskydning_100_5
+X_t_fixedVaR_100_3 <- matrix(rt(T * M, df = nu_3), nrow = M, ncol = T) + Forskydning_100_3
+
+# Under H_0 med nu = 10
+X_t_fixedVaR_10 <- matrix(rt(T * M, df = nu_10), nrow = M, ncol = T)
+X_t_fixedVaR_10_5 <- matrix(rt(T * M, df = nu_5), nrow = M, ncol = T) + Forskydning_10_5
+X_t_fixedVaR_10_3 <- matrix(rt(T * M, df = nu_3), nrow = M, ncol = T) + Forskydning_10_3
+
+# Standardiseret t fordeling, Fixed VaR_2.5%
+## Forskydninger
+Forskydning_stdt_100_10 <- VaR_stdt_nu_10 - VaR_stdt_nu_100
+Forskydning_stdt_100_5 <- VaR_stdt_nu_5 - VaR_stdt_nu_100
+Forskydning_stdt_100_3 <- VaR_stdt_nu_3 - VaR_stdt_nu_100
+
+Forskydning_stdt_10_5 <- VaR_stdt_nu_5 - VaR_stdt_nu_10
+Forskydning_stdt_10_3 <- VaR_stdt_nu_3 - VaR_stdt_nu_10
+
+# Under H_0 med nu = 100
+X_stdt_fixedVaR_100 <- matrix(rt(T * M, df = nu_100), nrow = M, ncol = T) * tau_100
+X_stdt_fixedVaR_100_10 <- matrix(rt(T * M, df = nu_10), nrow = M, ncol = T) * tau_10 + Forskydning_stdt_100_10
+X_stdt_fixedVaR_100_5 <- matrix(rt(T * M, df = nu_5), nrow = M, ncol = T) * tau_5 + Forskydning_stdt_100_5
+X_stdt_fixedVaR_100_3 <- matrix(rt(T * M, df = nu_3), nrow = M, ncol = T) * tau_3 + Forskydning_stdt_100_3
+
+# Under H_0 med nu = 10
+X_stdt_fixedVaR_10 <- matrix(rt(T * M, df = nu_10), nrow = M, ncol = T) * tau_10
+X_stdt_fixedVaR_10_5 <- matrix(rt(T * M, df = nu_5), nrow = M, ncol = T) * tau_5 + Forskydning_stdt_10_5
+X_stdt_fixedVaR_10_3 <- matrix(rt(T * M, df = nu_3), nrow = M, ncol = T) * tau_3 + Forskydning_stdt_10_3
+
+```
+
+```{r}
+
+# Faktiske diskrete signifikansniveauer
+## Kritiske værdier: mindste q så P(X ≤ q) ≥ 1 - alpha
+q5  <- qbinom(1 - 0.05, T, 0.01)
+q10 <- qbinom(1 - 0.11, T, 0.01)
+
+## Faktisk diskret størrelse: P(X > q)
+alpha_discrete_0.05 <- pbinom(q5, T, 0.01, lower.tail = FALSE)
+alpha_discrete_0.10 <- pbinom(q10, T, 0.01, lower.tail = FALSE)
+
+
+# Definer styrkefunktion 
+Z_power <- function(Z, q) {
+  1 - mean(Z >= q)}
+
+
+# Definer Z1, Z2 og Z3
+
+## Z1
+
+
+## Z2
+Z2 <- function(X, VaR, ES, alpha) {
+  T <- ncol(X)
+  I <- (X + VaR) < 0
+  
+  Z2 <- rowSums(X * I) / (T * alpha * ES) + 1
+  return(Z2)}
+
+## Z3
+ES_hat <- function(U, df, alpha_0.025, tau = 1, mu = 0) {
+  n <- ncol(U) # 250
+  cap <- floor(n * alpha) # 6 (de 6 værste observationer)
+  
+  ES_observationer <- apply(U, 1, function(u) {
+    u_sorteret <- sort(u)
+    model_tab <- qt(u_sorteret[1:cap], df = df) * tau + mu # P^-1(U_t)
+  return(-mean(model_tab))})
+  return(ES_observationer)}
+
+Mm <- 10000
+nn <- 250
+V_samples <- matrix(runif(Mm * nn), nrow = Mm, ncol = nn)
+
+Z3 <- function(X, df_H0, alpha_0.025, tau, mu) {
+  U <- pt((X - mu) / tau, df = df_H0)
+  ES_Hat <- ES_hat(U, df = df_H0, alpha_0.025, tau, mu)
+  ES_V <- ES_hat(V_samples, df = df_H0, alpha_0.025, tau, mu)
+  
+  Z3 <- -ES_Hat / mean(ES_V) + 1
+  return(Z3)}
+
+
+# Alternative fordelinger under H_1 defineres for t fordeling
+X_t_H1_100 <- list(df10 = X_t_10, df5 = X_t_5, df3 = X_t_3)
+X_t_H1_10 <- list(df5 = X_t_5, df3 = X_t_3)
+
+
+# Alternative fordelinger under H_1 defineres for standardiseret t fordeling
+X_stdt_H1_100 <- list(df10 = X_stdt_10, df5 = X_stdt_5, df3 = X_stdt_3)
+X_stdt_H1_10 <- list(df5 = X_stdt_5, df3 = X_stdt_3)
+
+
+# t fordeling (test af Z2 og Z3)
+
+## Z2 teststørrelser under H_0 for nu=100 og nu=10
+Z2_t_H0_100 <- Z2(X_t_100, VaR_nu_100, ES_nu_100, alpha_0.025)
+Z2_t_H0_10 <- Z2(X_t_10, VaR_nu_10, ES_nu_10, alpha_0.025)
+
+## Z2 teststørrelser under H_1 for nu=100 og nu=10
+Z2_t_H1_100 <- lapply(X_t_H1_100, function(X) Z2(X, VaR_nu_100, ES_nu_100, alpha_0.025))
+Z2_t_H1_10 <- lapply(X_t_H1_10, function(X) Z2(X, VaR_nu_10, ES_nu_10, alpha_0.025))
+
+## Find kritiske værdier
+qt_t_100_Z2 <- quantile(Z2_t_H0_100, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+qt_t_10_Z2 <- quantile(Z2_t_H0_10, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+
+
+## Z3 teststørrelser under H_0 for nu=100 og nu=10
+Z3_t_H0_100 <- Z3(X_t_100, df_H0 = nu_100, alpha_0.025, tau = 1, mu = 0)
+Z3_t_H0_10 <- Z3(X_t_10, df_H0 = nu_10, alpha_0.025, tau = 1, mu = 0)
+
+## Z3 teststørrelser under H_1 for nu=100 og nu=10
+Z3_t_H1_100 <- lapply(X_t_H1_100, function(X) Z3(X, df_H0 = nu_100, alpha_0.025, tau = 1, mu = 0))
+Z3_t_H1_10 <- lapply(X_t_H1_10, function(X) Z3(X, df_H0 = nu_10, alpha_0.025, tau = 1, mu = 0))
+
+## Find kritiske værdier
+qt_t_100_Z3 <- quantile(Z3_t_H0_100, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+qt_t_10_Z3 <- quantile(Z3_t_H0_10, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+
+
+# Standardiseret t fordeling (test af Z2 og Z3)
+
+## Z2 teststørrelser under H_0 for nu=100 og nu=10
+Z2_stdt_H0_100 <- Z2(X_stdt_100, VaR_nu_100, ES_nu_100, alpha_0.025)
+Z2_stdt_H0_10 <- Z2(X_stdt_10, VaR_nu_10, ES_nu_10, alpha_0.025)
+
+## Z2 teststørrelser under H_1 for nu=100 og nu=10
+Z2_stdt_H1_100 <- lapply(X_stdt_H1_100, function(X) Z2(X, VaR_nu_100, ES_nu_100, alpha_0.025))
+Z2_stdt_H1_10 <- lapply(X_stdt_H1_10, function(X) Z2(X, VaR_nu_10, ES_nu_10, alpha_0.025))
+
+## Find kritiske værdier
+qt_stdt_100_Z2 <- quantile(Z2_stdt_H0_100, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+qt_stdt_10_Z2 <- quantile(Z2_stdt_H0_10, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+
+
+## Z3 teststørrelser under H_0 for nu=100 og nu=10
+Z3_stdt_H0_100 <- Z3(X_stdt_100, df_H0 = nu_100, alpha_0.025, tau = 1, mu = 0)
+Z3_stdt_H0_10 <- Z3(X_stdt_10, df_H0 = nu_10, alpha_0.025, tau = 1, mu = 0)
+
+## Z3 teststørrelser under H_1 for nu=100 og nu=10
+Z3_stdt_H1_100 <- lapply(X_stdt_H1_100, function(X) Z3(X, df_H0 = nu_100, alpha_0.025, tau = 1, mu = 0))
+Z3_stdt_H1_10 <- lapply(X_stdt_H1_10, function(X) Z3(X, df_H0 = nu_10, alpha_0.025, tau = 1, mu = 0))
+
+## Find kritiske værdier
+qt_stdt_100_Z3 <- quantile(Z3_stdt_H0_100, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+qt_stdt_10_Z3 <- quantile(Z3_stdt_H0_10, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+
+
+
+# Teststyrke for Z2 og Z3 ved H_0, nu = 100 og ved H_0, nu = 10 (t og standardiseret t fordeling)
+
+ZPower_t_100 <- data.frame(
+  H0 = "df=100",
+  H1 = rep(names(X_t_H1_100), 2),
+  Signifikansniveau = rep(c(alpha_discrete_0.05, alpha_discrete_0.10), each = 3),
+  Z2_Teststyrke = c(
+    sapply(Z2_t_H1_100, function(z) Z_power(z, qt_t_100_Z2[1])),
+    sapply(Z2_t_H1_100, function(z) Z_power(z, qt_t_100_Z2[2]))
+  ),
+  Z3_Teststyrke = c(
+    sapply(Z3_t_H1_100, function(z) Z_power(z, qt_t_100_Z3[1])),
+    sapply(Z3_t_H1_100, function(z) Z_power(z, qt_t_100_Z3[2]))
+  )
+)
+
+ZPower_t_100
+
+
+ZPower_t_10 <- data.frame(
+  H0 = "df=10",
+  H1 = rep(names(X_t_H1_10), 2),
+  Signifikansniveau = rep(c(alpha_discrete_0.05, alpha_discrete_0.10), each = 2),
+  Z2_Teststyrke = c(
+    sapply(Z2_t_H1_10, function(z) Z_power(z, qt_t_10_Z2[1])),
+    sapply(Z2_t_H1_10, function(z) Z_power(z, qt_t_10_Z2[2]))
+  ),
+  Z3_Teststyrke = c(
+    sapply(Z3_t_H1_10, function(z) Z_power(z, qt_t_10_Z3[1])),
+    sapply(Z3_t_H1_10, function(z) Z_power(z, qt_t_10_Z3[2]))
+  )
+)
+
+ZPower_t_10
+
+
+
+```
