@@ -301,18 +301,18 @@ Z_styrke_t_100 <- data.frame(
     sapply(Z3_t_H1_100, function(z) Z_styrke(z, qt_t_100_Z3[1])),
     sapply(Z3_t_H1_100, function(z) Z_styrke(z, qt_t_100_Z3[2]))))
 
-Z_styrke_stdt_10 <- data.frame(
+Z_styrke_t_10 <- data.frame(
   H_0 = "nu = 10",
   H_1 = rep(c("nu = 5", "nu = 3"), 2),
   Signifikansniveau = rep(c(alpha_discrete_0.05, alpha_discrete_0.10), each = 2),
   
   Z2_teststyrke = c(
-    sapply(Z2_stdt_H1_10, function(z) Z_power(z, qt_stdt_10_Z2[1])),
-    sapply(Z2_stdt_H1_10, function(z) Z_power(z, qt_stdt_10_Z2[2]))),
+    sapply(Z2_t_H1_10, function(z) Z_power(z, qt_t_10_Z2[1])),
+    sapply(Z2_t_H1_10, function(z) Z_power(z, qt_t_10_Z2[2]))),
   
   Z3_teststyrke = c(
-    sapply(Z3_stdt_H1_10, function(z) Z_power(z, qt_stdt_10_Z3[1])),
-    sapply(Z3_stdt_H1_10, function(z) Z_power(z, qt_stdt_10_Z3[2]))))
+    sapply(Z3_t_H1_10, function(z) Z_power(z, qt_t_10_Z3[1])),
+    sapply(Z3_t_H1_10, function(z) Z_power(z, qt_t_10_Z3[2]))))
 
 Z_styrke_stdt_100 <- data.frame(
   H_0 = "nu = 100",
@@ -409,14 +409,14 @@ X_stdt_fixedVaR_H1_10 <- list(df5 = X_stdt_fixedVaR_10_5, df3 = X_stdt_fixedVaR_
 # N_T for alle t fordelinger med fixed VaR 2.5% under H0
 N_t_fixedVaR_H0_100 <- VaR_exceptions(X_t_fixedVaR_100, VaR_nu_100)
 N_t_fixedVaR_H0_10 <- VaR_exceptions(X_t_fixedVaR_10, VaR_nu_10)
-N_stdt_fixedVaR_H0_100 <- VaR_exceptions(X_stdt_fixedVaR_100, VaR_nu_100)
-N_stdt_fixedVaR_H0_10 <- VaR_exceptions(X_stdt_fixedVaR_10, VaR_nu_10)
+N_stdt_fixedVaR_H0_100 <- VaR_exceptions(X_stdt_fixedVaR_100, VaR_stdt_nu_100)
+N_stdt_fixedVaR_H0_10 <- VaR_exceptions(X_stdt_fixedVaR_10, VaR_stdt_nu_10)
 
 # N_T for alle t fordelinger med fixed VaR 2.5% under H1
 N_t_fixedVaR_H1_100 <- lapply(X_t_fixedVaR_H1_100, function(X) VaR_exceptions(X, VaR_nu_100))
 N_t_fixedVaR_H1_10 <- lapply(X_t_fixedVaR_H1_10, function(X) VaR_exceptions(X, VaR_nu_10))
-N_stdt_fixedVaR_H1_100 <- lapply(X_stdt_fixedVaR_H1_100, function(X) VaR_exceptions(X, VaR_nu_100))
-N_stdt_fixedVaR_H1_10 <- lapply(X_stdt_fixedVaR_H1_100, function(X) VaR_exceptions(X, VaR_nu_10))
+N_stdt_fixedVaR_H1_100 <- lapply(X_stdt_fixedVaR_H1_100, function(X) VaR_exceptions(X, VaR_stdt_nu_100))
+N_stdt_fixedVaR_H1_10 <- lapply(X_stdt_fixedVaR_H1_10, function(X) VaR_exceptions(X, VaR_stdt_nu_10))
 
 
 # t fordeling fixed VaR 2.5% (test af Z1, Z2 og Z3)
@@ -424,6 +424,8 @@ N_stdt_fixedVaR_H1_10 <- lapply(X_stdt_fixedVaR_H1_100, function(X) VaR_exceptio
 Z1_t_fixedVaR_H0_100 <- Z1(X_t_fixedVaR_100, N_t_fixedVaR_H0_100, VaR_nu_100, ES_nu_100)
 Z1_t_fixedVaR_H0_10 <- Z1(X_t_fixedVaR_10, N_t_fixedVaR_H0_10, VaR_nu_10, ES_nu_10)
 
+
+## Z1 teststørrelser under H_1 med fixed VaR 2.5% for nu=100 og nu=10
 Z1_t_fixedVaR_H1_100 <- mapply(function(X, N) Z1(X, N, VaR_nu_100, ES_nu_100),
                                X_t_fixedVaR_H1_100, 
                                N_t_fixedVaR_H1_100, 
@@ -433,21 +435,160 @@ Z1_t_fixedVaR_H1_10 <- mapply(function(X, N) Z1(X, N, VaR_nu_10, ES_nu_10),
                               N_t_fixedVaR_H1_10, 
                               SIMPLIFY = FALSE)
 
-qt_t_fixedVaR_100_Z1 <- quantile(Z1_t_fixedVaR_H0_100, probs = c(alpha_discrete_0.05, alpha_discrete_0.10), na.rm = TRUE)
-qt_t_fixedVaR_10_Z1 <- quantile(Z1_t_fixedVaR_H0_10, probs = c(alpha_discrete_0.05, alpha_discrete_0.10), na.rm = TRUE)
+## Find kritiske værdier
+qt_t_fixedVaR_100_Z1 <- quantile(Z1_t_fixedVaR_H0_100, probs = c(alpha_discrete_0.05, alpha_discrete_0.10), 
+                                 na.rm = TRUE)
+qt_t_fixedVaR_10_Z1 <- quantile(Z1_t_fixedVaR_H0_10, probs = c(alpha_discrete_0.05, alpha_discrete_0.10), 
+                                na.rm = TRUE)
 
-Z1_styrke_t_100 <- data.frame(
+
+## Z2 teststørrelser under H_0 med fixed VaR 2.5% for nu=100 og nu=10
+Z2_t_fixedVaR_H0_100 <- Z2(X_t_fixedVaR_100, VaR_nu_100, ES_nu_100, alpha_0.025)
+Z2_t_fixedVaR_H0_10 <- Z2(X_t_fixedVaR_10, VaR_nu_10, ES_nu_10, alpha_0.025)
+
+## Z2 teststørrelser under H_1 med fixed VaR 2.5% for nu=100 og nu=10
+Z2_t_fixedVaR_H1_100 <- lapply(X_t_fixedVaR_H1_100, function(X) Z2(X, VaR_nu_100, ES_nu_100, alpha_0.025))
+Z2_t_fixedVaR_H1_10 <- lapply(X_t_fixedVaR_H1_10, function(X) Z2(X, VaR_nu_10, ES_nu_10, alpha_0.025))
+
+## Find kritiske værdier
+qt_t_fixedVaR_100_Z2 <- quantile(Z2_t_fixedVaR_H0_100, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+qt_t_fixedVaR_10_Z2 <- quantile(Z2_t_fixedVaR_H0_10, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+
+  
+## Z3 teststørrelser under H_0 med fixed VaR 2.5% for nu=100 og nu=10
+Z3_t_fixedVaR_H0_100 <- Z3(X_t_fixedVaR_100, df_H0 = nu_100, alpha = alpha_0.025, tau = 1, mu = 0)
+Z3_t_fixedVaR_H0_10 <- Z3(X_t_fixedVaR_10, df_H0 = nu_10, alpha = alpha_0.025, tau = 1, mu = 0)
+
+## Z3 teststørrelser under H_1 med fixed VaR 2.5% for nu=100 og nu=10
+Z3_t_fixedVaR_H1_100 <- lapply(X_t_fixedVaR_H1_100, function(X) Z3(X, df_H0 = nu_100, alpha = alpha_0.025, tau = 1, mu = 0))
+Z3_t_fixedVaR_H1_10 <- lapply(X_t_fixedVaR_H1_10, function(X) Z3(X, df_H0 = nu_10, alpha = alpha_0.025, tau = 1, mu = 0))
+
+## Find kritiske værdier
+qt_t_fixedVaR_100_Z3 <- quantile(Z3_t_fixedVaR_H0_100, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+qt_t_fixedVaR_10_Z3 <- quantile(Z3_t_fixedVaR_H0_10, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+
+
+# Standardiseret t fordeling fixed VaR 2.5% (test af Z1, Z2 og Z3)
+## Z1 teststørrelser under H_0 med fixed VaR 2.5% for nu=100 og nu=10
+Z1_stdt_fixedVaR_H0_100 <- Z1(X_stdt_fixedVaR_100, N_stdt_fixedVaR_H0_100, VaR_stdt_nu_100, ES_stdt_nu_100)
+Z1_stdt_fixedVaR_H0_10 <- Z1(X_stdt_fixedVaR_10, N_stdt_fixedVaR_H0_10, VaR_stdt_nu_10, ES_stdt_nu_10)
+
+
+## Z1 teststørrelser under H_1 med fixed VaR 2.5% for nu=100 og nu=10
+Z1_stdt_fixedVaR_H1_100 <- mapply(function(X, N) Z1(X, N, VaR_stdt_nu_100, ES_stdt_nu_100),
+                               X_stdt_fixedVaR_H1_100, 
+                               N_stdt_fixedVaR_H1_100, 
+                               SIMPLIFY = FALSE)
+Z1_stdt_fixedVaR_H1_10 <- mapply(function(X, N) Z1(X, N, VaR_stdt_nu_10, ES_stdt_nu_10), 
+                              X_stdt_fixedVaR_H1_10, 
+                              N_stdt_fixedVaR_H1_10, 
+                              SIMPLIFY = FALSE)
+
+## Find kritiske værdier
+qt_stdt_fixedVaR_100_Z1 <- quantile(Z1_stdt_fixedVaR_H0_100, probs = c(alpha_discrete_0.05, alpha_discrete_0.10), 
+                                    na.rm = TRUE)
+qt_stdt_fixedVaR_10_Z1 <- quantile(Z1_stdt_fixedVaR_H0_10, probs = c(alpha_discrete_0.05, alpha_discrete_0.10), 
+                                   na.rm = TRUE)
+
+
+## Z2 teststørrelser under H_0 med fixed VaR 2.5% for nu=100 og nu=10
+Z2_stdt_fixedVaR_H0_100 <- Z2(X_stdt_fixedVaR_100, VaR_stdt_nu_100, ES_stdt_nu_100, alpha_0.025)
+Z2_stdt_fixedVaR_H0_10 <- Z2(X_stdt_fixedVaR_10, VaR_stdt_nu_10, ES_stdt_nu_10, alpha_0.025)
+
+## Z2 teststørrelser under H_1 med fixed VaR 2.5% for nu=100 og nu=10
+Z2_stdt_fixedVaR_H1_100 <- lapply(X_stdt_fixedVaR_H1_100, function(X) Z2(X, VaR_stdt_nu_100, ES_stdt_nu_100, alpha_0.025))
+Z2_stdt_fixedVaR_H1_10 <- lapply(X_stdt_fixedVaR_H1_10, function(X) Z2(X, VaR_stdt_nu_10, ES_stdt_nu_10, alpha_0.025))
+
+## Find kritiske værdier
+qt_stdt_fixedVaR_100_Z2 <- quantile(Z2_stdt_fixedVaR_H0_100, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+qt_stdt_fixedVaR_10_Z2 <- quantile(Z2_stdt_fixedVaR_H0_10, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+
+  
+## Z3 teststørrelser under H_0 med fixed VaR 2.5% for nu=100 og nu=10
+Z3_stdt_fixedVaR_H0_100 <- Z3(X_stdt_fixedVaR_100, df_H0 = nu_100, alpha = alpha_0.025, tau = 1, mu = 0)
+Z3_stdt_fixedVaR_H0_10 <- Z3(X_stdt_fixedVaR_10, df_H0 = nu_10, alpha = alpha_0.025, tau = 1, mu = 0)
+
+## Z3 teststørrelser under H_1 med fixed VaR 2.5% for nu=100 og nu=10
+Z3_stdt_fixedVaR_H1_100 <- lapply(X_stdt_fixedVaR_H1_100, function(X) Z3(X, df_H0 = nu_100, alpha = alpha_0.025, tau = 1, mu = 0))
+Z3_stdt_fixedVaR_H1_10 <- lapply(X_stdt_fixedVaR_H1_10, function(X) Z3(X, df_H0 = nu_10, alpha = alpha_0.025, tau = 1, mu = 0))
+
+## Find kritiske værdier
+qt_stdt_fixedVaR_100_Z3 <- quantile(Z3_stdt_fixedVaR_H0_100, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+qt_stdt_fixedVaR_10_Z3 <- quantile(Z3_stdt_fixedVaR_H0_10, probs = c(alpha_discrete_0.05, alpha_discrete_0.10))
+
+
+# Teststyrke for Z1, Z2 og Z3 ved H_0, nu = 100 og ved H_0, nu = 10 (t og standardiseret t fordeling, fixed VaR 2.5%)
+Z_styrke_t_fixedVaR_100 <- data.frame(
   H_0 = "nu = 100",
   H_1 = rep(c("nu = 10", "nu = 5", "nu = 3"), 2),
   Signifikansniveau = rep(c(alpha_discrete_0.05, alpha_discrete_0.10), each = 3),
   
   Z1_teststyrke = c(
     sapply(Z1_t_fixedVaR_H1_100, function(z) Z_styrke(z, qt_t_fixedVaR_100_Z1[1])),
-    sapply(Z1_t_fixedVaR_H1_100, function(z) Z_styrke(z, qt_t_fixedVaR_100_Z1[2]))))
+    sapply(Z1_t_fixedVaR_H1_100, function(z) Z_styrke(z, qt_t_fixedVaR_100_Z1[2]))), 
 
-Z1_styrke_t_100
+  Z2_teststyrke = c(
+    sapply(Z2_t_fixedVaR_H1_100, function(z) Z_styrke(z, qt_t_fixedVaR_100_Z2[1])),
+    sapply(Z2_t_fixedVaR_H1_100, function(z) Z_styrke(z, qt_t_fixedVaR_100_Z2[2]))),
+  
+  Z3_teststyrke = c(
+    sapply(Z3_t_fixedVaR_H1_100, function(z) Z_styrke(z, qt_t_fixedVaR_100_Z3[1])),
+    sapply(Z3_t_fixedVaR_H1_100, function(z) Z_styrke(z, qt_t_fixedVaR_100_Z3[2]))))
 
-----
+Z_styrke_t_fixedVaR_10 <- data.frame(
+  H_0 = "nu = 10",
+  H_1 = rep(c("nu = 5", "nu = 3"), 2),
+  Signifikansniveau = rep(c(alpha_discrete_0.05, alpha_discrete_0.10), each = 2),
+  
+  Z1_teststyrke = c(
+    sapply(Z1_t_fixedVaR_H1_10, function(z) Z_styrke(z, qt_t_fixedVaR_10_Z1[1])),
+    sapply(Z1_t_fixedVaR_H1_10, function(z) Z_styrke(z, qt_t_fixedVaR_10_Z1[2]))), 
 
+  Z2_teststyrke = c(
+    sapply(Z2_t_fixedVaR_H1_10, function(z) Z_styrke(z, qt_t_fixedVaR_10_Z2[1])),
+    sapply(Z2_t_fixedVaR_H1_10, function(z) Z_styrke(z, qt_t_fixedVaR_10_Z2[2]))),
+  
+  Z3_teststyrke = c(
+    sapply(Z3_t_fixedVaR_H1_10, function(z) Z_styrke(z, qt_t_fixedVaR_10_Z3[1])),
+    sapply(Z3_t_fixedVaR_H1_10, function(z) Z_styrke(z, qt_t_fixedVaR_10_Z3[2]))))
+
+Z_styrke_stdt_fixedVaR_100 <- data.frame(
+  H_0 = "nu = 100",
+  H_1 = rep(c("nu = 10", "nu = 5", "nu = 3"), 2),
+  Signifikansniveau = rep(c(alpha_discrete_0.05, alpha_discrete_0.10), each = 3),
+  
+  Z1_teststyrke = c(
+    sapply(Z1_stdt_fixedVaR_H1_100, function(z) Z_styrke(z, qt_stdt_fixedVaR_100_Z1[1])),
+    sapply(Z1_stdt_fixedVaR_H1_100, function(z) Z_styrke(z, qt_stdt_fixedVaR_100_Z1[2]))), 
+
+  Z2_teststyrke = c(
+    sapply(Z2_stdt_fixedVaR_H1_100, function(z) Z_styrke(z, qt_stdt_fixedVaR_100_Z2[1])),
+    sapply(Z2_stdt_fixedVaR_H1_100, function(z) Z_styrke(z, qt_stdt_fixedVaR_100_Z2[2]))),
+  
+  Z3_teststyrke = c(
+    sapply(Z3_stdt_fixedVaR_H1_100, function(z) Z_styrke(z, qt_stdt_fixedVaR_100_Z3[1])),
+    sapply(Z3_stdt_fixedVaR_H1_100, function(z) Z_styrke(z, qt_stdt_fixedVaR_100_Z3[2]))))
+
+Z_styrke_stdt_fixedVaR_10 <- data.frame(
+  H_0 = "nu = 10",
+  H_1 = rep(c("nu = 5", "nu = 3"), 2),
+  Signifikansniveau = rep(c(alpha_discrete_0.05, alpha_discrete_0.10), each = 2),
+  
+  Z1_teststyrke = c(
+    sapply(Z1_stdt_fixedVaR_H1_10, function(z) Z_styrke(z, qt_stdt_fixedVaR_10_Z1[1])),
+    sapply(Z1_stdt_fixedVaR_H1_10, function(z) Z_styrke(z, qt_stdt_fixedVaR_10_Z1[2]))), 
+
+  Z2_teststyrke = c(
+    sapply(Z2_stdt_fixedVaR_H1_10, function(z) Z_styrke(z, qt_stdt_fixedVaR_10_Z2[1])),
+    sapply(Z2_stdt_fixedVaR_H1_10, function(z) Z_styrke(z, qt_stdt_fixedVaR_10_Z2[2]))),
+  
+  Z3_teststyrke = c(
+    sapply(Z3_stdt_fixedVaR_H1_10, function(z) Z_styrke(z, qt_stdt_fixedVaR_10_Z3[1])),
+    sapply(Z3_stdt_fixedVaR_H1_10, function(z) Z_styrke(z, qt_stdt_fixedVaR_10_Z3[2]))))
+
+Z_styrke_t_fixedVaR_100
+Z_styrke_t_fixedVaR_10
+Z_styrke_stdt_fixedVaR_100
+Z_styrke_stdt_fixedVaR_10
 
 ```
