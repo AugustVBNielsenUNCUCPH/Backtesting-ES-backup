@@ -154,6 +154,14 @@ alpha_discrete_0.05 <- pbinom(q5, T, 0.01, lower.tail = FALSE)
 alpha_discrete_0.10 <- pbinom(q10, T, 0.01, lower.tail = FALSE)
 
 
+## Kritiske værdier til fixed VaR 2.5%
+q5_fixedVaR  <- qbinom(1 - 0.05, T, prob = 0.025)
+q10_fixedVaR <- qbinom(1 - 0.10, T, prob = 0.025)
+
+alpha_discrete_0.05_fixedVaR  <- pbinom(q5_fixedVaR, T, 0.025, lower.tail = FALSE)
+alpha_discrete_0.10_fixedVaR  <- pbinom(q10_fixedVaR, T, 0.025, lower.tail = FALSE)
+
+
 # Definer styrkefunktioner 
 Z_styrke <- function(Z, q) {
   1 - mean(Z >= q, na.rm = TRUE)}
@@ -307,12 +315,12 @@ Z_styrke_t_10 <- data.frame(
   Signifikansniveau = rep(c(alpha_discrete_0.05, alpha_discrete_0.10), each = 2),
   
   Z2_teststyrke = c(
-    sapply(Z2_t_H1_10, function(z) Z_power(z, qt_t_10_Z2[1])),
-    sapply(Z2_t_H1_10, function(z) Z_power(z, qt_t_10_Z2[2]))),
+    sapply(Z2_t_H1_10, function(z) Z_styrke(z, qt_t_10_Z2[1])),
+    sapply(Z2_t_H1_10, function(z) Z_styrke(z, qt_t_10_Z2[2]))),
   
   Z3_teststyrke = c(
-    sapply(Z3_t_H1_10, function(z) Z_power(z, qt_t_10_Z3[1])),
-    sapply(Z3_t_H1_10, function(z) Z_power(z, qt_t_10_Z3[2]))))
+    sapply(Z3_t_H1_10, function(z) Z_styrke(z, qt_t_10_Z3[1])),
+    sapply(Z3_t_H1_10, function(z) Z_styrke(z, qt_t_10_Z3[2]))))
 
 Z_styrke_stdt_100 <- data.frame(
   H_0 = "nu = 100",
@@ -590,5 +598,57 @@ Z_styrke_t_fixedVaR_100
 Z_styrke_t_fixedVaR_10
 Z_styrke_stdt_fixedVaR_100
 Z_styrke_stdt_fixedVaR_10
+
+```
+
+
+```{r}
+# Definer N_T for alle t fordelinger med fixed VaR 2.5% under H1 til VaR test
+N_t_fixedVaR_H1_100_VaRtest <- lapply(X_t_fixedVaR_H1_100, function(X) VaR_exceptions(X, VaR_nu_100_alph_0.01))
+N_t_fixedVaR_H1_10_VaRtest <- lapply(X_t_fixedVaR_H1_10, function(X) VaR_exceptions(X, VaR_nu_10_alph_0.01))
+N_stdt_fixedVaR_H1_100_VaRtest <- lapply(X_stdt_fixedVaR_H1_100, function(X) VaR_exceptions(X, VaR_stdt_nu_100_alph_0.01))
+N_stdt_fixedVaR_H1_10_VaRtest <- lapply(X_stdt_fixedVaR_H1_10, function(X) VaR_exceptions(X, VaR_stdt_nu_10_alph_0.01))
+
+# Teststyrke for VaR ved H_0, nu = 100 og ved H_0, nu = 10 (t og standardiseret t fordeling, fixed VaR 2.5%)
+VaR_styrke_t_fixedVaR_100 <- data.frame(
+  H_0 = "nu = 100",
+  H_1 = rep(c("nu = 10", "nu = 5", "nu = 3"), 2),
+  Signifikansniveau = rep(c(alpha_discrete_0.05, alpha_discrete_0.10), each = 3),
+  
+  VaR_teststyrke = c(
+    sapply(N_t_fixedVaR_H1_100_VaRtest, function(N) VaR_styrke(N, q5)),
+    sapply(N_t_fixedVaR_H1_100_VaRtest, function(N) VaR_styrke(N, q10))))
+
+VaR_styrke_t_fixedVaR_10 <- data.frame(
+  H_0 = "nu = 10",
+  H_1 = rep(c("nu = 5", "nu = 3"), 2),
+  Signifikansniveau = rep(c(alpha_discrete_0.05, alpha_discrete_0.10), each = 2),
+  
+  VaR_teststyrke = c(
+    sapply(N_t_fixedVaR_H1_10_VaRtest, function(N) VaR_styrke(N, q5)),
+    sapply(N_t_fixedVaR_H1_10_VaRtest, function(N) VaR_styrke(N, q10))))
+
+VaR_styrke_stdt_fixedVaR_100 <- data.frame(
+  H_0 = "nu = 100",
+  H_1 = rep(c("nu = 10", "nu = 5", "nu = 3"), 2),
+  Signifikansniveau = rep(c(alpha_discrete_0.05, alpha_discrete_0.10), each = 3),
+  
+  VaR_teststyrke = c(
+    sapply(N_stdt_fixedVaR_H1_100_VaRtest, function(N) VaR_styrke(N, q5)),
+    sapply(N_stdt_fixedVaR_H1_100_VaRtest, function(N) VaR_styrke(N, q10))))
+
+VaR_styrke_stdt_fixedVaR_10 <- data.frame(
+  H_0 = "nu = 10",
+  H_1 = rep(c("nu = 5", "nu = 3"), 2),
+  Signifikansniveau = rep(c(alpha_discrete_0.05, alpha_discrete_0.10), each = 2),
+  
+  VaR_teststyrke = c(
+    sapply(N_stdt_fixedVaR_H1_10_VaRtest, function(N) VaR_styrke(N, q5)),
+    sapply(N_stdt_fixedVaR_H1_10_VaRtest, function(N) VaR_styrke(N, q10))))
+
+VaR_styrke_t_fixedVaR_100
+VaR_styrke_t_fixedVaR_10
+VaR_styrke_stdt_fixedVaR_100
+VaR_styrke_stdt_fixedVaR_10
 
 ```
