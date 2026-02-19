@@ -55,10 +55,7 @@ ES_stdt_nu_5   <- ES(qt, p = alpha_0.025, df = nu_5) * tau_5
 ES_stdt_nu_10  <- ES(qt, p = alpha_0.025, df = nu_10) * tau_10
 ES_stdt_nu_100 <- ES(qt, p = alpha_0.025, df = nu_100) * tau_100
 
-cat(
-  "==============================\n",
-  "Almindelig t-fordeling\n",
-  "==============================\n",
+cat("t-fordeling\n",
   sprintf("VaR (2.5%%):  nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n",
           VaR_nu_3, VaR_nu_5, VaR_nu_10, VaR_nu_100),
   sprintf("ES  (2.5%%):  nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n",
@@ -67,9 +64,7 @@ cat(
           VaR_nu_3_alph_0.01, VaR_nu_5_alph_0.01,
           VaR_nu_10_alph_0.01, VaR_nu_100_alph_0.01),
 
-  "==============================\n",
   "Standardiseret t-fordeling\n",
-  "==============================\n",
   sprintf("VaR (2.5%%):  nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n",
           VaR_stdt_nu_3, VaR_stdt_nu_5, VaR_stdt_nu_10, VaR_stdt_nu_100),
   sprintf("ES  (2.5%%):  nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n",
@@ -187,11 +182,9 @@ N_stdt_10 <- lapply(X_stdt_H1_10, function(X) VaR_exceptions(X, VaR_stdt_nu_10_a
 ## Z1
 Z1 <- function(X, N, VaR, ES) {
   I <- (X + VaR) < 0
-  
   Z1_numenator <- rowSums((X * I) / ES)
   
   Z1 <- ifelse(N > 0, Z1_numenator / N + 1, NA)
-  
   return(Z1)
 }
 
@@ -217,7 +210,7 @@ ES_hat <- function(U, df, alpha, tau = 1, mu = 0) {
   return(ES_observationer)
 }
 
-Mm <- 10000
+Mm <- 100000
 nn <- 250
 V_samples <- matrix(runif(Mm * nn), nrow = Mm, ncol = nn) # V ~ U(0,1)
 
