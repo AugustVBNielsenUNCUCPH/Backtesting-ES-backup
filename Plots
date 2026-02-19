@@ -1,0 +1,598 @@
+---
+title: "Plots Acerbi"
+output: html_document
+date: "2026-02-18"
+---
+
+```{r}
+# t fordeling
+
+par(mar = c(5,4,4,8))
+
+x_vals <- seq(-6, 6, length.out = 2000)
+
+plot(x_vals, 
+     dt(x_vals, df = nu_100),
+     type = "l", lwd = 3,
+     ylim = c(0, 0.4),
+     xlab = "",
+     ylab = "",
+     main = expression("Tætheder for t-fordeling"))
+
+abline(h=seq(0,1,0.1), v=axTicks(1), col="grey70", lty=1)
+
+lines(x_vals, dt(x_vals, df = nu_100), lwd = 3, col = "deeppink3")
+lines(x_vals, dt(x_vals, df = nu_10), lwd = 3, col = "deepskyblue4")
+lines(x_vals, dt(x_vals, df = nu_5), lwd = 3, col = "aquamarine3")
+lines(x_vals, dt(x_vals, df = nu_3), lwd = 3, col = "darkgoldenrod2")
+
+legend("right",
+       inset = c(-0.3, 0),
+       xpd = NA,
+       legend = c(
+         expression(H[0]~~nu == 100),
+         expression(H[1]~~nu == 10),
+         expression(H[1]~~nu == 5),
+         expression(H[1]~~nu == 3)
+       ),
+       col = c("deeppink3",
+               "deepskyblue4",
+               "aquamarine3",
+               "darkgoldenrod2"),
+       lwd = 2,
+       bty = "n")
+
+```
+
+```{r}
+#Z2 test under H0 med nu = 100, t fordeling
+
+layout(matrix(c(1,2), ncol = 1), heights = c(3, 1.5))
+
+par(mar = c(0,4,2,8))
+
+Z2_t_dens_H0 <- density(Z2_t_H0_100)
+Z2_t_dens_10 <- density(Z2_t_H1_100$df10)
+Z2_t_dens_5  <- density(Z2_t_H1_100$df5)
+Z2_t_dens_3  <- density(Z2_t_H1_100$df3)
+
+F_H0_Z2_t <- ecdf(Z2_t_H0_100)
+F_10_Z2_t <- ecdf(Z2_t_H1_100$df10)
+F_5_Z2_t  <- ecdf(Z2_t_H1_100$df5)
+F_3_Z2_t  <- ecdf(Z2_t_H1_100$df3)
+
+plot(x_vals,
+     type = "l",
+     lwd = 3,
+     ylim = c(0,1),
+     xlim = c(-6,1),
+     xaxt = "n",
+     xlab = "",
+     ylab = "",
+     yaxt = "n",
+     main = expression(ES[2.5*"%"]~"| Z2 test"))
+
+axis(2,
+     at = seq(0,1,0.1),
+     labels = sprintf("%.1f", seq(0,1,0.1)),
+     las = 1)
+
+abline(h=seq(0,1,0.1), v=axTicks(1), col="grey70", lty=1)
+
+lines(x_vals, F_H0_Z2_t(x_vals), col = "deeppink3", lwd = 3)
+lines(x_vals, 1 - F_10_Z2_t(x_vals), col = "deepskyblue4", lwd = 3)
+lines(x_vals, 1 - F_5_Z2_t(x_vals),  col = "aquamarine3", lwd = 3)
+lines(x_vals, 1 - F_3_Z2_t(x_vals),  col = "darkgoldenrod2", lwd = 3)
+
+abline(v = quantile(Z2_t_H0_100, 0.05), col = "green2", lwd = 2)
+abline(v = quantile(Z2_t_H0_100, 0.10), col = "green2", lwd = 2)
+
+abline(v = qt_t_100_Z2[1], col = "black", lwd = 2)
+abline(v = qt_t_100_Z2[2], col = "black", lwd = 2)
+
+legend("right",
+       inset = c(-0.3, 0),
+       xpd = NA,
+       legend = c(
+         expression(H[0]~~nu == 100),
+         expression(H[1]~~nu == 10),
+         expression(H[1]~~nu == 5),
+         expression(H[1]~~nu == 3)
+       ),
+       col = c("deeppink3",
+               "deepskyblue4",
+               "aquamarine3",
+               "darkgoldenrod2"),
+       lwd = 2,
+       bty = "n")
+
+par(mar = c(3,4,0.5,8))
+
+plot(Z2_t_dens_H0,
+     main = "",
+     lwd = 3,
+     xlim = c(-6, 1),
+     ylim = c(0, 1.2),  
+     xlab = "",
+     ylab = "", 
+     yaxt = "n")
+
+abline(h=seq(0.6,0.6), v=axTicks(1), col="grey70", lty=1)
+
+lines(Z2_t_dens_H0, col = "deeppink3", lwd = 3)
+lines(Z2_t_dens_10, col = "deepskyblue4", lwd = 3)
+lines(Z2_t_dens_5,  col = "aquamarine3", lwd = 3)
+lines(Z2_t_dens_3,  col = "darkgoldenrod2", lwd = 3)
+
+```
+
+```{r}
+#Z3 test under H0 med nu = 100, t fordeling
+
+layout(matrix(c(1,2), ncol = 1), heights = c(3, 1.5))
+
+par(mar = c(0,4,2,8))
+
+Z3_t_dens_H0 <- density(Z3_t_H0_100)
+Z3_t_dens_10 <- density(Z3_t_H1_100$df10)
+Z3_t_dens_5  <- density(Z3_t_H1_100$df5)
+Z3_t_dens_3  <- density(Z3_t_H1_100$df3)
+
+F_H0_Z3_t <- ecdf(Z3_t_H0_100)
+F_10_Z3_t <- ecdf(Z3_t_H1_100$df10)
+F_5_Z3_t  <- ecdf(Z3_t_H1_100$df5)
+F_3_Z3_t  <- ecdf(Z3_t_H1_100$df3)
+
+plot(x_vals,
+     type = "l",
+     lwd = 3,
+     ylim = c(0,1),
+     xlim = c(-3,0.3),
+     xaxt = "n",
+     xlab = "",
+     ylab = "",
+     yaxt = "n",
+     main = expression(ES[2.5*"%"]~"| Z3 test"))
+
+axis(2,
+     at = seq(0,1,0.1),
+     labels = sprintf("%.1f", seq(0,1,0.1)),
+     las = 1)
+
+abline(h=seq(0,1,0.1), v=axTicks(1), col="grey70", lty=1)
+
+lines(x_vals, F_H0_Z3_t(x_vals), col = "deeppink3", lwd = 3)
+lines(x_vals, 1 - F_10_Z3_t(x_vals), col = "deepskyblue4", lwd = 3)
+lines(x_vals, 1 - F_5_Z3_t(x_vals),  col = "aquamarine3", lwd = 3)
+lines(x_vals, 1 - F_3_Z3_t(x_vals),  col = "darkgoldenrod2", lwd = 3)
+
+abline(v = quantile(Z3_t_H0_100, 0.05), col = "green2", lwd = 2)
+abline(v = quantile(Z3_t_H0_100, 0.10), col = "green2", lwd = 2)
+
+abline(v = qt_t_100_Z3[1], col = "black", lwd = 2)
+abline(v = qt_t_100_Z3[2], col = "black", lwd = 2)
+
+legend("right",
+       inset = c(-0.3, 0),
+       xpd = NA,
+       legend = c(
+         expression(H[0]~~nu == 100),
+         expression(H[1]~~nu == 10),
+         expression(H[1]~~nu == 5),
+         expression(H[1]~~nu == 3)
+       ),
+       col = c("deeppink3",
+               "deepskyblue4",
+               "aquamarine3",
+               "darkgoldenrod2"),
+       lwd = 2,
+       bty = "n")
+
+par(mar = c(3,4,0.5,8))
+
+plot(Z3_t_dens_H0,
+     main = "",
+     lwd = 3,
+     xlim = c(-3, 0.3),
+     ylim = c(0, 5),  
+     xlab = "",
+     ylab = "", 
+     yaxt = "n")
+
+abline(h=seq(2.5,2.5), v=axTicks(1), col="grey70", lty=1)
+
+lines(Z3_t_dens_H0, col = "deeppink3", lwd = 3)
+lines(Z3_t_dens_10, col = "deepskyblue4", lwd = 3)
+lines(Z3_t_dens_5,  col = "aquamarine3", lwd = 3)
+lines(Z3_t_dens_3,  col = "darkgoldenrod2", lwd = 3)
+
+```
+
+```{r}
+#VaR1% test under H0 med nu = 100, t fordeling
+
+layout(matrix(c(1,2), ncol=1), heights=c(3,1.5))
+
+par(mar=c(0,4,2,8))
+
+k_vals <- -1:30
+
+S_H0 <- 1 - pbinom(k_vals - 1, T, p0)
+
+plot(k_vals,
+     S_H0,
+     type="l",
+     lwd=3,
+     col="deeppink3",
+     ylim=c(0,1),
+     xlim=c(20,0),
+     xaxt="n",
+     ylab="",
+     xlab="",
+     yaxt="n",
+     main=expression(VaR[1*"%"]~"| Antal overskridelser"),
+     panel.first = {
+       abline(
+         h = seq(0, 1, by = 0.1),
+         v = seq(0, 20, by = 5),
+         col = "grey70",
+         lty = 1)})
+
+axis(2,
+     at=seq(0,1,0.1),
+     labels=sprintf("%.1f",seq(0,1,0.1)),
+     las=1)
+
+surv <- function(x){
+  sapply(k_vals, function(k) mean(x >= k))
+}
+
+lines(k_vals, 1 - surv(N_t_100$df10), col = "deepskyblue4", lwd = 3)
+lines(k_vals, 1 - surv(N_t_100$df5),  col = "aquamarine3", lwd =3 )
+lines(k_vals, 1 - surv(N_t_100$df3),  col = "darkgoldenrod2", lwd = 3)
+
+abline(v = qbinom(1 - alpha_discrete_0.05, T, 0.01) + 1, col = "black", lwd=2)
+abline(v = qbinom(1 - alpha_discrete_0.10, T, 0.01) + 1, col = "black", lwd=2)
+
+legend("right",
+       inset = c(-0.3, 0),
+       xpd = NA,
+       legend = c(
+         expression(H[0]~~nu == 100),
+         expression(H[1]~~nu == 10),
+         expression(H[1]~~nu == 5),
+         expression(H[1]~~nu == 3)
+       ),
+       col = c("deeppink3",
+               "deepskyblue4",
+               "aquamarine3",
+               "darkgoldenrod2"),
+       lwd = 2,
+       bty = "n")
+
+par(mar=c(3,4,0.5,8))
+
+pmf_H0 <- dbinom(k_vals, T, p0)
+
+plot(k_vals,
+     pmf_H0,
+     type="l",
+     lwd=3,
+     col="deeppink3",
+     xlim=c(20,0),
+     yaxt="n",
+     ylab="",
+     xlab="", 
+     panel.first = {
+       abline(v = seq(0, 20, by = 5),
+              col = "grey70",
+              lty = 1)})
+
+pmf_emp <- function(x){
+  tab <- table(factor(x, levels=k_vals))
+  as.numeric(tab)/length(x)
+}
+
+lines(k_vals, pmf_emp(N_t_100$df10), col="deepskyblue4", lwd=3)
+lines(k_vals, pmf_emp(N_t_100$df5),  col="aquamarine3", lwd=3)
+lines(k_vals, pmf_emp(N_t_100$df3),  col="darkgoldenrod2", lwd=3)
+
+```
+
+```{r}
+# Standardiseret t fordeling
+
+par(mar = c(5,4,4,8))
+
+std_t_dens <- function(x, nu, tau) {
+  dt(x / tau, df = nu) / tau
+}
+
+x_vals <- seq(-6, 6, length.out = 2000)
+
+plot(x_vals,
+     std_t_dens(x_vals, nu_100, tau_100),
+     type = "l", lwd = 3,
+     ylim = c(0, 0.7),
+     xlab = "",
+     ylab = "",
+     main = expression("Tætheder for Standardiseret t-fordeling"))
+
+abline(h=seq(0,1,0.1), v=axTicks(1), col="grey70", lty=1)
+
+lines(x_vals, std_t_dens(x_vals, nu_100, tau_100), lwd = 3, col = "deeppink3")
+lines(x_vals, std_t_dens(x_vals, nu_10, tau_10), lwd = 3, col = "deepskyblue4")
+lines(x_vals, std_t_dens(x_vals, nu_5, tau_5), lwd = 3, col = "aquamarine3")
+lines(x_vals, std_t_dens(x_vals, nu_3, tau_3), lwd = 3, col = "darkgoldenrod2")
+
+legend("right",
+       inset = c(-0.3, 0),
+       xpd = NA,
+       legend = c(
+         expression(H[0]~~nu == 100),
+         expression(H[1]~~nu == 10),
+         expression(H[1]~~nu == 5),
+         expression(H[1]~~nu == 3)
+       ),
+       col = c("deeppink3",
+               "deepskyblue4",
+               "aquamarine3",
+               "darkgoldenrod2"),
+       lwd = 2,
+       bty = "n")
+
+```
+```{r}
+#Z2 test under H0 med nu = 100, standardiseret t fordeling
+
+layout(matrix(c(1,2), ncol = 1), heights = c(3, 1.5))
+
+par(mar = c(0,4,2,8))
+
+Z2_stdt_dens_H0 <- density(Z2_stdt_H0_100)
+Z2_stdt_dens_10 <- density(Z2_stdt_H1_100$df10)
+Z2_stdt_dens_5  <- density(Z2_stdt_H1_100$df5)
+Z2_stdt_dens_3  <- density(Z2_stdt_H1_100$df3)
+
+F_H0_Z2_stdt <- ecdf(Z2_stdt_H0_100)
+F_10_Z2_stdt <- ecdf(Z2_stdt_H1_100$df10)
+F_5_Z2_stdt  <- ecdf(Z2_stdt_H1_100$df5)
+F_3_Z2_stdt  <- ecdf(Z2_stdt_H1_100$df3)
+
+plot(x_vals,
+     type = "l",
+     lwd = 3,
+     ylim = c(0,1),
+     xlim = c(-1.5,1),
+     xaxt = "n",
+     xlab = "",
+     ylab = "",
+     yaxt = "n",
+     main = expression(ES[2.5*"%"]~"| Z2 test"))
+
+axis(2,
+     at = seq(0,1,0.1),
+     labels = sprintf("%.1f", seq(0,1,0.1)),
+     las = 1)
+
+abline(h=seq(0,1,0.1), v=axTicks(1), col="grey70", lty=1)
+
+lines(x_vals, F_H0_Z2_stdt(x_vals), col = "deeppink3", lwd = 3)
+lines(x_vals, 1 - F_10_Z2_stdt(x_vals), col = "deepskyblue4", lwd = 3)
+lines(x_vals, 1 - F_5_Z2_stdt(x_vals),  col = "aquamarine3", lwd = 3)
+lines(x_vals, 1 - F_3_Z2_stdt(x_vals),  col = "darkgoldenrod2", lwd = 3)
+
+abline(v = quantile(Z2_stdt_H0_100, 0.05), col = "green2", lwd = 2)
+abline(v = quantile(Z2_stdt_H0_100, 0.10), col = "green2", lwd = 2)
+
+abline(v = qt_stdt_100_Z2[1], col = "black", lwd = 2)
+abline(v = qt_stdt_100_Z2[2], col = "black", lwd = 2)
+
+legend("right",
+       inset = c(-0.3, 0),
+       xpd = NA,
+       legend = c(
+         expression(H[0]~~nu == 100),
+         expression(H[1]~~nu == 10),
+         expression(H[1]~~nu == 5),
+         expression(H[1]~~nu == 3)
+       ),
+       col = c("deeppink3",
+               "deepskyblue4",
+               "aquamarine3",
+               "darkgoldenrod2"),
+       lwd = 2,
+       bty = "n")
+
+par(mar = c(3,4,0.5,8))
+
+plot(Z2_stdt_dens_H0,
+     main = "",
+     lwd = 3,
+     xlim = c(-1.5, 1),
+     ylim = c(0, 1.2),  
+     xlab = "",
+     ylab = "", 
+     yaxt = "n")
+
+abline(h=seq(0.6,0.6), v=axTicks(1), col="grey70", lty=1)
+
+lines(Z2_stdt_dens_H0, col = "deeppink3", lwd = 3)
+lines(Z2_stdt_dens_10, col = "deepskyblue4", lwd = 3)
+lines(Z2_stdt_dens_5,  col = "aquamarine3", lwd = 3)
+lines(Z2_stdt_dens_3,  col = "darkgoldenrod2", lwd = 3)
+
+```
+
+```{r}
+#Z3 test under H0 med nu = 100, standardiseret t fordeling
+
+layout(matrix(c(1,2), ncol = 1), heights = c(3, 1.5))
+
+par(mar = c(0,4,2,8))
+
+Z3_stdt_dens_H0 <- density(Z3_stdt_H0_100)
+Z3_stdt_dens_10 <- density(Z3_stdt_H1_100$df10)
+Z3_stdt_dens_5  <- density(Z3_stdt_H1_100$df5)
+Z3_stdt_dens_3  <- density(Z3_stdt_H1_100$df3)
+
+F_H0_Z3_stdt <- ecdf(Z3_stdt_H0_100)
+F_10_Z3_stdt <- ecdf(Z3_stdt_H1_100$df10)
+F_5_Z3_stdt  <- ecdf(Z3_stdt_H1_100$df5)
+F_3_Z3_stdt  <- ecdf(Z3_stdt_H1_100$df3)
+
+plot(x_vals,
+     type = "l",
+     lwd = 3,
+     ylim = c(0,1),
+     xlim = c(-1.5,0.5),
+     xaxt = "n",
+     xlab = "",
+     ylab = "",
+     yaxt = "n",
+     main = expression(ES[2.5*"%"]~"| Z3 test"))
+
+axis(2,
+     at = seq(0,1,0.1),
+     labels = sprintf("%.1f", seq(0,1,0.1)),
+     las = 1)
+
+abline(h=seq(0,1,0.1), v=axTicks(1), col="grey70", lty=1)
+
+lines(x_vals, F_H0_Z3_stdt(x_vals), col = "deeppink3", lwd = 3)
+lines(x_vals, 1 - F_10_Z3_stdt(x_vals), col = "deepskyblue4", lwd = 3)
+lines(x_vals, 1 - F_5_Z3_stdt(x_vals),  col = "aquamarine3", lwd = 3)
+lines(x_vals, 1 - F_3_Z3_stdt(x_vals),  col = "darkgoldenrod2", lwd = 3)
+
+abline(v = quantile(Z3_stdt_H0_100, 0.05), col = "green2", lwd = 2)
+abline(v = quantile(Z3_stdt_H0_100, 0.10), col = "green2", lwd = 2)
+
+abline(v = qt_stdt_100_Z3[1], col = "black", lwd = 2)
+abline(v = qt_stdt_100_Z3[2], col = "black", lwd = 2)
+
+legend("right",
+       inset = c(-0.3, 0),
+       xpd = NA,
+       legend = c(
+         expression(H[0]~~nu == 100),
+         expression(H[1]~~nu == 10),
+         expression(H[1]~~nu == 5),
+         expression(H[1]~~nu == 3)
+       ),
+       col = c("deeppink3",
+               "deepskyblue4",
+               "aquamarine3",
+               "darkgoldenrod2"),
+       lwd = 2,
+       bty = "n")
+
+par(mar = c(3,4,0.5,8))
+
+plot(Z3_stdt_dens_H0,
+     main = "",
+     lwd = 3,
+     xlim = c(-1.5, 0.5),
+     ylim = c(0, 5),  
+     xlab = "",
+     ylab = "", 
+     yaxt = "n")
+
+abline(h=seq(0.6,0.6), v=axTicks(1), col="grey70", lty=1)
+
+lines(Z3_stdt_dens_H0, col = "deeppink3", lwd = 3)
+lines(Z3_stdt_dens_10, col = "deepskyblue4", lwd = 3)
+lines(Z3_stdt_dens_5,  col = "aquamarine3", lwd = 3)
+lines(Z3_stdt_dens_3,  col = "darkgoldenrod2", lwd = 3)
+
+```
+
+```{r}
+#VaR1% test under H0 med nu = 100, standardiseret t fordeling
+
+layout(matrix(c(1,2), ncol=1), heights=c(3,1.5))
+
+par(mar=c(0,4,2,8))
+
+k_vals <- -1:30
+
+S_H0 <- 1 - pbinom(k_vals - 1, T, p0)
+
+plot(k_vals,
+     S_H0,
+     type="l",
+     lwd=3,
+     col="deeppink3",
+     ylim=c(0,1),
+     xlim=c(10,0),
+     xaxt="n",
+     ylab="",
+     xlab="",
+     yaxt="n",
+     main=expression(VaR[1*"%"]~"| Antal overskridelser"),
+     panel.first = {
+       abline(
+         h = seq(0, 1, by = 0.1),
+         v = seq(0, 10, by = 2),
+         col = "grey70",
+         lty = 1)})
+
+axis(2,
+     at=seq(0,1,0.1),
+     labels=sprintf("%.1f",seq(0,1,0.1)),
+     las=1)
+
+surv <- function(x){
+  sapply(k_vals, function(k) mean(x >= k))
+}
+
+lines(k_vals, 1 - surv(N_stdt_100$df10), col = "deepskyblue4", lwd = 3)
+lines(k_vals, 1 - surv(N_stdt_100$df5),  col = "aquamarine3", lwd =3 )
+lines(k_vals, 1 - surv(N_stdt_100$df3),  col = "darkgoldenrod2", lwd = 3)
+
+abline(v = qbinom(1 - alpha_discrete_0.05, T, 0.01) + 1, col = "black", lwd=2)
+abline(v = qbinom(1 - alpha_discrete_0.10, T, 0.01) + 1, col = "black", lwd=2)
+
+legend("right",
+       inset = c(-0.3, 0),
+       xpd = NA,
+       legend = c(
+         expression(H[0]~~nu == 100),
+         expression(H[1]~~nu == 10),
+         expression(H[1]~~nu == 5),
+         expression(H[1]~~nu == 3)
+       ),
+       col = c("deeppink3",
+               "deepskyblue4",
+               "aquamarine3",
+               "darkgoldenrod2"),
+       lwd = 2,
+       bty = "n")
+
+par(mar=c(3,4,0.5,8))
+
+pmf_H0 <- dbinom(k_vals, T, p0)
+
+plot(k_vals,
+     pmf_H0,
+     type="l",
+     lwd=3,
+     col="deeppink3",
+     xlim=c(10,0),
+     yaxt="n",
+     ylab="",
+     xlab="", 
+     panel.first = {
+       abline(v = seq(0, 10, by = 2),
+              col = "grey70",
+              lty = 1)})
+
+pmf_emp <- function(x){
+  tab <- table(factor(x, levels=k_vals))
+  as.numeric(tab)/length(x)
+}
+
+lines(k_vals, pmf_emp(N_stdt_100$df10), col="deepskyblue4", lwd=3)
+lines(k_vals, pmf_emp(N_stdt_100$df5),  col="aquamarine3", lwd=3)
+lines(k_vals, pmf_emp(N_stdt_100$df3),  col="darkgoldenrod2", lwd=3)
+
+```
