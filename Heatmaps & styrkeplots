@@ -1,0 +1,199 @@
+---
+title: "Heatmaps"
+output: html_document
+date: "2026-02-25"
+---
+```{r fig.width = 10, fig.height = 8, dpi = 300}
+# Heatmap for styrke, t-fordeling og standardiseret t-fordeling med df=10 under H0
+library(pheatmap)
+library(gridExtra)
+
+H1_seq <- 3:9
+
+# Tom matrix, t-fordeling
+power_matrix_t_10 <- matrix(NA, nrow = length(H1_seq), ncol = 3)
+colnames(power_matrix_t_10) <- c("VaR", "Z2", "Z3")
+rownames(power_matrix_t_10) <- paste0("df = ", H1_seq)
+
+# Tom matrix, standardiseret t-fordeling
+power_matrix_stdt_10 <- matrix(NA, nrow = length(H1_seq), ncol = 3)
+colnames(power_matrix_stdt_10) <- c("VaR", "Z2", "Z3")
+rownames(power_matrix_stdt_10) <- paste0("df = ", H1_seq)
+
+# Tom matrix, t-fordeling fixed VaR2.5%
+power_matrix_t_10_fixedVaR <- matrix(NA, nrow = length(H1_seq), ncol = 4)
+colnames(power_matrix_t_10_fixedVaR) <- c("VaR", "Z1", "Z2", "Z3")
+rownames(power_matrix_t_10_fixedVaR) <- paste0("df = ", H1_seq)
+
+# Tom matrix, standardiseret t-fordeling fixed VaR2.5%
+power_matrix_stdt_10_fixedVaR <- matrix(NA, nrow = length(H1_seq), ncol = 4)
+colnames(power_matrix_stdt_10_fixedVaR) <- c("VaR", "Z1", "Z2", "Z3")
+rownames(power_matrix_stdt_10_fixedVaR) <- paste0("df = ", H1_seq)
+
+# for loop til t-fordeling
+for(i in seq_along(H1_seq)) {
+  
+  n <- H1_seq[i]
+
+  X_t_H1_seq_10 <- matrix(rt(T * M, df = n), nrow = M, ncol = T)
+  
+  # VaR1% t-fordeling
+  N_t_H1_seq_10 <- VaR_exceptions(X_t_H1_seq_10, VaR_nu_10_alph_0.01)
+  power_matrix_t_10[i, "VaR"] <- VaR_styrke(N_t_H1_seq_10, q5)
+  
+  # Z2 t-fordeling
+  Z2_t_H1_seq_10 <- Z2(X_t_H1_seq_10, VaR_nu_10, ES_nu_10, alpha_0.025)
+  power_matrix_t_10[i, "Z2"] <- Z_styrke(Z2_t_H1_seq_10, qt_t_10_Z2[1])
+  
+  # Z3 t-fordeling
+  Z3_t_H1_seq_10 <- Z3(X_t_H1_seq_10, df_H0 = nu_10, alpha = alpha_0.025, tau = 1, mu = 0)
+  power_matrix_t_10[i, "Z3"] <- Z_styrke(Z3_t_H1_seq_10, qt_t_10_Z3[1])
+}
+
+# for loop til standardiseret t-fordeling
+for(i in seq_along(H1_seq)) {
+  
+  n <- H1_seq[i]
+
+  X_stdt_H1_seq_10 <- matrix(rt(T * M, df = n), nrow = M, ncol = T) * sqrt((n  - 2) / n)
+  
+  # VaR1% standardiseret t-fordeling
+  N_stdt_H1_seq_10 <- VaR_exceptions(X_stdt_H1_seq_10, VaR_stdt_nu_10_alph_0.01)
+  power_matrix_stdt_10[i, "VaR"] <- VaR_styrke(N_stdt_H1_seq_10, q5)
+  
+  # Z2 standardiseret t-fordeling
+  Z2_stdt_H1_seq_10 <- Z2(X_stdt_H1_seq_10, VaR_stdt_nu_10, ES_stdt_nu_10, alpha_0.025)
+  power_matrix_stdt_10[i, "Z2"] <- Z_styrke(Z2_stdt_H1_seq_10, qt_stdt_10_Z2[1])
+  
+  # Z3 standardiseret t-fordeling
+  Z3_stdt_H1_seq_10 <- Z3(X_stdt_H1_seq_10, df_H0 = nu_10, alpha = alpha_0.025, tau = 1, mu = 0)
+  power_matrix_stdt_10[i, "Z3"] <- Z_styrke(Z3_stdt_H1_seq_10, qt_stdt_10_Z3[1])
+}
+
+# for loop til t-fordeling, fixed VaR2.5%
+for(i in seq_along(H1_seq)) {
+  
+  n <- H1_seq[i]
+  
+  Forskydning_t_seq_10 <- VaR(qt, p = alpha_0.025, df = n) - VaR_nu_10
+
+  X_t_H1_seq_10_fixedVaR <- matrix(rt(T * M, df = n), nrow = M, ncol = T) + Forskydning_t_seq_10
+  
+  # VaR1% t-fordeling, fixed VaR
+  N_t_H1_seq_10_fixedVaR_VaR1pcttest <- VaR_exceptions(X_t_H1_seq_10_fixedVaR, VaR_nu_10_alph_0.01)
+  power_matrix_t_10_fixedVaR[i, "VaR"] <- VaR_styrke(N_t_H1_seq_10_fixedVaR_VaR1pcttest, q5)
+  
+  # Z1 t-fordeling, fixed VaR
+  N_t_H1_seq_10_fixedVaR <- VaR_exceptions(X_t_H1_seq_10_fixedVaR, VaR_nu_10)
+  Z1_t_H1_seq_10_fixedVaR <- Z1(X_t_H1_seq_10_fixedVaR, N_t_H1_seq_10_fixedVaR, VaR_nu_10, ES_nu_10)
+  power_matrix_t_10_fixedVaR[i, "Z1"] <- Z_styrke(Z1_t_H1_seq_10_fixedVaR, qt_t_fixedVaR_10_Z1[1])
+  
+  # Z2 t-fordeling, fixed VaR
+  Z2_t_H1_seq_10_fixedVaR <- Z2(X_t_H1_seq_10_fixedVaR, VaR_nu_10, ES_nu_10, alpha_0.025)
+  power_matrix_t_10_fixedVaR[i, "Z2"] <- Z_styrke(Z2_t_H1_seq_10_fixedVaR, qt_t_fixedVaR_10_Z2[1])
+  
+  # Z3 t-fordeling, fixed VaR
+  Z3_t_H1_seq_10_fixedVaR <- Z3(X_t_H1_seq_10_fixedVaR, df_H0 = nu_10, alpha = alpha_0.025, tau = 1, mu = 0)
+  power_matrix_t_10_fixedVaR[i, "Z3"] <- Z_styrke(Z3_t_H1_seq_10_fixedVaR, qt_t_fixedVaR_10_Z3[1])
+}
+
+# for loop til standardiseret t-fordeling, fixed VaR2.5%
+for(i in seq_along(H1_seq)) {
+  
+  n <- H1_seq[i]
+  
+  Forskydning_stdt_seq_10 <- (VaR(qt, p = alpha_0.025, df = n) * (sqrt((n  - 2) / n))) - VaR_stdt_nu_10
+
+  X_stdt_H1_seq_10_fixedVaR <- matrix(rt(T * M, df = n), nrow = M, ncol = T) * sqrt((n  - 2) / n) + Forskydning_stdt_seq_10
+  
+  # VaR1% t-fordeling, fixed VaR
+  N_stdt_H1_seq_10_fixedVaR_VaR1pcttest <- VaR_exceptions(X_stdt_H1_seq_10_fixedVaR, VaR_stdt_nu_10_alph_0.01)
+  power_matrix_stdt_10_fixedVaR[i, "VaR"] <- VaR_styrke(N_stdt_H1_seq_10_fixedVaR_VaR1pcttest, q5)
+  
+  # Z1 t-fordeling, fixed VaR
+  N_stdt_H1_seq_10_fixedVaR <- VaR_exceptions(X_stdt_H1_seq_10_fixedVaR, VaR_stdt_nu_10)
+  Z1_stdt_H1_seq_10_fixedVaR <- Z1(X_stdt_H1_seq_10_fixedVaR, N_stdt_H1_seq_10_fixedVaR, VaR_stdt_nu_10, ES_stdt_nu_10)
+  power_matrix_stdt_10_fixedVaR[i, "Z1"] <- Z_styrke(Z1_stdt_H1_seq_10_fixedVaR, qt_stdt_fixedVaR_10_Z1[1])
+  
+  # Z2 t-fordeling, fixed VaR
+  Z2_stdt_H1_seq_10_fixedVaR <- Z2(X_stdt_H1_seq_10_fixedVaR, VaR_stdt_nu_10, ES_stdt_nu_10, alpha_0.025)
+  power_matrix_stdt_10_fixedVaR[i, "Z2"] <- Z_styrke(Z2_stdt_H1_seq_10_fixedVaR, qt_stdt_fixedVaR_10_Z2[1])
+  
+  # Z3 t-fordeling, fixed VaR
+  Z3_stdt_H1_seq_10_fixedVaR <- Z3(X_stdt_H1_seq_10_fixedVaR, df_H0 = nu_10, alpha = alpha_0.025, tau = 1, mu = 0)
+  power_matrix_stdt_10_fixedVaR[i, "Z3"] <- Z_styrke(Z3_stdt_H1_seq_10_fixedVaR, qt_stdt_fixedVaR_10_Z3[1])
+}
+
+
+# Heat maps
+breaks <- seq(0, 1, length.out = 51)
+
+map1 <- pheatmap(
+  power_matrix_t_10,
+  cluster_rows = FALSE,
+  cluster_cols = FALSE,
+  display_numbers = TRUE,
+  color = hcl.colors(50, "BluYl"),
+  number_color = "black",
+  fontsize_number = 8,
+  fontsize = 8,
+  legend = FALSE,
+  labels_row = "",
+  breaks = breaks,
+  main = "Teststyrke ved t-fordeling"
+)
+
+map2 <- pheatmap(
+  power_matrix_stdt_10,
+  cluster_rows = FALSE,
+  cluster_cols = FALSE,
+  display_numbers = TRUE,
+  color = hcl.colors(50, "BluYl"),
+  number_color = "black",
+  fontsize_number = 8,
+  fontsize = 8,
+  breaks = breaks,
+  main = "Teststyrke ved standardiseret t-fordeling"
+)
+
+map3 <- pheatmap(
+  power_matrix_t_10_fixedVaR,
+  cluster_rows = FALSE,
+  cluster_cols = FALSE,
+  display_numbers = TRUE,
+  color = hcl.colors(50, "BluYl"),
+  number_color = "black",
+  fontsize_number = 8,
+  fontsize = 8,
+  legend = FALSE,
+  labels_row = "",
+  breaks = breaks,
+  main = "Teststyrke ved t-fordeling, fast VaR2.5%"
+)
+
+map4 <- pheatmap(
+  power_matrix_stdt_10_fixedVaR,
+  cluster_rows = FALSE,
+  cluster_cols = FALSE,
+  display_numbers = TRUE,
+  color = hcl.colors(50, "BluYl"),
+  number_color = "black",
+  fontsize_number = 8,
+  fontsize = 8,
+  legend = FALSE,
+  breaks = breaks,
+  main = "Teststyrke ved standardiseret t-fordeling, fast VaR2.5%"
+)
+
+grid.arrange(map1$gtable, map2$gtable, map3$gtable, map4$gtable, ncol = 2)
+
+```
+
+
+```{r}
+
+plot()
+
+
+
+```
