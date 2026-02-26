@@ -217,6 +217,8 @@ par(mar=c(0,4,2,8))
 
 k_vals <- -1:30
 
+p0 <- 0.01
+
 S_H0 <- 1 - pbinom(k_vals - 1, T, p0)
 
 plot(k_vals,
@@ -514,6 +516,8 @@ layout(matrix(c(1,2), ncol=1), heights=c(3,1.5))
 par(mar=c(0,4,2,8))
 
 k_vals <- -1:30
+
+p0 <- 0.01
 
 S_H0 <- 1 - pbinom(k_vals - 1, T, p0)
 
@@ -907,6 +911,8 @@ layout(matrix(c(1,2), ncol=1), heights=c(3,1.5))
 par(mar=c(0,4,2,8))
 
 k_vals <- -1:30
+
+p0 <- 0.01
 
 S_H0 <- 1 - pbinom(k_vals - 1, T, p0)
 
