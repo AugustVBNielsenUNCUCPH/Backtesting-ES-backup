@@ -135,6 +135,14 @@ X_stdt_fixedVaR_10 <- matrix(rt(T * M, df = nu_10), nrow = M, ncol = T) * tau_10
 X_stdt_fixedVaR_10_5 <- matrix(rt(T * M, df = nu_5), nrow = M, ncol = T) * tau_5 + Forskydning_stdt_10_5
 X_stdt_fixedVaR_10_3 <- matrix(rt(T * M, df = nu_3), nrow = M, ncol = T) * tau_3 + Forskydning_stdt_10_3
 
+# Alternative fordelinger under H_1 defineres for t fordeling
+X_t_H1_100 <- list(df10 = X_t_10, df5 = X_t_5, df3 = X_t_3)
+X_t_H1_10 <- list(df5 = X_t_5, df3 = X_t_3)
+
+# Alternative fordelinger under H_1 defineres for standardiseret t fordeling
+X_stdt_H1_100 <- list(df10 = X_stdt_10, df5 = X_stdt_5, df3 = X_stdt_3)
+X_stdt_H1_10 <- list(df5 = X_stdt_5, df3 = X_stdt_3)
+
 ```
 
 ```{r}
@@ -222,16 +230,6 @@ Z3 <- function(X, df_H0, alpha, tau, mu) {
   Z3 <- -ES_Hat / mean(ES_V) + 1
   return(Z3)
 }
-
-
-# Alternative fordelinger under H_1 defineres for t fordeling
-X_t_H1_100 <- list(df10 = X_t_10, df5 = X_t_5, df3 = X_t_3)
-X_t_H1_10 <- list(df5 = X_t_5, df3 = X_t_3)
-
-
-# Alternative fordelinger under H_1 defineres for standardiseret t fordeling
-X_stdt_H1_100 <- list(df10 = X_stdt_10, df5 = X_stdt_5, df3 = X_stdt_3)
-X_stdt_H1_10 <- list(df5 = X_stdt_5, df3 = X_stdt_3)
 
 
 # t fordeling (test af Z2 og Z3)
