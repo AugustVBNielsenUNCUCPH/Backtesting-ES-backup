@@ -140,8 +140,7 @@ map1 <- pheatmap(
   legend = FALSE,
   labels_row = "",
   breaks = breaks,
-  main = "Teststyrke ved t-fordeling"
-)
+  main = expression("Teststyrke ved t-fordeling"))
 
 map2 <- pheatmap(
   power_matrix_stdt_10,
@@ -153,8 +152,7 @@ map2 <- pheatmap(
   fontsize_number = 8,
   fontsize = 8,
   breaks = breaks,
-  main = "Teststyrke ved standardiseret t-fordeling"
-)
+  main = expression("Teststyrke ved standardiseret t-fordeling"))
 
 map3 <- pheatmap(
   power_matrix_t_10_fixedVaR,
@@ -168,8 +166,7 @@ map3 <- pheatmap(
   legend = FALSE,
   labels_row = "",
   breaks = breaks,
-  main = "Teststyrke ved t-fordeling, fast VaR2.5%"
-)
+  main = expression("Teststyrke ved t-fordeling, fast VaR2.5%"))
 
 map4 <- pheatmap(
   power_matrix_stdt_10_fixedVaR,
@@ -182,18 +179,153 @@ map4 <- pheatmap(
   fontsize = 8,
   legend = FALSE,
   breaks = breaks,
-  main = "Teststyrke ved standardiseret t-fordeling, fast VaR2.5%"
-)
+  main = expression("Teststyrke ved standardiseret t-fordeling, fast VaR2.5%"))
 
 grid.arrange(map1$gtable, map2$gtable, map3$gtable, map4$gtable, ncol = 2)
 
 ```
 
 
-```{r}
+```{r fig.width = 8, fig.height = 6, dpi = 300}
 
-plot()
+par(mfrow = c(2,2),
+    mar = c(3,3,2,1),
+    mgp = c(1.8, 0.5, 0),
+    tcl = -0.2,
+    cex.axis = 0.8)
 
+# t fordeling
+plot(H1_seq,
+     lwd = 2, 
+     ylim = c(0,1),
+     xlim = c(min(H1_seq),max(H1_seq)),
+     xlab = "Frihedsgrader", 
+     ylab = "Styrke", 
+     yaxt = "n",
+     main = expression("t-fordeling"))
 
+abline(h=seq(0,1,0.1), v=axTicks(1), col="grey70", lty=1)
+
+axis(2,
+     at = seq(0,1,0.1),
+     labels = sprintf("%.1f", seq(0,1,0.1)),
+     las = 1)
+
+lines(H1_seq, power_matrix_t_10[, "VaR"], col = "darkgoldenrod2", lwd = 3)
+lines(H1_seq, power_matrix_t_10[, "Z2"], col = "cornflowerblue", lwd = 3)
+lines(H1_seq, power_matrix_t_10[, "Z3"], col = "deeppink3", lwd = 3)
+
+legend("right",
+       legend = c(
+         expression(VaR[1*"%"]),
+         expression(Z2),
+         expression(Z3)),
+       col = c("darkgoldenrod2",
+               "cornflowerblue",
+               "deeppink3"),
+       lwd = 3,
+       bty = "n")
+
+# Standardiseret t fordeling
+plot(H1_seq,
+     lwd = 2, 
+     ylim = c(0,1),
+     xlim = c(min(H1_seq),max(H1_seq)),
+     xlab = "Frihedsgrader", 
+     ylab = "Styrke", 
+     yaxt = "n",
+     main = expression("Standardiseret t-fordeling"))
+
+abline(h=seq(0,1,0.1), v=axTicks(1), col="grey70", lty=1)
+
+axis(2,
+     at = seq(0,1,0.1),
+     labels = sprintf("%.1f", seq(0,1,0.1)),
+     las = 1)
+
+lines(H1_seq, power_matrix_stdt_10[, "VaR"], col = "darkgoldenrod2", lwd = 3)
+lines(H1_seq, power_matrix_stdt_10[, "Z2"], col = "cornflowerblue", lwd = 3)
+lines(H1_seq, power_matrix_stdt_10[, "Z3"], col = "deeppink3", lwd = 3)
+
+legend("right",
+       legend = c(
+         expression(VaR[1*"%"]),
+         expression(Z2),
+         expression(Z3)),
+       col = c("darkgoldenrod2",
+               "cornflowerblue",
+               "deeppink3"),
+       lwd = 3,
+       bty = "n")
+
+# t fordeling, fixed VaR2.5%
+plot(H1_seq,
+     lwd = 2, 
+     ylim = c(0,1),
+     xlim = c(min(H1_seq),max(H1_seq)),
+     xlab = "Frihedsgrader", 
+     ylab = "Styrke", 
+     yaxt = "n",
+     main = expression("t-fordeling | fast VaR2.5%"))
+
+abline(h=seq(0,1,0.1), v=axTicks(1), col="grey70", lty=1)
+
+axis(2,
+     at = seq(0,1,0.1),
+     labels = sprintf("%.1f", seq(0,1,0.1)),
+     las = 1)
+
+lines(H1_seq, power_matrix_t_10_fixedVaR[, "VaR"], col = "darkgoldenrod2", lwd = 3)
+lines(H1_seq, power_matrix_t_10_fixedVaR[, "Z1"], col = "aquamarine2", lwd = 3)
+lines(H1_seq, power_matrix_t_10_fixedVaR[, "Z2"], col = "cornflowerblue", lwd = 3)
+lines(H1_seq, power_matrix_t_10_fixedVaR[, "Z3"], col = "deeppink3", lwd = 3)
+
+legend("right",
+       legend = c(
+         expression(VaR[1*"%"]),
+         expression(Z1),
+         expression(Z2),
+         expression(Z3)),
+       col = c("darkgoldenrod2",
+               "aquamarine2",
+               "cornflowerblue",
+               "deeppink3"),
+       lwd = 3,
+       bty = "n")
+
+# Standardiseret t fordeling, fixed VaR2.5%
+plot(H1_seq,
+     lwd = 2, 
+     ylim = c(0,1),
+     xlim = c(min(H1_seq),max(H1_seq)),
+     xlab = "Frihedsgrader", 
+     ylab = "Styrke", 
+     yaxt = "n",
+     main = expression("Standardiseret t-fordeling | fast VaR2.5%"))
+
+abline(h=seq(0,1,0.1), v=axTicks(1), col="grey70", lty=1)
+
+axis(2,
+     at = seq(0,1,0.1),
+     labels = sprintf("%.1f", seq(0,1,0.1)),
+     las = 1)
+
+lines(H1_seq, power_matrix_stdt_10_fixedVaR[, "VaR"], col = "darkgoldenrod2", lwd = 3)
+lines(H1_seq, power_matrix_stdt_10_fixedVaR[, "Z1"], col = "aquamarine2", lwd = 3)
+lines(H1_seq, power_matrix_stdt_10_fixedVaR[, "Z2"], col = "cornflowerblue", lwd = 3)
+lines(H1_seq, power_matrix_stdt_10_fixedVaR[, "Z3"], col = "deeppink3", lwd = 3)
+
+legend("right",
+       legend = c(
+         expression(VaR[1*"%"]),
+         expression(Z1),
+         expression(Z2),
+         expression(Z3)),
+       col = c("darkgoldenrod2",
+               "aquamarine2",
+               "cornflowerblue",
+               "deeppink3"),
+       lwd = 3,
+       bty = "n")
 
 ```
