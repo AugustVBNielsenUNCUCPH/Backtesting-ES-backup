@@ -15,6 +15,8 @@
 \usepackage{fontspec}
 \usepackage{lmodern}
 \usepackage[T1]{fontenc}
+\usepackage{caption}
+\captionsetup[figure]{labelformat=empty}
 
 % Arial defineres men bruges ikke globalt
 \newfontfamily\arialfont{Arial}
@@ -39,6 +41,8 @@
 
 % Resten i LaTeX standardfont
 \onehalfspacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
 
 \noindent Dette er en skabelon for selve opstillingen. Kravene til hvilke oplysninger, der skal medtages, varierer fra fag til fag. Du kan derfor ikke uden videre benytte skabelonen til din egen afhandling. Du får nærmere oplysninger om kravene på dit eget studiekontor!
 
@@ -71,7 +75,7 @@ Et ofte anvendt risikomål i finansiel risikostyring er Value-at-Risk (VaR). VaR
 \begin{figure} [H]
 \centering
 \input{VaR}
-\caption{Fordeling af afkast, VaR er vist med 2,5\% signifikansniveau}
+\caption{\small \textbf{\textit{Figur 1:}} Fordeling af afkast, VaR er vist med 2,5\% signifikansniveau}
 \end{figure}
 \noindent
 Lad $X_t$ betegne afkastet på tidspunkt $t$, og lad $P_t$ være den prædiktive fordelingsfunktion for $X_t$ betinget på informationsmængden $\mathcal{F}_{t-1}$. Value-at-Risk ved signifikansniveau $\alpha$ defineres da som
@@ -96,7 +100,7 @@ der opstår ud over denne tærskel.
 \begin{figure} [H]
 \centering
 \input{VaR + ES}
-\caption{Fordeling af afkast, ES er vist med 2,5\% signifikansniveau}
+\caption{\small \textbf{\textit{Figur 2:}} Fordeling af afkast, ES er vist med 2,5\% signifikansniveau}
 \end{figure}
 \noindent
 Lad $X_t$ betegne afkastet på tidspunkt $t$, og lad $P_t$ være den prædiktive 
@@ -123,6 +127,87 @@ da det tager højde for størrelsen af tabene ud over VaR-grænsen
 
 \subsection{Fordeling af afkast}
 
+\subsubsection{t-fordelinger}
+\subsubsection{GARCH-proces}
+Når man ser på observationer i virkeligheden er det højst usandsynligt, at afkast er uafhængige. Vi indfører en GARCH-proces (Generalized Autoregressive Conditional Heteroskedasticity process), som et alternativ til antagelsen om, at afkastdata ${X_t}$ for $t\in{1,...,T}$ er uafhængige. Processen skal forsøge at modellere volatilitetsklynger, hvor store og små udsving i afkast har tendens til at komme i perioder. Modellen antager altså ikke konstant volatilitet, hvorfor har processen til formål at repræsentere hvordan en afkastserie opfører sig i virkeligheden (Hull, 2018).
+
+Vi anvender en simpel GARCH(1,1) model. For afkastdata ${X_t}$, $t \in {1,...,T}$ definerer vi GARCH(1,1)-processen med t-fordelte innovationer på følgende vis:
+
+$$
+\begin{aligned}
+\varepsilon_t=\sigma_tz_t, \quad z_t \overset{iid}{\sim} t_\nu(0,1) \\
+\sigma_t^2=\omega+\alpha\varepsilon_{t-1}^2+\beta\sigma_{t-1}^2
+\end{aligned}
+$$
+
+$\varepsilon_t=\sigma_tz_t$ er dermed den uforudsigelige del i ændringen afkastet til tidspunktet $t$, og repræsenterer den procentvise ændring i afkast mellem dag $t$ og $t-1$ (Shephard, 2023). Vi vil under GARCH(1,1) estimationen benytte os af markedsdata fra S\&P 500, og $\varepsilon_t$ vil dermed defineres på følgende måde i den prædiktive model:
+
+$$\varepsilon_t = \log\frac{X_t}{X_{t-1}} \approx \frac{X_t-X_{t-1}}{X_{t-1}}$$
+
+Idet $z_t \overset{iid}{\sim} t_\nu(0,1)$ gælder at $Var(z_t)=\mathbb{E}[z_t^2]-\mathbb{E}[z_t]^2=1 \iff \mathbb{E}[z_t^2] = 1$ da $\mathbb{E}[z_t]=0$. Ved uafhængighed af $\sigma_t$ og $z_t$ følger det, at
+
+$$\mathbb{E}[\varepsilon_{t-1}^2]=\mathbb{E}[\sigma_{t-1}^2z_{t-1}^2]=\mathbb{E}[\sigma_{t-1}^2]\mathbb{E}[z_{t-1}^2]=\mathbb{E}[\sigma_{t-1}^2]$$
+
+Dette giver følgende resultat:
+\begin{equation}
+\begin{split}
+\mathbb{E}[{\sigma_t^2}]=\omega+\alpha\mathbb{E}[\varepsilon_{t-1}^2]+\beta\mathbb{E}[\sigma_{t-1}^2] \\
+\iff \mathbb{E}[{\sigma_t^2}]=\omega+\alpha\mathbb{E}[\sigma_{t-1}^2]+\beta\mathbb{E}[\sigma_{t-1}^2] \\
+\iff \mathbb{E}[{\sigma_t^2}] = \omega + (\alpha + \beta) \mathbb{E}[\sigma_{t-1}^2]
+\end{split}
+\end{equation}
+
+For at processen ikke divergerer antager vi stationaritet $\mathbb{E}[\sigma_t^2]=\mathbb{E}[\sigma_{t-1}^2]=\bar{\sigma}^2$ og udleder fra (2.5) den ubetingede varians
+$$\mathbb{E}[\sigma_t^2]=\frac{\omega}{1-\alpha-\beta}$$
+
+For at sikre en stationær process, kræver vi dermed, at $\alpha + \beta < 1$ (Hull, 2018).\\
+
+Under GARCH(1,1)-processen angiver $\omega$ et baseline variansniveau, imens $\alpha$ angiver shockparameteren og repræsenterer den uforudsigelige procentvise ændring i afkast mellem dag $t$ og $t-1$. Sidst angiver $\beta$ persistensen i volatilitet til tidspunktet $t$ fra forrige periode $t-1$.
+
+(RUGARCH .....)
+
+\subsection{Backtesting ES}
+
+\subsection{Styrke af teststørrelser og Fejltype I og II}
+
+Betragt en teststatistik $d(X)$ og de tilhørende observerede værdier $d(x)$ samt et parameterrum $\Theta$. Da definerer vi et kritisk område $\mathcal{K}$ og et acceptområde $\mathcal{A}$: 
+
+$$\mathcal{K} = \{x : d(x) < d_{\text{crit}} \}, \quad \mathcal{A} = \{x : d(x) \geq d_{\text{crit}} \}$$
+
+hvor $d_{\text{crit}}$ er den kritiske værdi sådan at 
+
+\begin{equation}
+\alpha = P_\theta( d(X) < d_{\text{crit}}), \quad \theta\in \Theta_0
+\end{equation}
+
+hvor $\alpha$ er signifikansniveauet. 
+
+Da er styrkefunktionen $\xi: \Theta \longrightarrow [0,1]$ givet ved
+
+$$\xi(\theta)=P_\theta(\mathcal{K})=P_\theta( d(X) < d_{\text{crit}})=1-P_\theta(\mathcal{A})$$
+
+hvor $\xi(\theta)$ angiver testens styrke, når $\theta\in\Theta_1$.
+
+Vi begår Type I-fejl, hvis vi afviser en sand nulhypotese. Dette sker når
+
+$$x \in \mathcal{K}, \quad \theta \in \Theta_0$$
+
+Vi begår Type II-fejl, hvis vi accepterer en falsk nulhypotese. Dette sker når
+
+$$x \in \mathcal{A}, \quad \theta \in \Theta_1$$
+
+hvor $\Theta_0$ betegner det parameterrum, hvor $\text{H}_0$ er sand og $\Theta_1$ betegner det parameterrum, hvor $\text{H}_1$ er sand.\\
+
+\begin{figure} [H]
+\centering
+\input{Styrke}
+\caption{\small \textbf{\textit{Figur 3:}} Fordeling af teststørrelse under nulhypotesen $\text{H}_0$ og den alternative hypotese $\text{H}_1$. Den stiplede linje angiver signifikansniveauet og styrken er markeret med blåt.}
+\end{figure}
+
+(2.6) definerer signifikansniveauet og angiver sandsynligheden for at begå Type I-fejl, såfremt nulhypotesen er sand. Da der er et statistisk trade-off mellem sandsynligheden for Type I- og Type II-fejl, anvendes et signifikansniveau på 0.05 ofte som tærskelværdi i hypotesetest. Analyserne i dette projekt vil i flere omgange tage afsæt i denne værdi.
+
+Testens styrke bestemmes af sandsynligheden for at forkaste nulhypotesen under den alternative hypotese, og betegnes af arealet under den alternative fordeling i det kritiske område. Jo større overlap af teststørrelsens fordeling under nulhypotesen og den alternative hypotese, desto højere er sandsynligheden for Type II-fejl, og desto lavere er testens styrke.
+
 
 \section{Teststørrelser}
 \subsection{Test 1 (Acerbi)}
@@ -130,11 +215,36 @@ da det tager højde for størrelsen af tabene ud over VaR-grænsen
 
 Teststørrelsen $Z_1$ er designet til at teste $ES$ betinget af, at $VaR$ allerede er blevet backtestet separat. Hvis antallet af $VaR$-overskridelser vurderes at være rimeligt, kan testen undersøge, om størrelsen af de tab, der opstår, når $VaR$ overskrides, stemmer overens med modellens estimerede $ES$. Testen fokuserer dermed på, om modellen korrekt beskriver størrelsen af tabene i fordelingens hale.
 
-\ Vi ønsker
+\ Til at udfører testen, gør vi brug af definition af ES med den betingede forventning. Fra (2.3) har vi:
 
-I disse tilfælde sammenlignes det realiserede tab $X_t$ med den forventede størrelse af tabet, som modellen forudsiger gennem ES. Teststørrelsen beregnes som et gennemsnit af forholdet mellem de observerede tab og de forventede ES-værdier for de dage, hvor der forekommer en VaR-overskridelse.
+\begin{equation}
+\begin{split}
+    ES_{\alpha,t} = -\mathbb{E}[X_t \mid X_t \leq -VaR_{\alpha,t} ] \\
+      \iff-1=\mathbb{E}\left[\frac{X_t}{ES_{\alpha,t}}\mid X_t \leq -VaR_{\alpha,t}\right] \\
+      \iff0=\mathbb{E}\left[\frac{X_t}{ES_{\alpha,t}}\mid X_t \leq -VaR_{\alpha,t}\right]+1
+\end{split}
+\end{equation}
 
-Hvis modellen er korrekt specificeret, vil gennemsnittet af denne størrelse være omkring nul. Hvis de observerede tab derimod systematisk er større end modellens forventede ES, vil teststørrelsen blive negativ. En negativ værdi indikerer derfor, at modellen undervurderer størrelsen af de ekstreme tab, selv hvis VaR-niveauet i sig selv er korrekt.
+På bagrund af vores antagelse, af at $VaR_{\alpha,t}$ allerede er testet, kan vi indfører indikatorvariablen $I_t=\mathbf{1}_{\{X_t\leq - VaR_{\alpha,t}\}}$, samt $N_T=\sum^T_{t=1}I_t$ og få vores teststørrelse:
+\begin{equation}
+    Z_1(\mathbf{X})=\frac{\sum^T_{t=1}\frac{X_tI_t}{ES_{\alpha,t}}}{N_T}+1
+\end{equation}
+hvor vi kræver at $N_T>0$, altså mindst 1 VaR-overskridelse.
+
+Vi opstiller en nulhypotese med det formål at teste, om modellen beskriver afkast korrekt. Derudover opstilles en alternativ hypotese, som undersøger, hvorvidt modellen undervurderer risikoen. For denne test, opstiller vi nulhypoytesen:
+$$
+    H_0:P^{[\alpha]}_t=F^{[\alpha]}_t, \quad \forall t
+$$
+hvor $P^{[\alpha]}_t=\min (1,\frac{P_t}{\alpha})$ er fordelingens hale, hvor $x<-VaR_{\alpha,t}$
+De alternative hypoteser er
+\[
+\begin{split}
+H_1 :\quad & ES^F_{\alpha,t} \geq ES_{\alpha,t}, \quad \forall t \text{ og } > \text{ for mindst ét } t \\
+           & VaR^F_{\alpha,t} = VaR_{\alpha,t}
+\end{split}
+\]
+Vi ser, at den estimerede $VaR_\alpha$ fortsat er korrekt under $H_1$, hvilket afspejler, at testen er underordnet en indledende $VaR$-test. Testen er desuden ufølsom over for et stort antal overskridelser, da den beregnes som et gennemsnit over selve overskridelserne.
+Fra vores hypoteser gælder der 
 
 
 
