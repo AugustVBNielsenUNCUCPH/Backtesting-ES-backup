@@ -1,0 +1,146 @@
+% VIGTIGT! For at dokumentet kan compile, skal man benytte XeLaTeX eller LuaLaTeX som compiler.
+\documentclass[12pt]{article}
+
+\usepackage{float}
+\usepackage{pgfplots}
+\usepackage{amsfonts}
+\pgfplotsset{compat=1.18}
+\usepackage{amsmath}
+\numberwithin{equation}{section}
+\usepackage{KUstyle}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{setspace}
+\usepackage{tabularx}
+
+\usepackage{fontspec}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+
+% Arial defineres men bruges ikke globalt
+\newfontfamily\arialfont{Arial}
+
+% Nedenstående ændrer indholdet på forsiden
+\ptype{Bachelorprojekt i Matematik-Økonomi}
+\author{Pelle Vestergaard Larsen, August Valdemar Bering Nielsen}
+\title{Risikostyring}
+\subtitle{Backtesting Expected Shortfall}
+\date{Dato: {Juni 2026}}
+\advisor{Vejleder: Nina Lange}
+\fpimage{}
+
+\renewcommand{\contentsname}{Indholdsfortegnelse}
+
+\begin{document}
+
+% Forside i Arial
+{\arialfont
+\maketitle
+}
+
+% Resten i LaTeX standardfont
+\onehalfspacing
+
+\noindent Dette er en skabelon for selve opstillingen. Kravene til hvilke oplysninger, der skal medtages, varierer fra fag til fag. Du kan derfor ikke uden videre benytte skabelonen til din egen afhandling. Du får nærmere oplysninger om kravene på dit eget studiekontor!
+
+\begin{table}[h]
+\def\arraystretch{1.5}
+\begin{tabularx}{\textwidth}{l X}
+Institutnavn: & {[Institut for Xxxxx]}  \\
+Afdelingsnavn & {[Afdeling for Xxxxx]} \\
+Forfatter(e): & {[Navn Navnsen]} \\
+Titel og evt. undertitel: & {[Titel på afhandling, evt. undertitel]} \\
+Emnebeskrivelse: & Lorem ipsum dolor sit amet... \\
+Vejleder: & {[Navn Navnsen]} \\
+Dato: & XX XX XXXX
+\end{tabularx}
+\end{table}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+\section{Indledning}
+Habibi
+\section{Baggrund}
+\subsection{Risikomål}
+Et risikomål er en kvantitativ indikator, der anvendes til at måle og vurdere risikoen for tab i en given position eller portefølje. I finansiel risikostyring er formålet med et risikomål at beskrive fordelingen af potentielle tab og dermed give en indikation af størrelsen af tab, der kan forekomme med en given sandsynlighed. Risikomål gør det således muligt at kvantificere og sammenligne risiko på tværs af forskellige investeringer eller porteføljer. Særligt anvendes risikomål til at estimere potentielle tab ved et givent signifikansniveau. I dette afsnit introduceres to centrale risikomål, Value at Risk (VaR) og Expected Shortfall (ES), som begge anvendes til at kvantificere risikoen for ekstreme tab.
+\subsubsection{Value-at-Risk (VaR)}
+Et ofte anvendt risikomål i finansiel risikostyring er Value-at-Risk (VaR). VaR angiver det største forventede tab over en given tidshorisont ved et givent signifikansniveau. Mere præcist beskriver VaR et kvantil af fordelingen af afkast, hvor fokus ligger på den venstre hale af fordelingen, som repræsenterer store negative afkast. Dermed angiver VaR det tab, som kun overskrides med sandsynlighed $\alpha$. 
+
+\begin{figure} [H]
+\centering
+\input{VaR}
+\caption{Fordeling af afkast, VaR er vist med 2,5\% signifikansniveau}
+\end{figure}
+\noindent
+Lad $X_t$ betegne afkastet på tidspunkt $t$, og lad $P_t$ være den prædiktive fordelingsfunktion for $X_t$ betinget på informationsmængden $\mathcal{F}_{t-1}$. Value-at-Risk ved signifikansniveau $\alpha$ defineres da som
+\begin{equation}
+VaR_{\alpha,t} =-\inf\{x\in \mathbb{R} :P_t(x)>\alpha\}
+\end{equation}
+Hvis fordelingsfunktionen for $X_t$ er kontinuert og strengt voksende, kan definitionen skrives som
+\begin{equation}
+VaR_{\alpha,t} = - P_t^{-1}(\alpha)
+\end{equation}
+Fortolkningen er således, at $VaR_{\alpha,t}$ er det mindste tab, som med sandsynlighed $1-\alpha$ ikke overskrides i den kommende periode. I denne opgave fokuseres der på \textit{one-day VaR}, hvor risikomålet angiver det maksimale forventede tab over én dag ved et givent signifikansniveau. 
+\\(Ref. Acerbi (2014) + Hult \& Lindskog (2007))
+
+\subsubsection{Expected Shortfall (ES)}
+
+Et alternativt risikomål til Value-at-Risk er \textit{Expected Shortfall} (ES). 
+Expected Shortfall måler det gennemsnitlige tab i de værste tilfælde, hvor 
+afkastet ligger under den tilsvarende VaR-grænse. Hvor VaR alene angiver 
+en tærskelværdi for tab, giver ES således information om størrelsen af de tab, 
+der opstår ud over denne tærskel.
+
+\begin{figure} [H]
+\centering
+\input{VaR + ES}
+\caption{Fordeling af afkast, ES er vist med 2,5\% signifikansniveau}
+\end{figure}
+\noindent
+Lad $X_t$ betegne afkastet på tidspunkt $t$, og lad $P_t$ være den prædiktive 
+fordelingsfunktion for $X_t$ betinget på informationsmængden $\mathcal{F}_{t-1}$. 
+Expected Shortfall ved signifikansniveau $\alpha$ defineres som det forventede 
+afkast givet, at afkastet ligger i den værste $\alpha$-andel af fordelingen, dvs.
+\begin{equation}
+ES_{\alpha,t} = -\mathbb{E}[X_t \mid X_t \leq -VaR_{\alpha,t} ]
+\end{equation}
+\noindent
+Hvis fordelingsfunktionen for $X_t$ er kontinuert, kan Expected Shortfall 
+alternativt skrives som
+\begin{equation}
+ES_{\alpha,t} = -\frac{1}{\alpha} \int_{0}^{\alpha} P_t^{-1}(u)\,du .
+\end{equation}
+\noindent
+Expected Shortfall fokuserer således på den venstre hale af afkastfordelingen 
+og giver et mål for det gennemsnitlige tab i de mest ekstreme udfald. 
+Af denne grund anses ES ofte for at være et mere informativt risikomål end VaR, 
+da det tager højde for størrelsen af tabene ud over VaR-grænsen 
+\citep{AcerbiSzekely2014}.
+
+\subsection{VaR vs. ES}
+
+\subsection{Fordeling af afkast}
+
+
+\section{Teststørrelser}
+\subsection{Test 1 (Acerbi)}
+
+
+Teststørrelsen $Z_1$ er designet til at teste $ES$ betinget af, at $VaR$ allerede er blevet backtestet separat. Hvis antallet af $VaR$-overskridelser vurderes at være rimeligt, kan testen undersøge, om størrelsen af de tab, der opstår, når $VaR$ overskrides, stemmer overens med modellens estimerede $ES$. Testen fokuserer dermed på, om modellen korrekt beskriver størrelsen af tabene i fordelingens hale.
+
+\ Vi ønsker
+
+I disse tilfælde sammenlignes det realiserede tab $X_t$ med den forventede størrelse af tabet, som modellen forudsiger gennem ES. Teststørrelsen beregnes som et gennemsnit af forholdet mellem de observerede tab og de forventede ES-værdier for de dage, hvor der forekommer en VaR-overskridelse.
+
+Hvis modellen er korrekt specificeret, vil gennemsnittet af denne størrelse være omkring nul. Hvis de observerede tab derimod systematisk er større end modellens forventede ES, vil teststørrelsen blive negativ. En negativ værdi indikerer derfor, at modellen undervurderer størrelsen af de ekstreme tab, selv hvis VaR-niveauet i sig selv er korrekt.
+
+
+
+
+
+
+
+
+\end{document}
