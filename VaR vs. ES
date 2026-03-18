@@ -1,0 +1,42 @@
+---
+title: "VaR vs. ES"
+output: html_document
+date: "2026-03-16"
+---
+
+```{r, fig.width = 10, fig.height = 5, dpi = 300}
+par(mfrow = c(1,2))
+
+# VaR for normal
+VaR <- qnorm(0.01)
+
+x <- seq(-6,6,length=1000)
+
+plot(x, 
+     dt(x, df = 100),
+     type="l", 
+     lwd=1,
+     col = "black",
+     ylab="Tæthed", 
+     xlab="x")
+
+lines(x, dt(x - Forskydning_100_3, df = 3), col="aquamarine3", lwd=1)
+
+abline(v = VaR, lty=2)
+
+plot(x, 
+     dt(x, df = 100),
+     type="l", 
+     lwd=1,
+     xlim = c(-4, -2),
+     ylim = c(0, 0.1),
+     col = "black",
+     ylab="Tæthed", 
+     xlab="x")
+
+lines(x, dt(x - Forskydning_100_3, df = 3), col="aquamarine3", lwd=1)
+
+abline(v = VaR, lty=2)
+
+```
+
