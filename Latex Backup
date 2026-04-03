@@ -11,6 +11,8 @@
 \usepackage[margin=0.8in]{geometry}
 \usepackage{setspace}
 \usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{subcaption}
 
 \usepackage{fontspec}
 \usepackage{lmodern}
@@ -34,9 +36,11 @@
 
 \begin{document}
 
-% Forside i Arial
+\pagenumbering{gobble}
+
 {\arialfont
 \maketitle
+\thispagestyle{empty}
 }
 
 % Resten i LaTeX standardfont
@@ -62,10 +66,15 @@ Dato: & XX XX XXXX
 \newpage
 
 \tableofcontents
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\section{Indledning}
+I mange år har Basel-komitéen foreslået, at Type II-fejl faktisk IKKE er værre end holocaust, det er vi dybt uenige i, derfor backtester vi derudaf. 
 
 \newpage
-\section{Indledning}
-Habibi
+
 \section{Baggrund}
 \subsection{Risikomål}
 Et risikomål er en kvantitativ indikator, der anvendes til at måle og vurdere risikoen for tab i en given position eller portefølje. I finansiel risikostyring er formålet med et risikomål at beskrive fordelingen af potentielle tab og dermed give en indikation af størrelsen af tab, der kan forekomme med en given sandsynlighed. Risikomål gør det således muligt at kvantificere og sammenligne risiko på tværs af forskellige investeringer eller porteføljer. Særligt anvendes risikomål til at estimere potentielle tab ved et givent signifikansniveau. I dette afsnit introduceres to centrale risikomål, Value at Risk (VaR) og Expected Shortfall (ES), som begge anvendes til at kvantificere risikoen for ekstreme tab.
@@ -86,7 +95,7 @@ Hvis fordelingsfunktionen for $X_t$ er kontinuert og strengt voksende, kan defin
 \begin{equation}
 VaR_{\alpha,t} = - P_t^{-1}(\alpha)
 \end{equation}
-Fortolkningen er således, at $VaR_{\alpha,t}$ er det mindste tab, som med sandsynlighed $1-\alpha$ ikke overskrides i den kommende periode. I denne opgave fokuseres der på \textit{one-day VaR}, hvor risikomålet angiver det maksimale forventede tab over én dag ved et givent signifikansniveau. 
+Fortolkningen er således, at $\text{VaR}_{\alpha,t}$ er det mindste tab, som med sandsynlighed $1-\alpha$ ikke overskrides i den kommende periode. I denne opgave fokuseres der på \textit{one-day VaR}, hvor risikomålet angiver det maksimale forventede tab over én dag ved et givent signifikansniveau. 
 \\(Ref. Acerbi (2014) + Hult \& Lindskog (2007))
 
 \subsubsection{Expected Shortfall (ES)}
@@ -120,20 +129,18 @@ ES_{\alpha,t} = -\frac{1}{\alpha} \int_{0}^{\alpha} P_t^{-1}(u)\,du .
 Expected Shortfall fokuserer således på den venstre hale af afkastfordelingen 
 og giver et mål for det gennemsnitlige tab i de mest ekstreme udfald. 
 Af denne grund anses ES ofte for at være et mere informativt risikomål end VaR, 
-da det tager højde for størrelsen af tabene ud over VaR-grænsen 
-\citep{AcerbiSzekely2014}.
+da det tager højde for størrelsen af tabene ud over VaR-grænsen (Acerbi, 2014).
 
 \subsection{VaR vs. ES}
 
 Som beskrevet tidligere angiver $\text{VaR}_\alpha$ det tab, der overskrides med sandsynlighed $\alpha$, men giver ingen information om størrelsen af tabene ud over denne grænse.
 
+Figur 3 er et eksempel på to tæthedsfunktioner, der repræsenterer to fordelinger af afkast. Den sorte tæthedsfunktion repræsenterer en t-fordeling med 100 frihedsgrader, mens den grønne tæthedsfunktion repræsenterer samme fordeling, blot med 3 frihedsgrader og forskudt således at VaR er identisk for de to fordelinger. Valget af frihedsgrader i t-fordelingen behandles i næste afsnit.
 \begin{figure}[H]
     \centering
     \includegraphics[width=16cm]{0000f2.png}
     \caption{\small \textbf{\textit{Figur 3:}} Eksempel på to fordelinger af afkast med samme VaR og forskellig ES.}
 \end{figure}
-
-Figur 3 er et eksempel på to tæthedsfunktioner, der repræsenterer to fordelinger af afkast. Den sorte tæthedsfunktion repræsenterer en t-fordeling med 100 frihedsgrader, mens den blå tæthedsfunktion repræsenterer samme fordeling, blot med 3 frihedsgrader og forskudt således at VaR er identisk for de to fordelinger. Valget af frihedsgrader i t-fordelingen behandles i næste afsnit.\\
 
 For et risikomål $\rho$ gælder, at både VaR og ES opfylder monotonicitet: 
 $$X \leq Y \Longrightarrow \rho(X) \geq \rho(Y)$$ 
@@ -143,9 +150,9 @@ Dette medfører, at risikoen er proportional til positionens størrelse. VaR og 
 $$\rho(X+c)=\rho(X)-c$$
 Som indebærer, at hvis der tilføjes likviditet $c$, falder risikoen med $c$. ES opfylder også subadditivitet: 
 $$\rho(X+Y)\leq \rho(X)+\rho(Y)$$
-Dette indebærer, at diversifikation ikke må øge risikoen, og da ES opfylder disse fire betingelser, er det nødvendigvis et kohærent risikomål (Artzner, 1999). Det kan påvises at VaR bryder subadditivitet ved følgende simple eksempel, der tager udgangspunkt i Acerbi (2001):\\
+Dette indebærer, at diversifikation ikke må øge risikoen, og da ES opfylder disse fire betingelser, er det nødvendigvis et kohærent risikomål (Artzner, 1999). Det kan påvises at VaR bryder subadditivitet ved følgende simple eksempel (Acerbi, 2001):
 
-Betragt to forskellige obligationer, A og B, hvis misligholdelser ikke kan indtræffe samtidig. Hvis A bliver misligholdt er $P(\text{B misligholder} \mid \text{A misligholder}) = 0$ og omvendt. I tilfælde af misligholdelse har obligationerne to forskellige restitutionsværdier, 50 og 95, med 4\% og 1\% sandsynlighed. Begge obligationer indløses til 100, hvis misligholdelse ikke finder sted. Vi opstiller tre porteføljer, A, B og A+B samt hvert udfald: 
+Betragt to forskellige obligationer, A og B, hvis misligholdelser ikke kan indtræffe samtidig. Hvis A bliver misligholdt er $P(\text{B misligholder} \mid \text{A misligholder}) = 0$ og omvendt. I tilfælde af misligholdelse har obligationerne to forskellige restitutionsværdier, 50 og 95, med 4\% og 1\% sandsynlighed. Begge obligationer indløses til værdi 100, hvis misligholdelse ikke finder sted. Vi opstiller tre porteføljer, A, B og A+B samt hvert udfald: 
 
 \begin{table}[h!]
 \centering
@@ -182,8 +189,61 @@ $$ES_{5\%}(A+B)=45,90<77,90 = ES_{5\%}(A)+ES_{5\%}(B)$$
 Brud på subadditivitet understreger en af de centrale forskelle mellem VaR og ES. Eksemplet illustrerer, at VaR kan give en misvisende risikovurdering i diversificerede porteføljer og lede til uhensigtsmæssige investeringsbeslutninger. ES tager derimod højde for hele halen og størrelsen af tabene i ekstreme tilfælde, hvilket gør det til et kohærent og mere robust risikomål.
 
 \subsection{Fordeling af afkast}
-
 \subsubsection{t-fordelinger}
+Som udgangspunkt for simulering af afkast anvendes en simpel fordeling. I denne sammenhæng betragtes t-fordelingen. Vi starter med standardtilfældet, hvor en stokastisk variabel $T$ følger en t-fordeling med $\nu$ frihedsgrader, dvs.\ $T \sim t_\nu(0,1)$, med tæthedsfunktion (Hult \& Lindskog, 2007)
+\[
+g_\nu(x) = \frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\sqrt{\nu\pi}\,\Gamma\left(\frac{\nu}{2}\right)} \left(1 + \frac{x^2}{\nu}\right)^{-\frac{\nu+1}{2}}.
+\]
+For $\nu > 2$ har fordelingen middelværdi 0 og varians $\frac{\nu}{\nu - 2}$. Antallet af frihedsgrader $\nu$ bestemmer haleopførslen: små værdier af $\nu$ giver tungere haler og dermed større sandsynlighed for ekstreme observationer. Endvidere gælder, at $E(T^k) < \infty$ hvis og kun hvis $\nu > k$.
+
+For at opnå større fleksibilitet betragtes en location-scale transformation af t-fordelingen.Lad $X \sim t_\nu(\mu,\sigma^2)$, hvor $\mu \in \mathbb{R}$ er en lokationsparameter, og $\sigma > 0$ er en skalaparameter. Dette kan ækvivalent skrives som
+\[
+X = \mu + \sigma T, \qquad T \sim t_\nu(0,1).
+\]
+Ved anvendelse af transformationssætningen for tæthedsfunktioner fås tæthedsfunktionen (Le Gall, 2022)
+\[
+g_\nu(x \mid \mu, \sigma) = \frac{1}{\sigma} g_\nu\!\left(\frac{x - \mu}{\sigma}\right)
+= \frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\sigma \sqrt{\nu\pi}\,\Gamma\left(\frac{\nu}{2}\right)} 
+\left(1 + \frac{1}{\nu}\left(\frac{x - \mu}{\sigma}\right)^2 \right)^{-\frac{\nu+1}{2}}.
+\]
+For $\nu > 2$ er middelværdi og varians givet ved
+\[
+E(X) = \mu, \qquad \mathrm{Var}(X) = \sigma^2 \frac{\nu}{\nu - 2}.
+\]
+
+Hvis man ønsker at sammenligne fordelinger med forskellig haleopførsel under samme varians, kan man standardisere ved at vælge $\sigma$ således at
+\[
+\sigma^2 \frac{\nu}{\nu - 2} = 1 
+\;\Longleftrightarrow\;
+\sigma = \sqrt{\frac{\nu - 2}{\nu}}.
+\]
+Herved opnås en standardiseret t-fordeling med enhedsvarians, hvor forskelle i haleopførsel alene styres af $\nu$.
+
+
+
+
+\subsubsection{VaR og ES ved t-fordelte afkast}
+
+Når afkast antages at være t-fordelte, kan VaR og ES udtrykkes eksplicit ved fordelingens kvantiler og tæthed. For standardtilfældet $T \sim t_\nu(0,1)$ fås VaR ved
+\[
+\mathrm{VaR}_{\alpha,t} = -q_\alpha,
+\]
+hvor $q_\alpha$ er den $\alpha$-kvantil, der opfylder $P(T \leq q_\alpha) = \alpha$. Expected Shortfall kan tilsvarende skrives som (Hult \& Lindskog, 2007)
+\[
+\mathrm{ES}_{\alpha,t} = \frac{\nu + q_\alpha^2}{\nu - 1} \cdot \frac{g_\nu(q_\alpha)}{\alpha}, \qquad \nu > 2,
+\]
+hvor $g_\nu$ er tæthedsfunktionen for $t_\nu(0,1)$.
+
+For $X \sim t_\nu(\mu,\sigma^2)$ følger det af location-scale strukturen, at kvantilerne transformeres lineært som $q_\alpha(X) = \mu + \sigma q_\alpha$. Dermed fås
+\[
+\mathrm{VaR}_{\alpha,t} = -\mu - \sigma q_\alpha,
+\]
+samt
+\[
+\mathrm{ES}_{\alpha,t} = -\mu + \sigma \frac{\nu + q_\alpha^2}{\nu - 1} \cdot \frac{g_\nu(q_\alpha)}{\alpha}.
+\]
+Det ses således, at risikomålene påvirkes lineært af parametrene $\mu$ og $\sigma$, mens haleegenskaberne bestemmes af frihedsgraderne $\nu$ gennem kvantilen $q_\alpha$ og tæthedsfunktionen $g_\nu$.
+
 \subsubsection{GARCH-proces}
 Når man ser på observationer i virkeligheden er det højst usandsynligt, at afkast er uafhængige. Vi indfører en GARCH-proces (Generalized Autoregressive Conditional Heteroskedasticity process), som et alternativ til antagelsen om, at afkastdata ${X_t}$ for $t\in{1,...,T}$ er uafhængige. Processen skal forsøge at modellere volatilitetsklynger, hvor store og små udsving i afkast har tendens til at komme i perioder. Modellen antager altså ikke konstant volatilitet, hvorfor har processen til formål at repræsentere hvordan en afkastserie opfører sig i virkeligheden (Hull, 2018).
 
@@ -220,9 +280,23 @@ For at sikre en stationær process, kræver vi dermed, at $\alpha + \beta < 1$ (
 
 Under GARCH(1,1)-processen angiver $\omega$ et baseline variansniveau, imens $\alpha$ angiver shockparameteren og repræsenterer den uforudsigelige procentvise ændring i afkast mellem dag $t$ og $t-1$. Sidst angiver $\beta$ persistensen i volatilitet til tidspunktet $t$ fra forrige periode $t-1$.
 
-(RUGARCH .....)
-
 \subsection{Backtesting ES}
+
+Formålet med backtesting af Expected Shortfall (og VaR) er at vurdere, om en given risikomodel er tilstrækkelig. I forbindelse med ES og ligeledes VaR opstilles nulhypotesen således: 
+
+\begin{equation}
+    H_0: \text{Risikoprædiktionen er korrekt}
+\end{equation}
+
+Den alternative hypotese $H_1$ er da:
+
+\begin{equation}
+    H_1: \text{Modellen undervurderer risiko}
+\end{equation}
+
+Hvis vi ikke forkaster nulhypotesen, vil vi anse den prædiktive model som værende acceptabel. Basel-komitéen anvender binomialtest baseret på antal overskridelser, den såkaldte traffic-light tilgang, som anvendes til backtesting af VaR. Man skelner ofte mellem traditionelle backtests og komparative backtests, hvor komparative backtests kræver, at risikomålet er \textit{elicitable}, dvs. at den kan evalueres gennem en konsistent scoring-funktion og bruges til modeludvalg og sammenligning af forecasts. 
+
+VaR er \textit{elicitable}, det er ES ikke alene. I forbindelse med dette opstod der tvivl, om hvorvidt ES overhovedet kunne backtestes. Nyere resultater fra Acerbi \& Szekely (2014) og Fissler \& Ziegel (2016) fremhæver dog, at parret $(VaR_\alpha, ES_\alpha)$ er \textit{jointly elicitable}, hvilket muliggør komparative backtests for ES. Særligt understreger Acerbi \& Szekely (2014) at \textit{elicitability} ikke er en nødvendig betingelse for traditionel backtesting, som blot vurderer, om en given prædiktiv model er konsistent med de observerede tab. I dette projekt vil backtesting af ES evalueres via traditionelle hypotesetest under formuleringerne introduceret i (2.6) og (2.7).
 
 \subsection{Styrke af teststørrelser og Fejltype I og II}
 
@@ -264,18 +338,187 @@ hvor $\Theta_0$ betegner det parameterrum, hvor $H_0$ er sand og $\Theta_1$ bete
 
 Testens styrke bestemmes af sandsynligheden for at forkaste nulhypotesen under den alternative hypotese, og betegnes af arealet under den alternative fordeling i det kritiske område. Jo større overlap af teststørrelsens fordeling under nulhypotesen og den alternative hypotese, desto højere er sandsynligheden for Type II-fejl, og desto lavere er testens styrke (Lauritzen, 2023).
 
+\subsection{Historisk simulation til VaR og ES estimation}
+\subsubsection{Historisk simulation}
 
+Historisk simulation (HS) er en udbredt ikke-parametrisk metode til estimering af risikomål som VaR og ES. I stedet for at antage en specifik fordeling for log-afkast baseres metoden direkte på den empiriske fordeling af historiske observationer. Dette gør HS enkel at implementere og bidrager til dens udbredte anvendelse.
+
+Lad $\{X_{t-\tau}\}_{\tau=1}^m$ betegne de $m$ seneste observerede afkast ved tidspunkt $t$, hvor vindueslængden typisk vælges som $m=250$, svarende til omtrent ét års handelsdage. Den prædiktive fordeling for det fremtidige afkast $X_t$ approksimeres da ved den empiriske fordeling af $\{X_{t-\tau}\}_{\tau=1}^m$.
+
+VaR ved signifikansniveau $\alpha$ estimeres herefter som den empiriske $\alpha$-fraktil af de historiske afkast. Vi skriver derfor (Christoffersen 2012):
+\[
+VaR_{\alpha,t}^{HS}
+=
+-\mathrm{Percentile}\left(\{X_{t-\tau}\}_{\tau=1}^m,\,100\alpha\right)
+\]
+
+I praksis sorteres de historiske afkast i stigende orden, og $VaR_{\alpha,t}$ vælges som den værdi, således at $\alpha$-andelen af observationerne ligger under $-VaR_{\alpha,t}$. Da fraktilen typisk ligger mellem to observationer, anvendes ofte lineær interpolation til at bestemme den præcise værdi.
+
+Når $VaR_{\alpha,t}^{HS}$ er bestemt, kan Expected Shortfall estimeres som gennemsnittet af de historiske afkast, der ligger under den estimerede VaR-grænse.
+Her kan ES estimeres ved (Hull, 2015):
+\[
+ES_{\alpha,t}^{HS}
+=
+-\frac{\sum_{\tau=1}^{m} X_{t-\tau}\mathbf{1}_{\{X_{t-\tau}\leq - VaR_{\alpha,t}^{HS}\}}}{\sum_{\tau=1}^{m}\mathbf{1}_{\{X_{t-\tau}\leq - VaR_{\alpha,t}^{HS}\}}}
+\]
+
+Historisk simulation har den fordel, at metoden direkte afspejler de observerede data og automatisk tager højde for skævhed og tykke haler i afkastfordelingen. Til gengæld er metoden følsom over for valget af vindueslængde $m$, da et for kort vindue kan give ustabile estimater, mens et for langt vindue kan gøre risikomålene mindre responsive i forhold til ændringer i markedsforholdene. 
+
+\subsubsection{Vægtet historisk simulation}
+
+En naturlig udvidelse af ovenstående er vægtet historisk simulation (WHS), hvor de historiske afkast ikke tillægges lige stor vægt. I standard HS antages det implicit, at alle $m$ observationer er lige informative om fremtiden, men i praksis kan nyere observationer være mere relevante, særligt i perioder med skiftende markedsforhold.
+
+I WHS tilskrives hvert afkast $\{X_{t-\tau}\}_{\tau=1}^m$ derfor en vægt $w_\tau$, som vi definere (Christoffersen, 2012):
+\[
+w_\tau = \frac{(1-\eta)\eta^{\tau-1}}{1-\eta^m}, \quad 0 < \eta < 1
+\]
+hvor det bemærkes at $w_\tau$ går mod 0, når $\tau$ bliver stor og at $\sum^m_{\tau=1}w_\tau=1$. Derudover antages det som oftest at $\eta\in(0.95,0.99)$ 
+
+
+VaR kan estimeres, ved at lade de observerede afkast være sorteret i stigende orden som
+\[
+X_{(1)} \le X_{(2)} \le \cdots \le X_{(m)},
+\]
+og lad $w_{(1)},\dots,w_{(m)}$ betegne de tilsvarende omordnede vægte. Historisk vægtet simulation-VaR ved niveau $\alpha$ defineres da som
+\[
+VaR^{WHS}_{\alpha,t}
+=
+-\inf\left\{x\in\mathbb{R} : \sum_{i=1}^m w_{(i)} \mathbf{1}_{\{X_{(i)}\le x\}} \ge \alpha \right\}.
+\]
+
+Ækvivalent kan man definere de kumulerede vægte ved
+\[
+W_k = \sum_{i=1}^k w_{(i)}, \qquad k\in\{1,\dots,m\}.
+\]
+Fra dette kan man bestemme $
+k_\alpha = \inf\{k\in\{1,\dots,m\} : W_k \ge \alpha\}$, hvor der vil gælde at $
+VaR^{WHS}_{\alpha,t} = -X_{(k_\alpha)}$. Ligesom i HS anvendes der lineær lineær interpolation til at bestemme den præcise værdi for VaR.
+
+Når $VaR^{WHS}_{\alpha,t}$ er bestemt kan $ES_{\alpha,t}^{WHS}$ estimeres tilsvarende $ES_{\alpha,t}^{HS}$  dog som et vægtet gennemsnit af haleobservationerne:
+\[
+ES_{\alpha,t}^{WHS}
+=
+-\frac{\sum_{\tau=1}^{m} w_\tau X_{t-\tau}\mathbf{1}_{\{X_{t-\tau}\leq -VaR_{\alpha,t}^{WHS}\}}}
+{\sum_{\tau=1}^{m} w_\tau \mathbf{1}_{\{X_{t-\tau}\leq -VaR_{\alpha,t}^{WHS}\}}}
+\]
+
+WHS bevarer fordelene ved historisk simulation, herunder at metoden er ikke-parametrisk og tager højde for skævhed og tykke haler, men adresserer samtidig en central svaghed ved HS ved at give større vægt til nyere information. Til gengæld introducerer metoden et ekstra valg af parameteren $\eta$, som påvirker, hvor hurtigt vægtene aftager, og dermed hvor følsom modellen er over for nye observationer.
 \section{Teststørrelser}
+
+\subsection{Test 1}
+
+
+Teststørrelsen $Z_1$ er designet til at teste ES betinget af, at VaR allerede er blevet backtestet separat. Når VaR er fastlagt, kan testen undersøge, om størrelsen af de tab, der opstår, når VaR overskrides, stemmer overens med modellens estimerede ES. Testen fokuserer dermed på, om modellen korrekt beskriver størrelsen af tabene i fordelingens hale.
+
+For at udføre testen, gør vi brug af definitionen for ES med den betingede forventning. Fra (2.3) har vi:
+
+\begin{equation}
+\begin{split}
+    ES_{\alpha,t} = -\mathbb{E}[X_t \mid X_t \leq -VaR_{\alpha,t} ] \\
+      \iff-1=\mathbb{E}\left[\frac{X_t}{ES_{\alpha,t}}\mid X_t \leq -VaR_{\alpha,t}\right] \\
+      \iff0=\mathbb{E}\left[\frac{X_t}{ES_{\alpha,t}}\mid X_t \leq -VaR_{\alpha,t}\right]+1
+\end{split}
+\end{equation}
+
+På baggrund af vores antagelse, af at $VaR_{\alpha,t}$ allerede er testet, kan vi indføre indikatorvariablen $I_t=\mathbf{1}_{\{X_t\leq - VaR_{\alpha,t}\}}$, samt $N_T=\sum^T_{t=1}I_t$ og få vores teststørrelse:
+\begin{equation}
+    Z_1(\mathbf{X})=\frac{\sum^T_{t=1}\frac{X_tI_t}{ES_{\alpha,t}}}{N_T}+1
+\end{equation}
+hvor vi kræver at $N_T>0$, altså mindst én VaR-overskridelse.
+
+Vi opstiller en nulhypotese med det formål at teste, om modellen beskriver fordelingens hale korrekt. Derudover opstilles en alternativ hypotese, som undersøger, hvorvidt modellen undervurderer risikoen. For denne test, opstiller vi nulhypotesen:
+$$
+    H_0:P^{[\alpha]}_t=F^{[\alpha]}_t, \quad \forall t
+$$
+hvor $P^{[\alpha]}_t(x)=\min (1,\frac{P_t(x)}{\alpha})$ er fordelingens hale, hvor $x<-VaR_{\alpha,t}$
+De alternative hypoteser er
+\[
+\begin{split}
+H_1 :\quad & ES^F_{\alpha,t} \geq ES_{\alpha,t}, \quad \forall t \text{ og } > \text{ for mindst ét } t \\
+           & VaR^F_{\alpha,t} = VaR_{\alpha,t}
+\end{split}
+\]
+Vi ser, at den estimerede $\text{VaR}_\alpha$ fortsat er korrekt under $H_1$, hvilket afspejler, Var allerede er backtestet og derfor fastlagt. Testen er desuden ufølsom over for antallet af overskridelser, da den beregnes som et gennemsnit over selve overskridelserne.
+Under vores betingelser af teststørrelse, gælder der pr. proposition A.2 i Acerbi og Szekely (2014):
+$$
+E_{H_0}[Z_1 \mid N_T > 0] = 0 \quad \text{og} \quad E_{H_1}[Z_1 \mid N_T > 0] < 0
+$$
+Det betyder, at $Z_1$ under nulhypotesen forventes at være tæt på $0$, mens negative værdier af $Z_1$ forventes under den alternative hypotese, hvor modellen undervurderer størrelsen af de ekstreme tab.
+
+\subsection{Test 2}
+Til den anden backtest, omskriver vi definitionen til en ubetinget forventning:
+$$
+ES_{\alpha,t}=-\mathbb{E}[X_t \mid X_t \leq -VaR_{\alpha,t} ]\overset{*}{=} -\frac{\mathbb{E}[X_tI_t]}{P(X_t \leq -VaR_{\alpha,t})}=-\frac{\mathbb{E}[X_tI_t]}{\alpha}
+$$
+Hvor omskrivningen (*) følger af definitionen af betinget forventning (Le Gall, s. 228).
+Vi ser nu at der gælder:
+$$ES_{\alpha,t}=-\frac{\mathbb{E}[X_tI_t]}{\alpha} \iff 0=\mathbb{E} \left[ \frac{X_tI_t}{\alpha ES_{\alpha,t}}\right] +1
+$$
+Heraf kan vi definere den anden teststørrelse
+$$
+Z_2(\mathbf{X})=\sum^T_{t=1}\frac{X_tI_t}{T\alpha ES_{\alpha,t}}+1
+$$
+De relevante hypoteser for testen er:
+\[
+\begin{split}
+H_0 :\quad & P^{[\alpha]}_t=F^{[\alpha]}_t, \quad \forall t \\
+H_1 :\quad & ES^F_{\alpha,t} \geq ES_{\alpha,t}, \quad \forall t \text{ og } > \text{ for mindst ét } t \\
+           & VaR^F_{\alpha,t} \geq VaR_{\alpha,t}, \quad \forall t
+\end{split}
+\]
+$Z_2$ adskiller sig fra $Z_1$, da det ikke kræves at $VaR$ er backtestet i forvejen.
+
+Vi har at:
+$$E_{H_0}[Z_2] = 0 \quad \text{og} \quad E_{H_1}[Z_2] < 0$$
+Pr. proposition A.3 i Acerbi og Szekely (2014)
+
+\subsection{Test 3}
+Til den tredje backtest udnyttes egenskaben, at hvis modellens prædiktive fordeling er korrekt, vil rangene
+$$
+U_t = P_t(X_t)
+$$
+være uafhængige og identisk fordelte som $U(0,1)$. Ideen bag testen er derfor at undersøge, om de observerede ranger stemmer overens med en uniform fordeling.
+
+For at relatere dette til ES estimeres denne ud fra de observerede ranger. Lad
+$$
+ES^{(N)}_{\alpha}(\mathbf{Y}) = -\frac{1}{[N\alpha]}\sum_{i=1}^{[N\alpha]}Y_{i:N}
+$$
+være en estimator for ES, hvor $Y_{i:N}$ betegner de sorterede observationer fra mindst til størst. Estimatoren anvendes på de rekonstruerede observationer $P_t^{-1}(U_t)$, og vi får teststørrelsen
+$$
+Z_3(\mathbf{X}) =
+-\frac{1}{T}\sum_{t=1}^{T}
+\frac{ES^{(T)}_{\alpha}(P_t^{-1}(\mathbf{U}))}
+{\mathbb{E}_V\left[ES^{(T)}_{\alpha}(P_t^{-1}(\mathbf{V}))\right]}
++1,
+$$
+hvor $\mathbf{V}$ er en vektor af uafhængige og identisk fordelte $U(0,1)$-variable.
+
+Testen sammenligner den empiriske rangbaserede ES med den forventede rangbaserede ES under en korrekt specificeret model. Hvis modellen er korrekt, vil $U_t$ være i.i.d. $U(0,1)$, og vi vil derfor forvente, at tæller og nævner har samme størrelse. Hvis modellen derimod undervurderer risikoen, vil de observerede tab i halen være større end forventet, hvilket medfører, at tælleren bliver større end nævneren.
+
+De relevante hypoteser for testen er
+\[
+\begin{split}
+H_0 :\quad & P_t = F_t, \quad \forall t \\
+H_1 :\quad & P_t \succeq F_t, \quad \forall t \text{ og } \succ \text{ for mindst ét } t
+\end{split}
+\]
+
+Her betegner $\succeq$ førsteordens stokastisk dominans. Test 3 adskiller sig fra test 1 og 2 ved, at den ikke kun undersøger haleobservationer, men i stedet anvender transformationen $U_t = P_t(X_t)$, som afhænger af hele den prædiktive fordeling.
+
+Jf. Proposition A.4 i Acerbi og Szekely (2014) gælder
+$$
+E_{H_0}[Z_3]=0 \quad \text{og} \quad E_{H_1}[Z_3]<0
+$$
 
 \subsection{VaR backtest}
 
-Denne test følger den klassiske tilgang fra Basle Committee on Banking Supervision (1996), kombineret med Christoffersen (2012), hvor man betragter en sekvens af indikatorvariable for $VaR$-overskridelser.
+Til sammenligning anvendes en overskridelsestest til at backteste risikomålet VaR. Denne test følger den klassiske tilgang fra Basel Committee on Banking Supervision (1996), kombineret med Christoffersen (2012), hvor man betragter en sekvens af indikatorvariable for VaR-overskridelser.
 
 Lad
 \[
 I_t =
 \begin{cases}
-1, & \text{hvis } X_t < -VaR_t \\
+1, & \text{hvis } X_t < -VaR_{\alpha,t} \\
 0, & \text{ellers}
 \end{cases}
 \]
@@ -307,131 +550,233 @@ H_0: E(VaR_{\text{exceed}}) = T\alpha,
 H_1: E(VaR_{\text{exceed}}) > T\alpha
 \]
 
-Testen baseres på fordelingen af \( VaR_{\text{exceed}} \). Givet et signifikansniveau \( \eta \) bestemmes en kritisk værdi \( q_{\text{crit},\eta} \), således at:
+Testen baseres på fordelingen af \( VaR_{\text{exceed}} \). Givet et signifikansniveau \( \eta \) bestemmes en kritisk værdi \( d_{\text{crit},\eta} \), således at:
 \[
-P(VaR_{\text{exceed}} \leq q_{\text{crit},\eta}) \geq 1 - \eta
+P(VaR_{\text{exceed}} \leq d_{\text{crit},\eta}) \geq 1 - \eta
 \]
 
 Da binomialfordelingen er diskret, vil det faktiske signifikansniveau generelt afvige fra \( \eta \). Det realiserede niveau kan derfor beregnes som:
 \[
-\eta_{\text{sand}} = P(VaR_{\text{exceed}} > q_{\text{crit},\eta})
+\eta_{\text{sand}} = P(VaR_{\text{exceed}} > d_{\text{crit},\eta})
 \]
 
 Forkastnings- og acceptområderne er givet ved:
 \[
-K = \{VaR_{\text{exceed}} > q_{\text{crit},\eta}\}, 
+K = \{VaR_{\text{exceed}} > d_{\text{crit},\eta}\}, 
 \quad
-A = \{VaR_{\text{exceed}} \leq q_{\text{crit},\eta}\}
+A = \{VaR_{\text{exceed}} \leq d_{\text{crit},\eta}\}
 \]
 
 Testens styrke er:
 \[
-\gamma = 1 - P(VaR_{\text{exceed}} \leq q_{\text{crit},\eta})
+\xi_{VaR_\alpha} = 1 - P(VaR_{\text{exceed}} \leq d_{\text{crit},\eta})
 \]
 
-\subsection{Test 1 (Acerbi)}
+\subsection{Exceedance Residuals Backtest}
 
+Exceedence Residuals backtesten foreslået af McNeil \& Frey (2000) anvendes og baserer sig på forskellen mellem de observerede afkast ved overskridelse af VaR og det prædikterede $ES_{\alpha,t}^P$. For afkast $X_t$ defineres $r_t$ som de standardiserede overskridelsesresidualer:
 
-Teststørrelsen $Z_1$ er designet til at teste $ES$ betinget af, at $VaR$ allerede er blevet backtestet separat. Når $VaR$ er fastlagt, kan testen undersøge, om størrelsen af de tab, der opstår, når $VaR$ overskrides, stemmer overens med modellens estimerede $ES$. Testen fokuserer dermed på, om modellen korrekt beskriver størrelsen af tabene i fordelingens hale.
+$$r_t=\frac{ES_{\alpha,t}^P+X_t}{\hat{\sigma_t}}I_t$$
 
-For at udføre testen, gør vi brug af definitionen for ES med den betingede forventning. Fra (2.3) har vi:
+Hvor $I_t=\mathbf{1}_{\{X_t\leq -VaR_{\alpha, t}^P\}}$ og $\hat{\sigma_t}$ er estimater for den betingede volatilitet. Yderligere antages det at $\sum_{t=1}^TI_t>0$ og vi definerer teststørrelsen:
 
-\begin{equation}
-\begin{split}
-    ES_{\alpha,t} = -\mathbb{E}[X_t \mid X_t \leq -VaR_{\alpha,t} ] \\
-      \iff-1=\mathbb{E}\left[\frac{X_t}{ES_{\alpha,t}}\mid X_t \leq -VaR_{\alpha,t}\right] \\
-      \iff0=\mathbb{E}\left[\frac{X_t}{ES_{\alpha,t}}\mid X_t \leq -VaR_{\alpha,t}\right]+1
-\end{split}
-\end{equation}
+$$\bar{r}=\frac{\sum_{t=1}^Tr_t}{\sum_{t=1}^TI_t}$$
 
-På bagrund af vores antagelse, af at $VaR_{\alpha,t}$ allerede er testet, kan vi indføre indikatorvariablen $I_t=\mathbf{1}_{\{X_t\leq - VaR_{\alpha,t}\}}$, samt $N_T=\sum^T_{t=1}I_t$ og få vores teststørrelse:
-\begin{equation}
-    Z_1(\mathbf{X})=\frac{\sum^T_{t=1}\frac{X_tI_t}{ES_{\alpha,t}}}{N_T}+1
-\end{equation}
-hvor vi kræver at $N_T>0$, altså mindst én VaR-overskridelse.
-
-Vi opstiller en nulhypotese med det formål at teste, om modellen beskriver fordelingens hale korrekt. Derudover opstilles en alternativ hypotese, som undersøger, hvorvidt modellen undervurderer risikoen. For denne test, opstiller vi nulhypotesen:
-$$
-    H_0:P^{[\alpha]}_t=F^{[\alpha]}_t, \quad \forall t
-$$
-hvor $P^{[\alpha]}_t(x)=\min (1,\frac{P_t(x)}{\alpha})$ er fordelingens hale, hvor $x<-VaR_{\alpha,t}$
-De alternative hypoteser er
+I forlængelse med vores formål for backtesting af ES, opstilles følgende nulhypotese og alternative hypotese for teststørrelsen: 
 \[
 \begin{split}
-H_1 :\quad & ES^F_{\alpha,t} \geq ES_{\alpha,t}, \quad \forall t \text{ og } > \text{ for mindst ét } t \\
-           & VaR^F_{\alpha,t} = VaR_{\alpha,t}
+H_0: \bar{r} \geq0 \\
+H_1: \bar{r} <0
 \end{split}
 \]
-Vi ser, at den estimerede $VaR_\alpha$ fortsat er korrekt under $H_1$, hvilket afspejler, $Var$ allerede er backtestet og derfor fastlagt. Testen er desuden ufølsom over for antallet af overskridelser, da den beregnes som et gennemsnit over selve overskridelserne.
-Under vores betingelser af teststørrelse, gælder der pr. proposition A.2 i Acerbi og Szekely (2014):
-$$
-E_{H_0}[Z_1 \mid N_T > 0] = 0 \quad \text{og} \quad E_{H_1}[Z_1 \mid N_T > 0] < 0
-$$
-Det betyder, at $Z_1$ under nulhypotesen forventes at være tæt på $0$, mens negative værdier af $Z_1$ forventes under den alternative hypotese, hvor modellen undervurderer størrelsen af de ekstreme tab.
+I overensstemmelse med projektets styrkefunktion for ES backtests defineres styrken af ER testen som:
+$$\xi_{\bar{r}}=1-P(\bar{r}\geq d_{crit,\eta})$$
 
-\subsection{Test 2 (Acerbi)}
-Til den anden backtest, omskriver vi definitionen til en ubetinget forventning:
-$$
-ES_{\alpha,t}=-\mathbb{E}[X_t \mid X_t \leq -VaR_{\alpha,t} ]\overset{*}{=} -\frac{\mathbb{E}[X_tI_t]}{P(X_t \leq -VaR_{\alpha,t})}=-\frac{\mathbb{E}[X_tI_t]}{\alpha}
-$$
-Hvor omskrivningen (*) følger af definitionen af betinget forventning (Le Gall, s. 228):
-$$ES_{\alpha,t}=-\frac{\mathbb{E}[X_tI_t]}{\alpha} \iff 0=\mathbb{E} \left[ \frac{X_tI_t}{\alpha ES_{\alpha,t}}\right] +1
-$$
-Heraf kan vi definere den anden teststørrelse
-$$
-Z_2(\mathbf{X})=\sum^T_{t=1}\frac{X_tI_t}{T\alpha ES_{\alpha,t}}+1
-$$
-De relevante hypoteser for testen er:
+\subsection{Conditional Calibration Backtest}
+
+Lad $X_t$ betegne det realiserede afkast, og lad $\{(r_{1,t},r_{2,t})\}_{t=1}^n$ være forudsigelser for $\mathrm{VaR}_{\alpha,t}$ og $\mathrm{ES}_{\alpha,t}$ baseret på informationsmængden $\{\mathcal{F}_t\}$. Fra Nolde \& Ziegel (2017) har vi, at den optimale forudsigelse ved tid $t-1$ er det sande betingede risikopar
 \[
-\begin{split}
-H_0 :\quad & P^{[\alpha]}_t=F^{[\alpha]}_t, \quad \forall t \\
-H_1 :\quad & ES^F_{\alpha,t} \geq ES_{\alpha,t}, \quad \forall t \text{ og } > \text{ for mindst ét } t \\
-           & VaR^F_{\alpha,t} \geq VaR_{\alpha,t}, \quad \forall t
-\end{split}
+\Theta\big(\mathcal L(X_t\mid \mathcal F_{t-1})\big)
+=
+(\mathrm{VaR}_{\alpha,t},\ \mathrm{ES}_{\alpha,t}).
 \]
-$Z_2$ adskiller sig fra $Z_1$, da det ikke kræves at $VaR$ er backtestet i forvejen.
 
-Vi har at:
-$$E_{H_0}[Z_2] = 0 \quad \text{og} \quad E_{H_1}[Z_2] < 0$$
-Pr. proposition A.3 i Acerbi og Szekely (2014)
-
-\subsection{Test 3 (Acerbi)}
-Til den tredje backtest udnyttes egenskaben, at hvis modellens prædiktive fordeling er korrekt, vil rangene
-$$
-U_t = P_t(X_t)
-$$
-være uafhængige og identisk fordelte som $U(0,1)$. Ideen bag testen er derfor at undersøge, om de observerede ranger stemmer overens med en uniform fordeling.
-
-For at relatere dette til $ES$ estimeres denne ud fra de observerede ranger. Lad
-$$
-ES^{(N)}_{\alpha}(\mathbf{Y}) = -\frac{1}{[N\alpha]}\sum_{i=1}^{[N\alpha]}Y_{i:N}
-$$
-være en estimator for $ES$, hvor $Y_{i:N}$ betegner de sorterede observationer fra mindst til størst. Estimatoren anvendes på de rekonstruerede observationer $P_t^{-1}(U_t)$, og vi får teststørrelsen
-$$
-Z_3(\mathbf{X}) =
--\frac{1}{T}\sum_{t=1}^{T}
-\frac{ES^{(T)}_{\alpha}(P_t^{-1}(\mathbf{U}))}
-{\mathbb{E}_V\left[ES^{(T)}_{\alpha}(P_t^{-1}(\mathbf{V}))\right]}
-+1,
-$$
-hvor $\mathbf{V}$ er en vektor af uafhængige og identisk fordelte $U(0,1)$-variable.
-
-Testen sammenligner den empiriske rangbaserede $ES$ med den forventede rangbaserede $ES$ under en korrekt specificeret model. Hvis modellen er korrekt, vil $U_t$ være i.i.d. $U(0,1)$, og vi vil derfor forvente, at tæller og nævner har samme størrelse. Hvis modellen derimod undervurderer risikoen, vil de observerede tab i halen være større end forventet, hvilket medfører, at tælleren bliver større end nævneren.
-
-De relevante hypoteser for testen er
+Til evaluering anvendes identifikationsfunktionen
 \[
-\begin{split}
-H_0 :\quad & P_t = F_t, \quad \forall t \\
-H_1 :\quad & P_t \succeq F_t, \quad \forall t \text{ og } \succ \text{ for mindst ét } t .
-\end{split}
+V(r_{1,t}, r_{2,t}, X_t)
+=
+\begin{pmatrix}
+\alpha - \mathbf{1}_{\{X_t < - r_{1,t}\}} \\
+r_{1,t} - r_{2,t} - \frac{1}{\alpha}\mathbf{1}_{\{X_t < -r_{1,t}\}}(r_{1,t} + X_t)
+\end{pmatrix},
+\]
+som opfylder
+\[
+\mathbb{E}\big[V(r_{1,t},r_{2,t},X_t)\mid \mathcal F_{t-1}\big]=0
+\]
+hvis og kun hvis $(r_{1,t},r_{2,t})$ svarer til det sande betingede risikopar (Se appendiks A1). En model siges derfor at være (betinget) kalibreret, hvis fejlene ikke udviser systematiske mønstre givet den tilgængelige information.
+
+For $\mathcal{F}_{t-1}$-målelige testfunktioner $h_t$ defineres
+\[
+Z_t = h_t V(r_{1,t}, r_{2,t}, X_t), 
+\qquad 
+\bar{Z}_n = \frac{1}{n}\sum_{t=1}^n Z_t,
+\qquad
+\hat{\Omega}_n = \frac{1}{n}\sum_{t=1}^n Z_t Z_t^{\top}.
+\]
+Testfunktionerne $h_t$ afhænger af information tilgængelig ved tid $t-1$ og anvendes til at omskrive den betingede kalibreringsbetingelse til ubetingede momentbetingelser.
+
+Vi tester ensidigt for systematisk undervurdering af risiko:
+\[
+H_0:\ \mathbb{E}[Z_t] \geq 0,
+\qquad
+H_1:\ \mathbb{E}[Z_t] < 0.
 \]
 
-Her betegner $\succeq$ førsteordens stokastisk dominans. Test 3 adskiller sig fra test 1 og 2 ved, at den ikke kun undersøger haleobservationer, men i stedet anvender transformationen $U_t = P_t(X_t)$, som afhænger af hele den prædiktive fordeling.
+Teststørrelsen gives komponentvist ved
+\[
+T_n = \sqrt{n}\,\hat{\Omega}_n^{-1/2}\bar{Z}_n,
+\]
+som under $H_0$ er asymptotisk standardnormalfordelt. For hver komponent $i=1,2$ beregnes p-værdien som
+\[
+\pi_i
+=
+\Phi\left(
+\frac{\sqrt{n}\,\bar{Z}_{n,i}}{\sqrt{\hat{\Omega}_{n,ii}}}
+\right),
+\]
+hvor $\Phi$ er fordelingsfunktionen for standardnormalfordelingen.
 
-Jf. Proposition A.4 i Acerbi og Szekely (2014) gælder
-$$
-E_{H_0}[Z_3]=0 \quad \text{og} \quad E_{H_1}[Z_3]<0.
-$$
+Da testen omfatter to komponenter, anvendes en Bonferroni-korrektion, således at nulhypotesen forkastes ved niveau $\eta$, hvis
+\[
+\min(\pi_1,\pi_2) < \frac{\eta}{2}.
+\]
+
+\section{Analyse af Z-teststørrelser}
+
+\subsection{Z-tests og VaR under t-fordelte afkast}
+
+\subsection{Styrke af teststørrelser}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=16cm]{00000e.png}
+    \caption{\small \textbf{\textit{Figur xx:}} Heatmap over teststyrker ved misspecifikation under forskellige frihedsgrader ved diverse t-fordelinger med 10 frihedsgrader i den prædiktive model. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 100.000 Monte-Carlo simulationer. For risikomålene anvendes halesandsynligheden $\alpha = 0.025$ for Z-teststørrelser, mens VaR-teststørrelsen baseres på den regulatoriske $\alpha = 0.01$.
+}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=16cm]{000581.png}
+    \caption{\small \textbf{\textit{Figur xx:}} Teststyrke ved misspecifikation under forskellige frihedsgrader ved diverse t-fordelinger med 10 frihedsgrader i den prædiktive model. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 100.000 Monte-Carlo simulationer. For risikomålene anvendes halesandsynligheden $\alpha = 0.025$ for Z-teststørrelser, mens VaR-teststørrelsen baseres på den regulatoriske $\alpha = 0.025$.}
+\end{figure}
+
+Figur xx viser teststyrken for VaR- og Z-teststørrelserne under fire forskellige t-fordelinger med 10 frihedsgrader under $H_0$, mens $H_1$ varierer fra 3 til 9 frihedsgrader. Figur xx a) viser teststyrker for data trukket fra en t-fordeling uden standardisering og fast VaR, og der observeres en klar og sammenhæng mellem teststyrke og faldende antal frihedsgrader. Alle tre teststørrelser afviser korrekt modellen, som er forventeligt, idet lavere frihedsgrader medfører tungere haler og flere udsving i P\&L-fordelingen.
+
+Figur xx b) viser teststyrker for data trukket fra en standardiseret t-fordeling, så den har varians 1 og middelværdi 0. Vi ser, at Z3 er den eneste teststørrelse, der korrekt afviser modellen, dog i ringe grad. Da vi under standardisering tvinger fordelingerne til at have samme volatilitet under forskellige frihedsgrader, forventes det at VaR-testen og Z2 vil udvise lav teststyrke ved lavt antal frihedsgrader, fordi forskellen mellem $H_0$ og $H_1$ nu skyldes haleform og ikke skala. Da VaR-testen ser på 1\%-kvantilen, observerer vi en lavere teststyrke, idet 1\%-kvantilen ikke flytter sig markant under standardisering. Da Z2 simultant tester antal VaR overskridelser og størrelsen af disse tab, har Z2-teststørrelsen også svært ved at afvise modellen, når antallet af frihedsgrader falder, idet standardiseringen af t-fordelingen mindsker forskellen af de forventede haleværdier mellem $H_0$ og misspecifikation. Z3 reagerer i højere grad på haleformen, som kan forklare forskellen i teststyrken mellem de tre teststørrelser, hvor Z3, i begrænset omfang, klarer sig bedre.
+
+
+
+
+\section{Parametrisk udvidelse med variansmodel}
+\subsection{GARCH(1,1) som datagenererende proces}
+
+Rugarch R pakke... 
+Quantmod R pakke til S\&P500 data...
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Volatilitetsperiode} & \textbf{$\hat{\omega}$} & \textbf{$\hat{\alpha}$} & \textbf{$\hat{\beta}$} & \textbf{$\hat{\nu}$} \\
+\hline
+01.01.2013 - 2015.12.31 & 0.077 & 0.188 & 0.696 & 8.819 \\
+01.01.2021 - 2023.12.31 & 0.009 & 0.063 & 0.930 & 17.478 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Følsomhed under misspecifikation af GARCH(1,1)}
+
+Indfører to nye tests, ER og CC...
+
+
+\subsubsection{Parallel misspecifikation af den ubetingede varians}
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Ændring i UV, Lav vol.png}
+\caption{Lav volatilitet}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Ændring i UV, Høj vol.png}
+\caption{Høj volatilitet}
+\end{subfigure}
+\caption{\textbf{\textit{Figur xx:}} ...}
+\label{fig:powerplots}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Ændring i UV, Lav vol, nu=3.png}
+\caption{Lav volatilitet}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Ændring i UV, Lav vol, nu=100.png}
+\caption{Høj volatilitet}
+\end{subfigure}
+\caption{\textbf{\textit{Figur xx:}} ...}
+\label{fig:powerplots}
+\end{figure}
+
+
+
+
+\section{Appendiks}
+\subsection{A1}
+Vi betraget identifikationsfunktionen givet ved
+\[
+V(r_{1,t}, r_{2,t}, X_t)
+=
+\begin{pmatrix}
+\alpha - \mathbf{1}_{\{X_t < - r_{1,t}\}} \\
+r_{1,t} - r_{2,t} - \frac{1}{\alpha}\mathbf{1}_{\{X_t < -r_{1,t}\}}(r_{1,t} + X_t)
+\end{pmatrix},
+\]
+
+Vi ønsker at vise at:
+
+\[
+\mathbb{E}\big[V(r_{1,t},r_{2,t},X_t)\mid \mathcal F_{t-1}\big]=0
+\iff 
+(r_{1,t},r_{2,t})=
+(\mathrm{VaR}_{\alpha,t}, \mathrm{ES}_{\alpha,t})
+\]
+Først betragtes:
+$$E[\alpha - \mathbf{1}_{\{X_t < - r_{1,t}\}}]=\alpha-E[\mathbf{1}_{\{X_t < - r_{1,t}\}}]=\alpha-P(X_t < - r_{1,t})$$
+Pr. def. af VaR har vi at $P(X_t < - r_{1,t})=\alpha \iff r_{1,t}=VaR_{\alpha,t}$, så må det gælde at 
+$$\alpha-P(X_t < - r_{1,t})=0 \iff r_{1,t}=VaR_{\alpha,t}$$
+
+Vi ser nu at der pr. linearitet af forventning samt identiteten fra (Le Gall side 228):
+\begin{align}
+    E\big[r_{1,t} - r_{2,t} - \frac{1}{\alpha}\mathbf{1}_{\{X_t < -r_{1,t}\}}(r_{1,t} + X_t)\big]
+    &= r_{1,t} - r_{2,t} - \frac{1}{\alpha}P(X_t < -r_{1,t})\big(r_{1,t}+E[X_t\mid X_t<-r_{1,t}]\big)
+\end{align}
+Vi lader nu $(r_{1,t},r_{2,t})=
+(\mathrm{VaR}_{\alpha,t}, \mathrm{ES}_{\alpha,t})
+$ og ser at $P(X_t < - r_{1,t})=\alpha$ og $E[X_t\mid X_t<-r_{1,t}]=ES_{\alpha,t}$ pr. def. 
+Dermed får vi fra (6.1) at
+$$\mathrm{VaR}_{\alpha,t} - \mathrm{ES}_{\alpha,t} - (\mathrm{VaR}_{\alpha,t}+\mathrm{ES}_{\alpha,t})=0$$
+Dermed har vi vist det ønskede
+
+
 
 
 
