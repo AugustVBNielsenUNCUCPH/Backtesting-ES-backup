@@ -256,7 +256,7 @@ Z3_test_GARCH <- function(X, sigma, alpha, nu){
   
   z <- X / sigma
   U <- pt(z * sqrt(nu/(nu-2)), df = nu)
-  U <- pmin(pmax(U, 1e - 10), 1 - 1e - 10)
+  U <- pmin(pmax(U, 1e-10), 1-1e-10)
   U_sorted <- t(apply(U, 1, sort, method = "quick"))
   q <- qt(U_sorted, df = nu)
   
@@ -264,7 +264,10 @@ Z3_test_GARCH <- function(X, sigma, alpha, nu){
   ES_emp <- -rowMeans(q[, 1:k, drop = FALSE])
   
   q_alpha <- qt(alpha, nu)
-  ES_theo <- (dt(q_alpha, nu)/alpha) * (nu + q_alpha^2)/(nu - 1) -(ES_emp / ES_theo) + 1}
+  ES_theo <- (dt(q_alpha, nu)/alpha) * (nu + q_alpha^2)/(nu - 1)
+  
+  Z3 <- 1 - (ES_emp / ES_theo)}
+
 
 ### fordeling af Z3 under H0
 Z3_H0_low  <- Z3_test_GARCH(sim_H0_low$X,  sim_H0_low$sigma,  alpha, nu_l)
@@ -1183,10 +1186,15 @@ for(i in 1:n_paths){
         lwd = 1)
 }
 abline(h = sqrt(E_sigma2_low),
-       col = "grey20", lwd = 2, lty = 2)
+       col = "grey20", 
+       lwd = 2, 
+       lty = 2)
 legend("topright",
        legend = expression(sqrt(E*"["*sigma^2*"]")),
-       col = "grey20", lty = 2, lwd = 2, bty = "n")
+       col = "grey20", 
+       lty = 2, 
+       lwd = 2, 
+       bty = "n")
 
 # Afkastfordeling, høj volatilitet
 hist(as.vector(sim_H0_high$X),
@@ -1212,14 +1220,18 @@ plot(1:T, sim_H0_high$sigma[1,],
      las = 1)
 for(i in 1:n_paths){
   lines(1:T, sim_H0_high$sigma[i,],
-        col = adjustcolor("deeppink4", alpha.f = 0.8),
-        lwd = 1)
-}
+        col = adjustcolor("deeppink4",alpha.f = 0.8), 
+        lwd = 1)}
 abline(h = sqrt(E_sigma2_high),
-       col = "grey20", lwd = 2, lty = 2)
+       col = "grey20", 
+       lwd = 2, 
+       lty = 2)
 legend("topright",
        legend = expression(sqrt(E*"["*sigma^2*"]")),
-       col = "grey20", lty = 2, lwd = 2, bty = "n")
+       col = "grey20", 
+       lty = 2, 
+       lwd = 2, 
+       bty = "n")
 
 ```
 
