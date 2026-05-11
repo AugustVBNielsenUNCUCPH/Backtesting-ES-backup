@@ -19,7 +19,7 @@ returns <- na.omit(returns)
 
 # Perioder med hhv. høj og lav volatilitet
 high_vol <- returns["2021-01-01/2023-12-31"]
-low_vol  <- returns["2013-01-01/2015-12-31"]
+low_vol <- returns["2013-01-01/2015-12-31"]
 
 # GARCH(1,1) model
 spec <- ugarchspec(
@@ -51,12 +51,12 @@ param_table <- data.frame(
 print(param_table)
 
 sigma_high <- sigma(garch_high)
-sigma_low  <- sigma(garch_low)
+sigma_low <- sigma(garch_low)
 
 # Høj volatilitet
 omega_h <- coef_high["omega"]
 alpha_h <- coef_high["alpha1"]
-beta_h  <- coef_high["beta1"]
+beta_h <- coef_high["beta1"]
 nu_h <- coef_high["shape"]
 
 E_sigma2_high <- omega_h / (1 - alpha_h - beta_h)
@@ -64,7 +64,7 @@ E_sigma2_high <- omega_h / (1 - alpha_h - beta_h)
 # Lav volatilitet
 omega_l <- coef_low["omega"]
 alpha_l <- coef_low["alpha1"]
-beta_l  <- coef_low["beta1"]
+beta_l <- coef_low["beta1"]
 nu_l <- coef_low["shape"]
 
 E_sigma2_low <- omega_l / (1 - alpha_l - beta_l)
@@ -151,14 +151,14 @@ alpha_VaRtest <- 0.01
 sim_H0_low <- simulate_garch(T, omega_l, alpha_l, beta_l, nu_l, burn_in, M)
 
 VaR_H0_low <- VaR_GARCH_stdt(sim_H0_low$sigma, alpha, nu_l)
-ES_H0_low  <- ES_GARCH_stdt(sim_H0_low$sigma, alpha, nu_l)
+ES_H0_low <- ES_GARCH_stdt(sim_H0_low$sigma, alpha, nu_l)
 
 
 # H0 fordeling, høj volatilitet 
 sim_H0_high <- simulate_garch(T, omega_h, alpha_h, beta_h, nu_h, burn_in, M)
 
 VaR_H0_high <- VaR_GARCH_stdt(sim_H0_high$sigma, alpha, nu_h)
-ES_H0_high  <- ES_GARCH_stdt(sim_H0_high$sigma, alpha, nu_h)
+ES_H0_high <- ES_GARCH_stdt(sim_H0_high$sigma, alpha, nu_h)
 
 #hist(as.vector(sim_H0_high$X), xlim=c(-10,10), breaks=1000)
 #hist(as.vector(sim_H0_low$X),  xlim=c(-10,10), breaks=500)
@@ -175,7 +175,7 @@ VaR_stat_GARCH <- function(X, VaR){
   rowSums(X + VaR < 0)}
 
 ### Hit rates
-hit_rate_low  <- rowMeans(VaR_test_GARCH(sim_H0_low$X, VaR_H0_low))
+hit_rate_low <- rowMeans(VaR_test_GARCH(sim_H0_low$X, VaR_H0_low))
 hit_rate_high <- rowMeans(VaR_test_GARCH(sim_H0_high$X, VaR_H0_high))
 
 
@@ -246,7 +246,7 @@ Z2_test_GARCH <- function(X, VaR, ES, alpha){
   rowMeans((X * I) / (alpha * ES)) + 1}
 
 ### fordeling af Z2 under H0
-Z2_H0_low  <- Z2_test_GARCH(sim_H0_low$X,  VaR_H0_low,  ES_H0_low,  alpha)
+Z2_H0_low <- Z2_test_GARCH(sim_H0_low$X,  VaR_H0_low,  ES_H0_low,  alpha)
 Z2_H0_high <- Z2_test_GARCH(sim_H0_high$X, VaR_H0_high, ES_H0_high, alpha)
 
 ## Z3
@@ -270,12 +270,12 @@ Z3_test_GARCH <- function(X, sigma, alpha, nu){
 
 
 ### fordeling af Z3 under H0
-Z3_H0_low  <- Z3_test_GARCH(sim_H0_low$X,  sim_H0_low$sigma,  alpha, nu_l)
+Z3_H0_low <- Z3_test_GARCH(sim_H0_low$X,  sim_H0_low$sigma,  alpha, nu_l)
 Z3_H0_high <- Z3_test_GARCH(sim_H0_high$X, sim_H0_high$sigma, alpha, nu_h)
 
 # Kritiske værdier
-q_Z2_low  <- quantile(Z2_H0_low, 0.0412)
-q_Z3_low  <- quantile(Z3_H0_low, 0.0412)
+q_Z2_low <- quantile(Z2_H0_low, 0.0412)
+q_Z3_low <- quantile(Z3_H0_low, 0.0412)
 
 q_Z2_high <- quantile(Z2_H0_high, 0.0412)
 q_Z3_high <- quantile(Z3_H0_high, 0.0412)
@@ -290,14 +290,14 @@ q_VaR <- qbinom(1 - 0.05, size = T, prob = alpha_VaRtest)
 # Omega faktor
 omega_seq <- seq(0.5, 3.5, by = 0.1)
 
-omega_alt_low_vec  <- omega_l * omega_seq
+omega_alt_low_vec <- omega_l * omega_seq
 omega_alt_high_vec <- omega_h * omega_seq
 
 
 # Styrke, lav volatilitet
 power_VaR_low <- numeric(length(omega_seq))
-power_Z2_low  <- numeric(length(omega_seq))
-power_Z3_low  <- numeric(length(omega_seq))
+power_Z2_low <- numeric(length(omega_seq))
+power_Z3_low <- numeric(length(omega_seq))
 power_CC_low <- numeric(length(omega_seq))
 power_ER_low <- numeric(length(omega_seq))
 
@@ -330,10 +330,10 @@ for(i in 1:length(omega_seq)){
 
 # Styrke, høj volatilitet
 power_VaR_high <- numeric(length(omega_seq))
-power_Z2_high  <- numeric(length(omega_seq))
-power_Z3_high  <- numeric(length(omega_seq))
-power_CC_high  <- numeric(length(omega_seq))
-power_ER_high  <- numeric(length(omega_seq))
+power_Z2_high <- numeric(length(omega_seq))
+power_Z3_high <- numeric(length(omega_seq))
+power_CC_high <- numeric(length(omega_seq))
+power_ER_high <- numeric(length(omega_seq))
 
 for(i in 1:length(omega_seq)){
   
@@ -381,19 +381,36 @@ axis(2, at = seq(0,1,0.1),
      labels = sprintf("%.1f", seq(0,1,0.1)), las = 1)
 axis(1, at = omega_seq,
      labels = sprintf("%.1f", omega_seq), las = 2, cex.axis = 0.7)
-lines(omega_seq, power_VaR_low, col = "darkgoldenrod2", lwd = 3)
-lines(omega_seq, power_Z2_low,  col = "cornflowerblue", lwd = 3)
-lines(omega_seq, power_Z3_low,  col = "deeppink3",      lwd = 3)
-lines(omega_seq, power_CC_low,  col = "darkgreen",      lwd = 3)
-lines(omega_seq, power_ER_low,  col = "purple",         lwd = 3)
+lines(omega_seq, power_VaR_low, 
+      col = "darkgoldenrod2", lwd = 3)
+
+lines(omega_seq, power_Z2_low,
+      col = "cornflowerblue", lwd = 3)
+
+lines(omega_seq, power_Z3_low,
+      col = "deeppink3", lwd = 3)
+
+lines(omega_seq, power_CC_low,
+      col = "darkgreen", lwd = 3)
+
+lines(omega_seq, power_ER_low,
+      col = "purple", lwd = 3)
+
 abline(v = 1, col = "grey40", lwd = 2, lty = 2)
+
 legend("left",
        legend = c(expression(VaR[1*"%"]),
-                  expression(Z2), expression(Z3),
-                  expression(CC), expression(ER)),
-       col = c("darkgoldenrod2","cornflowerblue","deeppink3",
-               "darkgreen","purple"),
-       lwd = 3, bty = "n")
+                  expression(Z2), 
+                  expression(Z3),
+                  expression(CC), 
+                  expression(ER)),
+       col = c("darkgoldenrod2",
+               "cornflowerblue",
+               "deeppink3",
+               "darkgreen",
+               "purple"),
+       lwd = 3, 
+       bty = "n")
 
 
 # Plot, høj volatilitet
@@ -414,19 +431,36 @@ axis(2, at = seq(0,1,0.1),
      labels = sprintf("%.1f", seq(0,1,0.1)), las = 1)
 axis(1, at = omega_seq,
      labels = sprintf("%.1f", omega_seq), las = 2, cex.axis = 0.7)
-lines(omega_seq, power_VaR_high, col = "darkgoldenrod2", lwd = 3)
-lines(omega_seq, power_Z2_high,  col = "cornflowerblue", lwd = 3)
-lines(omega_seq, power_Z3_high,  col = "deeppink3",      lwd = 3)
-lines(omega_seq, power_CC_high,  col = "darkgreen",      lwd = 3)
-lines(omega_seq, power_ER_high,  col = "purple",         lwd = 3)
+lines(omega_seq, power_VaR_high,
+      col = "darkgoldenrod2", lwd = 3)
+
+lines(omega_seq, power_Z2_high,
+      col = "cornflowerblue", lwd = 3)
+
+lines(omega_seq, power_Z3_high,
+      col = "deeppink3", lwd = 3)
+
+lines(omega_seq, power_CC_high,
+      col = "darkgreen", lwd = 3)
+
+lines(omega_seq, power_ER_high,
+      col = "purple", lwd = 3)
+
 abline(v = 1, col = "grey40", lwd = 2, lty = 2)
+
 legend("left",
        legend = c(expression(VaR[1*"%"]),
-                  expression(Z2), expression(Z3),
-                  expression(CC), expression(ER)),
-       col = c("darkgoldenrod2","cornflowerblue","deeppink3",
-               "darkgreen","purple"),
-       lwd = 3, bty = "n")
+                  expression(Z2), 
+                  expression(Z3),
+                  expression(CC), 
+                  expression(ER)),
+       col = c("darkgoldenrod2",
+               "cornflowerblue",
+               "deeppink3",
+               "darkgreen",
+               "purple"),
+       lwd = 3, 
+       bty = "n")
 
 ```
 
@@ -441,14 +475,14 @@ sim_H0_low_3 <- simulate_garch(
   T, omega_l, alpha_l, beta_l, nu_low_3, burn_in, M)
 
 VaR_H0_low_3 <- VaR_GARCH_stdt(sim_H0_low_3$sigma, alpha, nu_low_3)
-ES_H0_low_3  <- ES_GARCH_stdt(sim_H0_low_3$sigma, alpha, nu_low_3)
+ES_H0_low_3 <- ES_GARCH_stdt(sim_H0_low_3$sigma, alpha, nu_low_3)
 
 # H0 med nu=100
 sim_H0_low_100 <- simulate_garch(
   T, omega_l, alpha_l, beta_l, nu_low_100, burn_in, M)
 
 VaR_H0_low_100 <- VaR_GARCH_stdt(sim_H0_low_100$sigma, alpha, nu_low_100)
-ES_H0_low_100  <- ES_GARCH_stdt(sim_H0_low_100$sigma, alpha, nu_low_100)
+ES_H0_low_100 <- ES_GARCH_stdt(sim_H0_low_100$sigma, alpha, nu_low_100)
 
 # nu=3
 CC_H0_low_3 <- CC_test_GARCH(sim_H0_low_3$X, VaR_H0_low_3, ES_H0_low_3, alpha)
@@ -463,9 +497,9 @@ Z2_H0_low_100 <- Z2_test_GARCH(sim_H0_low_100$X, VaR_H0_low_100, ES_H0_low_100, 
 Z3_H0_low_100 <- Z3_test_GARCH(sim_H0_low_100$X, sim_H0_low_100$sigma, alpha, nu_low_100)
 
 # Kritiske værdier 
-q_Z2_low_3   <- quantile(Z2_H0_low_3, 0.0412)
-q_Z3_low_3   <- quantile(Z3_H0_low_3, 0.0412)
-q_ER_low_3   <- quantile(ER_H0_low_3, 0.0412, na.rm = TRUE)
+q_Z2_low_3 <- quantile(Z2_H0_low_3, 0.0412)
+q_Z3_low_3 <- quantile(Z3_H0_low_3, 0.0412)
+q_ER_low_3 <- quantile(ER_H0_low_3, 0.0412, na.rm = TRUE)
 
 q_Z2_low_100 <- quantile(Z2_H0_low_100, 0.0412)
 q_Z3_low_100 <- quantile(Z3_H0_low_100, 0.0412)
@@ -473,8 +507,8 @@ q_ER_low_100 <- quantile(ER_H0_low_100, 0.0412, na.rm = TRUE)
 
 # Styrke, lav volatilitet nu=3 
 power_VaR_low_3 <- numeric(length(omega_seq))
-power_Z2_low_3  <- numeric(length(omega_seq))
-power_Z3_low_3  <- numeric(length(omega_seq))
+power_Z2_low_3 <- numeric(length(omega_seq))
+power_Z3_low_3 <- numeric(length(omega_seq))
 power_CC_low_3 <- numeric(length(omega_seq))
 power_ER_low_3 <- numeric(length(omega_seq))
 
@@ -507,8 +541,8 @@ for(i in 1:length(omega_seq)){
 
 # Styrke, lav volatilitet nu=100
 power_VaR_low_100 <- numeric(length(omega_seq))
-power_Z2_low_100  <- numeric(length(omega_seq))
-power_Z3_low_100  <- numeric(length(omega_seq))
+power_Z2_low_100 <- numeric(length(omega_seq))
+power_Z3_low_100 <- numeric(length(omega_seq))
 power_CC_low_100 <- numeric(length(omega_seq))
 power_ER_low_100 <- numeric(length(omega_seq))
 
@@ -559,19 +593,37 @@ axis(2, at = seq(0,1,0.1),
      labels = sprintf("%.1f", seq(0,1,0.1)), las = 1)
 axis(1, at = omega_seq,
      labels = sprintf("%.1f", omega_seq), las = 2, cex.axis = 0.7)
-lines(omega_seq, power_VaR_low_3, col = "darkgoldenrod2", lwd = 3)
-lines(omega_seq, power_Z2_low_3,  col = "cornflowerblue", lwd = 3)
-lines(omega_seq, power_Z3_low_3,  col = "deeppink3",      lwd = 3)
-lines(omega_seq, power_CC_low_3,  col = "darkgreen",      lwd = 3)
-lines(omega_seq, power_ER_low_3,  col = "purple",         lwd = 3)
+
+lines(omega_seq, power_VaR_low_3, 
+      col = "darkgoldenrod2", lwd = 3)
+
+lines(omega_seq, power_Z2_low_3,
+      col = "cornflowerblue", lwd = 3)
+
+lines(omega_seq, power_Z3_low_3,
+      col = "deeppink3", lwd = 3)
+
+lines(omega_seq, power_CC_low_3,
+      col = "darkgreen", lwd = 3)
+
+lines(omega_seq, power_ER_low_3,
+      col = "purple", lwd = 3)
+
 abline(v = 1, col = "grey40", lwd = 2, lty = 2)
+
 legend("left",
        legend = c(expression(VaR[1*"%"]),
-                  expression(Z2), expression(Z3),
-                  expression(CC), expression(ER)),
-       col = c("darkgoldenrod2","cornflowerblue","deeppink3",
-               "darkgreen","purple"),
-       lwd = 3, bty = "n")
+                  expression(Z2), 
+                  expression(Z3),
+                  expression(CC), 
+                  expression(ER)),
+       col = c("darkgoldenrod2",
+               "cornflowerblue",
+               "deeppink3",
+               "darkgreen",
+               "purple"),
+       lwd = 3, 
+       bty = "n")
 
 # Plot, lav volatilitet nu=100
 plot(omega_seq,
@@ -591,19 +643,37 @@ axis(2, at = seq(0,1,0.1),
      labels = sprintf("%.1f", seq(0,1,0.1)), las = 1)
 axis(1, at = omega_seq,
      labels = sprintf("%.1f", omega_seq), las = 2, cex.axis = 0.7)
-lines(omega_seq, power_VaR_low_100, col = "darkgoldenrod2", lwd = 3)
-lines(omega_seq, power_Z2_low_100,  col = "cornflowerblue", lwd = 3)
-lines(omega_seq, power_Z3_low_100,  col = "deeppink3",      lwd = 3)
-lines(omega_seq, power_CC_low_100,  col = "darkgreen",      lwd = 3)
-lines(omega_seq, power_ER_low_100,  col = "purple",         lwd = 3)
+
+lines(omega_seq, power_VaR_low_100, 
+      col = "darkgoldenrod2", lwd = 3)
+
+lines(omega_seq, power_Z2_low_100,  
+      col = "cornflowerblue", lwd = 3)
+
+lines(omega_seq, power_Z3_low_100,  
+      col = "deeppink3", lwd = 3)
+
+lines(omega_seq, power_CC_low_100,  
+      col = "darkgreen", lwd = 3)
+
+lines(omega_seq, power_ER_low_100,  
+      col = "purple", lwd = 3)
+
 abline(v = 1, col = "grey40", lwd = 2, lty = 2)
+
 legend("left",
        legend = c(expression(VaR[1*"%"]),
-                  expression(Z2), expression(Z3),
-                  expression(CC), expression(ER)),
-       col = c("darkgoldenrod2","cornflowerblue","deeppink3",
-               "darkgreen","purple"),
-       lwd = 3, bty = "n")
+                  expression(Z2), 
+                  expression(Z3),
+                  expression(CC), 
+                  expression(ER)),
+       col = c("darkgoldenrod2",
+               "cornflowerblue",
+               "deeppink3",
+               "darkgreen",
+               "purple"),
+       lwd = 3, 
+       bty = "n")
 
 ```
 
@@ -622,22 +692,22 @@ persist_seq <- seq(0.75, 0.99, length.out = length(omega_seq))
 # Skalering af alpha og beta
 c_seq_l <- persist_seq / persist_l
 alpha_alt_vec_l <- alpha_l * c_seq_l
-beta_alt_vec_l  <- beta_l  * c_seq_l
+beta_alt_vec_l <- beta_l  * c_seq_l
 
 # Den ubetingede varians holdes fast
 omega_alt_vec_l <- sigma2_bar_l * (1 - (alpha_alt_vec_l + beta_alt_vec_l))
 
 # Styrke, lav volatilitet
 power_VaR_persist_l <- numeric(length(c_seq_l))
-power_Z2_persist_l  <- numeric(length(c_seq_l))
-power_Z3_persist_l  <- numeric(length(c_seq_l))
-power_CC_persist_l  <- numeric(length(c_seq_l))
-power_ER_persist_l  <- numeric(length(c_seq_l))
+power_Z2_persist_l <- numeric(length(c_seq_l))
+power_Z3_persist_l <- numeric(length(c_seq_l))
+power_CC_persist_l <- numeric(length(c_seq_l))
+power_ER_persist_l <- numeric(length(c_seq_l))
 
 for(i in 1:length(c_seq_l)){
   
   alpha_alt <- alpha_alt_vec_l[i]
-  beta_alt  <- beta_alt_vec_l[i]
+  beta_alt <- beta_alt_vec_l[i]
   omega_alt <- omega_alt_vec_l[i]
   
   sim_H1_low <- simulate_garch(
@@ -646,9 +716,9 @@ for(i in 1:length(c_seq_l)){
   sigma_H0 <- simulate_sigma_from_X(
     sim_H1_low$X, omega_l, alpha_l, beta_l)
   
-  VaR_H1       <- VaR_GARCH_stdt(sigma_H0, alpha_VaRtest, nu_l)
+  VaR_H1 <- VaR_GARCH_stdt(sigma_H0, alpha_VaRtest, nu_l)
   VaR_H1_0.025 <- VaR_GARCH_stdt(sigma_H0, alpha, nu_l)
-  ES_H1        <- ES_GARCH_stdt(sigma_H0, alpha, nu_l)
+  ES_H1 <- ES_GARCH_stdt(sigma_H0, alpha, nu_l)
   
   Z2_H1 <- Z2_test_GARCH(sim_H1_low$X, VaR_H1_0.025, ES_H1, alpha)
   Z3_H1 <- Z3_test_GARCH(sim_H1_low$X, sigma_H0, alpha, nu_l)
@@ -657,23 +727,23 @@ for(i in 1:length(c_seq_l)){
   VaR_hits <- VaR_stat_GARCH(sim_H1_low$X, VaR_H1)
   
   power_VaR_persist_l[i] <- mean(VaR_hits > q_VaR)
-  power_Z2_persist_l[i]  <- mean(Z2_H1 < q_Z2_low)
-  power_Z3_persist_l[i]  <- mean(Z3_H1 < q_Z3_low)
-  power_CC_persist_l[i]  <- CC_power(CC_H0_low, CC_H1)
-  power_ER_persist_l[i]  <- ER_power(ER_H1, q_ER_low)}
+  power_Z2_persist_l[i] <- mean(Z2_H1 < q_Z2_low)
+  power_Z3_persist_l[i] <- mean(Z3_H1 < q_Z3_low)
+  power_CC_persist_l[i] <- CC_power(CC_H0_low, CC_H1)
+  power_ER_persist_l[i] <- ER_power(ER_H1, q_ER_low)}
 
 # Case 2.2 (fast baseline niveau omega)
 # Styrke lav volatilitet, misspecifikation af persistens
 power_VaR_persist <- numeric(length(c_seq_l))
-power_Z2_persist  <- numeric(length(c_seq_l))
-power_Z3_persist  <- numeric(length(c_seq_l))
-power_CC_persist  <- numeric(length(c_seq_l))
-power_ER_persist  <- numeric(length(c_seq_l))
+power_Z2_persist <- numeric(length(c_seq_l))
+power_Z3_persist <- numeric(length(c_seq_l))
+power_CC_persist <- numeric(length(c_seq_l))
+power_ER_persist <- numeric(length(c_seq_l))
 
 for(i in 1:length(c_seq_l)){
   
   alpha_alt <- alpha_alt_vec_l[i]
-  beta_alt  <- beta_alt_vec_l[i]
+  beta_alt <- beta_alt_vec_l[i]
   
   sim_H1_low <- simulate_garch(
     T,
@@ -692,7 +762,7 @@ for(i in 1:length(c_seq_l)){
   
   VaR_H1 <- VaR_GARCH_stdt(sigma_H0, alpha_VaRtest, nu_l)
   VaR_H1_0.025 <- VaR_GARCH_stdt(sigma_H0, alpha, nu_l)
-  ES_H1  <- ES_GARCH_stdt(sigma_H0, alpha, nu_l)
+  ES_H1 <- ES_GARCH_stdt(sigma_H0, alpha, nu_l)
   
   Z2_H1 <- Z2_test_GARCH(sim_H1_low$X, VaR_H1_0.025, ES_H1, alpha)
   Z3_H1 <- Z3_test_GARCH(sim_H1_low$X, sigma_H0, alpha, nu_l)
@@ -702,10 +772,10 @@ for(i in 1:length(c_seq_l)){
   VaR_hits <- VaR_stat_GARCH(sim_H1_low$X, VaR_H1)
   
   power_VaR_persist[i] <- mean(VaR_hits > q_VaR)
-  power_Z2_persist[i]  <- mean(Z2_H1 < q_Z2_low)
-  power_Z3_persist[i]  <- mean(Z3_H1 < q_Z3_low)
-  power_CC_persist[i]  <- CC_power(CC_H0_low, CC_H1)
-  power_ER_persist[i]  <- ER_power(ER_H1, q_ER_low)}
+  power_Z2_persist[i] <- mean(Z2_H1 < q_Z2_low)
+  power_Z3_persist[i] <- mean(Z3_H1 < q_Z3_low)
+  power_CC_persist[i] <- CC_power(CC_H0_low, CC_H1)
+  power_ER_persist[i] <- ER_power(ER_H1, q_ER_low)}
 
 # Plot, lav volatilitet case 2.1 og 2.2
 # Case 2.1
@@ -808,8 +878,10 @@ abline(v = persist_l, col = "grey40", lwd = 2, lty = 2)
 
 legend("left",
        legend = c(expression(VaR[1*"%"]),
-                  expression(Z2), expression(Z3),
-                  expression(CC), expression(ER)),
+                  expression(Z2), 
+                  expression(Z3),
+                  expression(CC), 
+                  expression(ER)),
        col = c("darkgoldenrod2",
                "cornflowerblue",
                "deeppink3",
@@ -839,15 +911,15 @@ beta_seq_h <- persist_h - alpha_seq_h
 
 # Styrke lav volatilitet, misspecifikation af dynamik
 power_VaR_case3_l <- numeric(length(alpha_seq_l))
-power_Z2_case3_l  <- numeric(length(alpha_seq_l))
-power_Z3_case3_l  <- numeric(length(alpha_seq_l))
-power_CC_case3_l  <- numeric(length(alpha_seq_l))
-power_ER_case3_l  <- numeric(length(alpha_seq_l))
+power_Z2_case3_l <- numeric(length(alpha_seq_l))
+power_Z3_case3_l <- numeric(length(alpha_seq_l))
+power_CC_case3_l <- numeric(length(alpha_seq_l))
+power_ER_case3_l <- numeric(length(alpha_seq_l))
 
 for(i in 1:length(alpha_seq_l)){
   
   alpha_alt <- alpha_seq_l[i]
-  beta_alt  <- beta_seq_l[i]
+  beta_alt <- beta_seq_l[i]
   
   sim_H1_low <- simulate_garch(
     T,
@@ -866,7 +938,7 @@ for(i in 1:length(alpha_seq_l)){
   
   VaR_H1 <- VaR_GARCH_stdt(sigma_H0, alpha_VaRtest, nu_l)
   VaR_H1_0.025 <- VaR_GARCH_stdt(sigma_H0, alpha, nu_l)
-  ES_H1  <- ES_GARCH_stdt(sigma_H0, alpha, nu_l)
+  ES_H1 <- ES_GARCH_stdt(sigma_H0, alpha, nu_l)
   
   Z2_H1 <- Z2_test_GARCH(sim_H1_low$X, VaR_H1_0.025, ES_H1, alpha)
   Z3_H1 <- Z3_test_GARCH(sim_H1_low$X, sigma_H0, alpha, nu_l)
@@ -876,23 +948,23 @@ for(i in 1:length(alpha_seq_l)){
   VaR_hits <- VaR_stat_GARCH(sim_H1_low$X, VaR_H1)
   
   power_VaR_case3_l[i] <- mean(VaR_hits > q_VaR)
-  power_Z2_case3_l[i]  <- mean(Z2_H1 < q_Z2_low)
-  power_Z3_case3_l[i]  <- mean(Z3_H1 < q_Z3_low)
-  power_CC_case3_l[i]  <- CC_power(CC_H0_low, CC_H1)
-  power_ER_case3_l[i]  <- ER_power(ER_H1, q_ER_low)}
+  power_Z2_case3_l[i] <- mean(Z2_H1 < q_Z2_low)
+  power_Z3_case3_l[i] <- mean(Z3_H1 < q_Z3_low)
+  power_CC_case3_l[i] <- CC_power(CC_H0_low, CC_H1)
+  power_ER_case3_l[i] <- ER_power(ER_H1, q_ER_low)}
 
 
 # Styrke høj volatilitet, misspecifikation af dynamik
 power_VaR_case3_h <- numeric(length(alpha_seq_h))
-power_Z2_case3_h  <- numeric(length(alpha_seq_h))
-power_Z3_case3_h  <- numeric(length(alpha_seq_h))
-power_CC_case3_h  <- numeric(length(alpha_seq_h))
-power_ER_case3_h  <- numeric(length(alpha_seq_h))
+power_Z2_case3_h <- numeric(length(alpha_seq_h))
+power_Z3_case3_h <- numeric(length(alpha_seq_h))
+power_CC_case3_h <- numeric(length(alpha_seq_h))
+power_ER_case3_h <- numeric(length(alpha_seq_h))
 
 for(i in 1:length(alpha_seq_h)){
   
   alpha_alt <- alpha_seq_h[i]
-  beta_alt  <- beta_seq_h[i]
+  beta_alt <- beta_seq_h[i]
   
   sim_H1_high <- simulate_garch(
     T,
@@ -911,7 +983,7 @@ for(i in 1:length(alpha_seq_h)){
   
   VaR_H1 <- VaR_GARCH_stdt(sigma_H0, alpha_VaRtest, nu_h)
   VaR_H1_0.025 <- VaR_GARCH_stdt(sigma_H0, alpha, nu_h)
-  ES_H1  <- ES_GARCH_stdt(sigma_H0, alpha, nu_h)
+  ES_H1 <- ES_GARCH_stdt(sigma_H0, alpha, nu_h)
   
   Z2_H1 <- Z2_test_GARCH(sim_H1_high$X, VaR_H1_0.025, ES_H1, alpha)
   Z3_H1 <- Z3_test_GARCH(sim_H1_high$X, sigma_H0, alpha, nu_h)
@@ -921,10 +993,10 @@ for(i in 1:length(alpha_seq_h)){
   VaR_hits <- VaR_stat_GARCH(sim_H1_high$X, VaR_H1)
   
   power_VaR_case3_h[i] <- mean(VaR_hits > q_VaR)
-  power_Z2_case3_h[i]  <- mean(Z2_H1 < q_Z2_high)
-  power_Z3_case3_h[i]  <- mean(Z3_H1 < q_Z3_high)
-  power_CC_case3_h[i]  <- CC_power(CC_H0_high, CC_H1)
-  power_ER_case3_h[i]  <- ER_power(ER_H1, q_ER_high)}
+  power_Z2_case3_h[i] <- mean(Z2_H1 < q_Z2_high)
+  power_Z3_case3_h[i] <- mean(Z3_H1 < q_Z3_high)
+  power_CC_case3_h[i] <- CC_power(CC_H0_high, CC_H1)
+  power_ER_case3_h[i] <- ER_power(ER_H1, q_ER_high)}
 
 # Plot, lav volatilitet
 plot(alpha_seq_l,
