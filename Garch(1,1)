@@ -14,7 +14,7 @@ getSymbols("^GSPC", from="2000-01-01")
 
 prices <- Ad(GSPC)
 
-returns <- 100 * diff(log(prices), lag = 1)
+returns <- diff(log(prices), lag = 1)
 returns <- na.omit(returns)
 
 # Perioder med hhv. høj og lav volatilitet
@@ -364,121 +364,69 @@ for(i in 1:length(omega_seq)){
 ```{r fig.width = 8, fig.height = 6, dpi = 300}
 # Case 1
 # Plot, lav volatilitet
-plot(omega_alt_low_vec,
+plot(omega_seq,
      power_Z2_low,
      type = "n",
      lwd = 2,
      ylim = c(0,1),
-     xlim = c(min(omega_alt_low_vec), max(omega_alt_low_vec)),
-     xlab = expression(omega),
+     xlim = c(min(omega_seq), max(omega_seq)),
+     xlab = expression("Faktor " * c * " "),
      ylab = "Styrke",
      xaxt = "n",
      yaxt = "n",
      main = expression("Ændring i ubetinget varians | Lav volatilitet"))
-
 abline(h = seq(0,1,0.1), col = "grey70")
-abline(v = omega_alt_low_vec, col = "grey90")
-
-axis(2,
-     at = seq(0,1,0.1),
-     labels = sprintf("%.1f", seq(0,1,0.1)),
-     las = 1)
-
-axis(1,
-     at = omega_alt_low_vec,
-     labels = round(omega_alt_low_vec, 3),
-     las = 2,
-     cex.axis = 0.7)
-
-lines(omega_alt_low_vec, power_VaR_low,
-      col = "darkgoldenrod2", lwd = 3)
-
-lines(omega_alt_low_vec, power_Z2_low,
-      col = "cornflowerblue", lwd = 3)
-
-lines(omega_alt_low_vec, power_Z3_low,
-      col = "deeppink3", lwd = 3)
-
-lines(omega_alt_low_vec, power_CC_low,
-      col = "darkgreen", lwd = 3)
-
-lines(omega_alt_low_vec, power_ER_low,
-      col = "purple", lwd = 3)
-
-abline(v = omega_l, col = "grey40", lwd = 2, lty = 2)
-
+abline(v = omega_seq, col = "grey90")
+axis(2, at = seq(0,1,0.1),
+     labels = sprintf("%.1f", seq(0,1,0.1)), las = 1)
+axis(1, at = omega_seq,
+     labels = sprintf("%.1f", omega_seq), las = 2, cex.axis = 0.7)
+lines(omega_seq, power_VaR_low, col = "darkgoldenrod2", lwd = 3)
+lines(omega_seq, power_Z2_low,  col = "cornflowerblue", lwd = 3)
+lines(omega_seq, power_Z3_low,  col = "deeppink3",      lwd = 3)
+lines(omega_seq, power_CC_low,  col = "darkgreen",      lwd = 3)
+lines(omega_seq, power_ER_low,  col = "purple",         lwd = 3)
+abline(v = 1, col = "grey40", lwd = 2, lty = 2)
 legend("left",
        legend = c(expression(VaR[1*"%"]),
-                  expression(Z2),
-                  expression(Z3),
-                  expression(CC),
-                  expression(ER)),
-       col = c("darkgoldenrod2",
-               "cornflowerblue",
-               "deeppink3",
-               "darkgreen",
-               "purple"),
-       lwd = 3,
-       bty = "n")
+                  expression(Z2), expression(Z3),
+                  expression(CC), expression(ER)),
+       col = c("darkgoldenrod2","cornflowerblue","deeppink3",
+               "darkgreen","purple"),
+       lwd = 3, bty = "n")
 
 
 # Plot, høj volatilitet
-plot(omega_alt_high_vec,
+plot(omega_seq,
      power_Z2_high,
      type = "n",
      lwd = 2,
      ylim = c(0,1),
-     xlim = c(min(omega_alt_high_vec), max(omega_alt_high_vec)),
-     xlab = expression(omega),
+     xlim = c(min(omega_seq), max(omega_seq)),
+     xlab = expression("Faktor " * c * " "),
      ylab = "Styrke",
      xaxt = "n",
      yaxt = "n",
      main = expression("Ændring i ubetinget varians | Høj volatilitet"))
-
 abline(h = seq(0,1,0.1), col = "grey70")
-abline(v = omega_alt_high_vec, col = "grey90")
-
-axis(2,
-     at = seq(0,1,0.1),
-     labels = sprintf("%.1f", seq(0,1,0.1)),
-     las = 1)
-
-axis(1,
-     at = omega_alt_high_vec,
-     labels = round(omega_alt_high_vec, 3),
-     las = 2,
-     cex.axis = 0.7)
-
-lines(omega_alt_high_vec, power_VaR_high,
-      col = "darkgoldenrod2", lwd = 3)
-
-lines(omega_alt_high_vec, power_Z2_high,
-      col = "cornflowerblue", lwd = 3)
-
-lines(omega_alt_high_vec, power_Z3_high,
-      col = "deeppink3", lwd = 3)
-
-lines(omega_alt_high_vec, power_CC_high,
-      col = "darkgreen", lwd = 3)
-
-lines(omega_alt_high_vec, power_ER_high,
-      col = "purple", lwd = 3)
-
-abline(v = omega_h, col = "grey40", lwd = 2, lty = 2)
-
+abline(v = omega_seq, col = "grey90")
+axis(2, at = seq(0,1,0.1),
+     labels = sprintf("%.1f", seq(0,1,0.1)), las = 1)
+axis(1, at = omega_seq,
+     labels = sprintf("%.1f", omega_seq), las = 2, cex.axis = 0.7)
+lines(omega_seq, power_VaR_high, col = "darkgoldenrod2", lwd = 3)
+lines(omega_seq, power_Z2_high,  col = "cornflowerblue", lwd = 3)
+lines(omega_seq, power_Z3_high,  col = "deeppink3",      lwd = 3)
+lines(omega_seq, power_CC_high,  col = "darkgreen",      lwd = 3)
+lines(omega_seq, power_ER_high,  col = "purple",         lwd = 3)
+abline(v = 1, col = "grey40", lwd = 2, lty = 2)
 legend("left",
        legend = c(expression(VaR[1*"%"]),
-                  expression(Z2),
-                  expression(Z3),
-                  expression(CC),
-                  expression(ER)),
-       col = c("darkgoldenrod2",
-               "cornflowerblue",
-               "deeppink3",
-               "darkgreen",
-               "purple"),
-       lwd = 3,
-       bty = "n")
+                  expression(Z2), expression(Z3),
+                  expression(CC), expression(ER)),
+       col = c("darkgoldenrod2","cornflowerblue","deeppink3",
+               "darkgreen","purple"),
+       lwd = 3, bty = "n")
 
 ```
 
@@ -594,120 +542,68 @@ for(i in 1:length(omega_seq)){
 
 ```{r fig.width = 8, fig.height = 6, dpi = 300}
 # Plot, lav volatilitet nu=3
-plot(omega_alt_low_vec,
+plot(omega_seq,
      power_Z2_low_3,
      type = "n",
      lwd = 2,
      ylim = c(0,1),
-     xlim = c(min(omega_alt_low_vec), max(omega_alt_low_vec)),
-     xlab = expression(omega),
+     xlim = c(min(omega_seq), max(omega_seq)),
+     xlab = expression("Faktor " * c * " "),
      ylab = "Styrke",
      xaxt = "n",
      yaxt = "n",
      main = expression("Ændring i ubetinget varians | Lav volatilitet"))
-
 abline(h = seq(0,1,0.1), col = "grey70")
-abline(v = omega_alt_low_vec, col = "grey90")
-
-axis(2,
-     at = seq(0,1,0.1),
-     labels = sprintf("%.1f", seq(0,1,0.1)),
-     las = 1)
-
-axis(1,
-     at = omega_alt_low_vec,
-     labels = round(omega_alt_low_vec, 3),
-     las = 2,
-     cex.axis = 0.7)
-
-lines(omega_alt_low_vec, power_VaR_low_3,
-      col = "darkgoldenrod2", lwd = 3)
-
-lines(omega_alt_low_vec, power_Z2_low_3,
-      col = "cornflowerblue", lwd = 3)
-
-lines(omega_alt_low_vec, power_Z3_low_3,
-      col = "deeppink3", lwd = 3)
-
-lines(omega_alt_low_vec, power_CC_low_3,
-      col = "darkgreen", lwd = 3)
-
-lines(omega_alt_low_vec, power_ER_low_3,
-      col = "purple", lwd = 3)
-
-abline(v = omega_l, col = "grey40", lwd = 2, lty = 2)
-
+abline(v = omega_seq, col = "grey90")
+axis(2, at = seq(0,1,0.1),
+     labels = sprintf("%.1f", seq(0,1,0.1)), las = 1)
+axis(1, at = omega_seq,
+     labels = sprintf("%.1f", omega_seq), las = 2, cex.axis = 0.7)
+lines(omega_seq, power_VaR_low_3, col = "darkgoldenrod2", lwd = 3)
+lines(omega_seq, power_Z2_low_3,  col = "cornflowerblue", lwd = 3)
+lines(omega_seq, power_Z3_low_3,  col = "deeppink3",      lwd = 3)
+lines(omega_seq, power_CC_low_3,  col = "darkgreen",      lwd = 3)
+lines(omega_seq, power_ER_low_3,  col = "purple",         lwd = 3)
+abline(v = 1, col = "grey40", lwd = 2, lty = 2)
 legend("left",
        legend = c(expression(VaR[1*"%"]),
-                  expression(Z2),
-                  expression(Z3),
-                  expression(CC),
-                  expression(ER)),
-       col = c("darkgoldenrod2",
-               "cornflowerblue",
-               "deeppink3",
-               "darkgreen",
-               "purple"),
-       lwd = 3,
-       bty = "n")
+                  expression(Z2), expression(Z3),
+                  expression(CC), expression(ER)),
+       col = c("darkgoldenrod2","cornflowerblue","deeppink3",
+               "darkgreen","purple"),
+       lwd = 3, bty = "n")
 
 # Plot, lav volatilitet nu=100
-plot(omega_alt_low_vec,
+plot(omega_seq,
      power_Z2_low_100,
      type = "n",
      lwd = 2,
      ylim = c(0,1),
-     xlim = c(min(omega_alt_low_vec), max(omega_alt_low_vec)),
-     xlab = expression(omega),
+     xlim = c(min(omega_seq), max(omega_seq)),
+     xlab = expression("Faktor " * c * " "),
      ylab = "Styrke",
      xaxt = "n",
      yaxt = "n",
      main = expression("Ændring i ubetinget varians | Lav volatilitet"))
-
 abline(h = seq(0,1,0.1), col = "grey70")
-abline(v = omega_alt_low_vec, col = "grey90")
-
-axis(2,
-     at = seq(0,1,0.1),
-     labels = sprintf("%.1f", seq(0,1,0.1)),
-     las = 1)
-
-axis(1,
-     at = omega_alt_low_vec,
-     labels = round(omega_alt_low_vec, 3),
-     las = 2,
-     cex.axis = 0.7)
-
-lines(omega_alt_low_vec, power_VaR_low_100,
-      col = "darkgoldenrod2", lwd = 3)
-
-lines(omega_alt_low_vec, power_Z2_low_100,
-      col = "cornflowerblue", lwd = 3)
-
-lines(omega_alt_low_vec, power_Z3_low_100,
-      col = "deeppink3", lwd = 3)
-
-lines(omega_alt_low_vec, power_CC_low_100,
-      col = "darkgreen", lwd = 3)
-
-lines(omega_alt_low_vec, power_ER_low_100,
-      col = "purple", lwd = 3)
-
-abline(v = omega_l, col = "grey40", lwd = 2, lty = 2)
-
+abline(v = omega_seq, col = "grey90")
+axis(2, at = seq(0,1,0.1),
+     labels = sprintf("%.1f", seq(0,1,0.1)), las = 1)
+axis(1, at = omega_seq,
+     labels = sprintf("%.1f", omega_seq), las = 2, cex.axis = 0.7)
+lines(omega_seq, power_VaR_low_100, col = "darkgoldenrod2", lwd = 3)
+lines(omega_seq, power_Z2_low_100,  col = "cornflowerblue", lwd = 3)
+lines(omega_seq, power_Z3_low_100,  col = "deeppink3",      lwd = 3)
+lines(omega_seq, power_CC_low_100,  col = "darkgreen",      lwd = 3)
+lines(omega_seq, power_ER_low_100,  col = "purple",         lwd = 3)
+abline(v = 1, col = "grey40", lwd = 2, lty = 2)
 legend("left",
        legend = c(expression(VaR[1*"%"]),
-                  expression(Z2),
-                  expression(Z3),
-                  expression(CC),
-                  expression(ER)),
-       col = c("darkgoldenrod2",
-               "cornflowerblue",
-               "deeppink3",
-               "darkgreen",
-               "purple"),
-       lwd = 3,
-       bty = "n")
+                  expression(Z2), expression(Z3),
+                  expression(CC), expression(ER)),
+       col = c("darkgoldenrod2","cornflowerblue","deeppink3",
+               "darkgreen","purple"),
+       lwd = 3, bty = "n")
 
 ```
 
@@ -1150,8 +1046,8 @@ legend("left",
 ```
 ```{r fig.width = 15, fig.height = 8, dpi = 300}
 par(mfrow = c(2, 2))
+n_paths <- 10
 
-# Afkast og volatiliteter under prædiktive modeller
 # Afkastfordeling, lav volatilitet
 hist(as.vector(sim_H0_low$X),
      breaks = 500,
@@ -1159,42 +1055,34 @@ hist(as.vector(sim_H0_low$X),
      border = "white",
      main = "Prædiktive afkast | Lav volatilitet",
      xlab = "Afkast",
-     ylab = "Frekvens",
-     xlim = c(-4, 4),
-     ylim = c(0, 0.7),
+     ylab = "Tæthed",
+     xlim = c(-0.04, 0.04),
+     ylim = c(0, 70),
      las = 1,
      freq = FALSE)
 box()
 
 # Prædiktiv volatilitet, lav
-n_paths <- 10
-plot(1:T, sim_H0_low$sigma[1,],
+plot(1:T, sim_H0_low$sigma[1, ],
      type = "n",
-     ylim = c(0, 4),
+     ylim = c(0, 0.04),
      xlab = "t",
      ylab = expression(sigma[t]),
      main = "Prædiktiv volatilitet | Lav volatilitet",
      yaxt = "n",
      las = 1)
 axis(2,
-     at = seq(0, 4, by = 0.5),
-     labels = sprintf("%.1f", seq(0, 4, by = 0.5)),
+     at = seq(0, 0.04, by = 0.005),
+     labels = sprintf("%.3f", seq(0, 0.04, by = 0.005)),
      las = 1)
-for(i in 1:n_paths){
-  lines(1:T, sim_H0_low$sigma[i,],
-        col = adjustcolor("cyan4", alpha.f = 0.8),
-        lwd = 1)
+for (i in 1:n_paths) {
+  lines(1:T, sim_H0_low$sigma[i, ],
+        col = adjustcolor("cyan4", alpha.f = 0.8), lwd = 1)
 }
-abline(h = sqrt(E_sigma2_low),
-       col = "grey20", 
-       lwd = 2, 
-       lty = 2)
+abline(h = sqrt(E_sigma2_low), col = "grey20", lwd = 2, lty = 2)
 legend("topright",
        legend = expression(sqrt(E*"["*sigma^2*"]")),
-       col = "grey20", 
-       lty = 2, 
-       lwd = 2, 
-       bty = "n")
+       col = "grey20", lty = 2, lwd = 2, bty = "n")
 
 # Afkastfordeling, høj volatilitet
 hist(as.vector(sim_H0_high$X),
@@ -1203,35 +1091,34 @@ hist(as.vector(sim_H0_high$X),
      border = "white",
      main = "Prædiktive afkast | Høj volatilitet",
      xlab = "Afkast",
-     ylab = "Frekvens",
-     xlim = c(-4, 4),
-     ylim = c(0, 0.7),
+     ylab = "Tæthed",
+     xlim = c(-0.04, 0.04),
+     ylim = c(0, 70),
      las = 1,
      freq = FALSE)
 box()
 
 # Prædiktiv volatilitet, høj
-plot(1:T, sim_H0_high$sigma[1,],
+plot(1:T, sim_H0_high$sigma[1, ],
      type = "n",
-     ylim = c(0, 3),
+     ylim = c(0, 0.03),
      xlab = "t",
      ylab = expression(sigma[t]),
      main = "Prædiktiv volatilitet | Høj volatilitet",
+     yaxt = "n",
      las = 1)
-for(i in 1:n_paths){
-  lines(1:T, sim_H0_high$sigma[i,],
-        col = adjustcolor("deeppink4",alpha.f = 0.8), 
-        lwd = 1)}
-abline(h = sqrt(E_sigma2_high),
-       col = "grey20", 
-       lwd = 2, 
-       lty = 2)
+axis(2,
+     at = seq(0, 0.03, by = 0.005),
+     labels = sprintf("%.3f", seq(0, 0.03, by = 0.005)),
+     las = 1)
+for (i in 1:n_paths) {
+  lines(1:T, sim_H0_high$sigma[i, ],
+        col = adjustcolor("deeppink4", alpha.f = 0.8), lwd = 1)
+}
+abline(h = sqrt(E_sigma2_high), col = "grey20", lwd = 2, lty = 2)
 legend("topright",
        legend = expression(sqrt(E*"["*sigma^2*"]")),
-       col = "grey20", 
-       lty = 2, 
-       lwd = 2, 
-       bty = "n")
+       col = "grey20", lty = 2, lwd = 2, bty = "n")
 
 ```
 
