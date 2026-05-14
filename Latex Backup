@@ -2,6 +2,7 @@
 \documentclass[12pt]{article}
 
 \usepackage{float}
+\usepackage{placeins}
 \usepackage{pgfplots}
 \usepackage{amsfonts}
 \pgfplotsset{compat=1.18}
@@ -18,7 +19,8 @@
 \usepackage{lmodern}
 \usepackage[T1]{fontenc}
 \usepackage{caption}
-\captionsetup[figure]{labelformat=empty}
+\usepackage{makecell}
+\captionsetup{labelformat=empty}
 
 % Arial defineres men bruges ikke globalt
 \newfontfamily\arialfont{Arial}
@@ -71,7 +73,6 @@ Dato: & XX XX XXXX
 \setcounter{page}{1}
 
 \section{Indledning}
-
 
 \newpage
 
@@ -194,7 +195,7 @@ Som udgangspunkt for simulering af afkast anvendes en simpel fordeling. I denne 
 \[
 g_\nu(x) = \frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\sqrt{\nu\pi}\,\Gamma\left(\frac{\nu}{2}\right)} \left(1 + \frac{x^2}{\nu}\right)^{-\frac{\nu+1}{2}}.
 \]
-For $\nu > 2$ har fordelingen middelværdi 0 og varians $\frac{\nu}{\nu - 2}$. Antallet af frihedsgrader $\nu$ bestemmer haleopførslen: små værdier af $\nu$ giver tungere haler og dermed større sandsynlighed for ekstreme observationer. Endvidere gælder, at $E(T^k) < \infty$ hvis og kun hvis $\nu > k$.
+For $\nu > 2$ har fordelingen middelværdi 0 og varians $\frac{\nu}{\nu - 2}$. Antallet af frihedsgrader $\nu$ bestemmer haleopførslen: små værdier af $\nu$ giver tungere haler og dermed større sandsynlighed for ekstreme observationer. Endvidere gælder, at $\mathbb{E}[T^k] < \infty$ hvis og kun hvis $\nu > k$.
 
 For at opnå større fleksibilitet betragtes en location-scale transformation af t-fordelingen.Lad $X \sim t_\nu(\mu,\sigma^2)$, hvor $\mu \in \mathbb{R}$ er en lokationsparameter, og $\sigma > 0$ er en skalaparameter. Dette kan ækvivalent skrives som
 \[
@@ -208,7 +209,7 @@ g_\nu(x \mid \mu, \sigma) = \frac{1}{\sigma} g_\nu\!\left(\frac{x - \mu}{\sigma}
 \]
 For $\nu > 2$ er middelværdi og varians givet ved
 \[
-E(X) = \mu, \qquad \mathrm{Var}(X) = \sigma^2 \frac{\nu}{\nu - 2}.
+\mathbb{E}[X] = \mu, \qquad \mathrm{Var}(X) = \sigma^2 \frac{\nu}{\nu - 2}.
 \]
 
 Hvis man ønsker at sammenligne fordelinger med forskellig haleopførsel under samme varians, kan man standardisere ved at vælge $\sigma$ således at
@@ -251,7 +252,7 @@ Vi anvender en simpel GARCH(1,1) model. For afkastdata ${X_t}$, $t \in {1,...,T}
 
 $$
 \begin{aligned}
-\varepsilon_t=\sigma_tz_t, \quad z_t \overset{iid}{\sim} t_\nu(0,1) \\
+\varepsilon_t=\sigma_tz_t, \quad z_t \;\stackrel{\text{i.i.d.}}{\sim}\; t_\nu(0,1) \\
 \sigma_t^2=\omega+\alpha\varepsilon_{t-1}^2+\beta\sigma_{t-1}^2
 \end{aligned}
 $$
@@ -262,7 +263,7 @@ $\varepsilon_t=\sigma_tz_t$ er dermed den uforudsigelige del i ændringen afkast
 \varepsilon_t = \log\frac{X_t}{X_{t-1}} \approx \frac{X_t-X_{t-1}}{X_{t-1}}
 \end{equation}
 
-Idet $z_t \overset{iid}{\sim} t_\nu(0,1)$ gælder at $Var(z_t)=\mathbb{E}[z_t^2]-\mathbb{E}[z_t]^2=1 \iff \mathbb{E}[z_t^2] = 1$ da $\mathbb{E}[z_t]=0$. Ved uafhængighed af $\sigma_t$ og $z_t$ følger det, at
+Idet $z_t \;\stackrel{\text{i.i.d.}}{\sim}\; t_\nu(0,1)$ gælder at $Var(z_t)=\mathbb{E}[z_t^2]-\mathbb{E}[z_t]^2=1 \iff \mathbb{E}[z_t^2] = 1$ da $\mathbb{E}[z_t]=0$. Ved uafhængighed af $\sigma_t$ og $z_t$ følger det, at
 
 $$\mathbb{E}[\varepsilon_{t-1}^2]=\mathbb{E}[\sigma_{t-1}^2z_{t-1}^2]=\mathbb{E}[\sigma_{t-1}^2]\mathbb{E}[z_{t-1}^2]=\mathbb{E}[\sigma_{t-1}^2]$$
 
@@ -336,25 +337,25 @@ hvor $\Theta_0$ betegner det parameterrum, hvor $H_0$ er sand og $\Theta_1$ bete
 \caption{\small \textbf{\textit{Figur 4:}} Fordeling af teststørrelse under nulhypotesen $H_0$ og den alternative hypotese $H_1$. Den stiplede linje angiver signifikansniveauet og styrken er markeret med blåt.}
 \end{figure}
 
-(2.6) definerer signifikansniveauet og angiver sandsynligheden for at begå Type I-fejl, såfremt nulhypotesen er sand. Da der er et statistisk trade-off mellem sandsynligheden for Type I- og Type II-fejl, anvendes et signifikansniveau på 0.05 ofte som tærskelværdi i hypotesetest. Analyserne i dette projekt vil i flere omgange tage afsæt i denne værdi.
+(2.9) definerer signifikansniveauet og angiver sandsynligheden for at begå Type I-fejl, såfremt nulhypotesen er sand. Da der er et statistisk trade-off mellem sandsynligheden for Type I- og Type II-fejl, anvendes et signifikansniveau på 0.05 ofte som tærskelværdi i hypotesetest. Analyserne i dette projekt vil i flere omgange tage afsæt i denne værdi.
 
 Testens styrke bestemmes af sandsynligheden for at forkaste nulhypotesen under den alternative hypotese, og betegnes af arealet under den alternative fordeling i det kritiske område. Jo større overlap af teststørrelsens fordeling under nulhypotesen og den alternative hypotese, desto højere er sandsynligheden for Type II-fejl, og desto lavere er testens styrke (Lauritzen, 2023).
 
 \subsection{Historisk simulation til VaR og ES estimation}
 \subsubsection{Historisk simulation}
 
-Historisk simulation (HS) er en udbredt ikke-parametrisk metode til estimering af risikomål som VaR og ES. I stedet for at antage en specifik fordeling for log-afkast baseres metoden direkte på den empiriske fordeling af historiske observationer. Dette gør HS enkel at implementere og bidrager til dens udbredte anvendelse.
+Historisk simulation (HS) er en udbredt ikke-parametrisk metode til estimering af risikomål som VaR og ES. I stedet for at antage en specifik fordeling for afkast, baseres metoden direkte på den empiriske fordeling af historiske observationer. Dette gør HS enkel at implementere og bidrager til dens udbredte anvendelse.
 
-Lad $\{X_{t-\tau}\}_{\tau=1}^m$ betegne de $m$ seneste observerede afkast ved tidspunkt $t$, hvor vindueslængden typisk vælges som $m=250$, svarende til omtrent ét års handelsdage. Den prædiktive fordeling for det fremtidige afkast $X_t$ approksimeres da ved den empiriske fordeling af $\{X_{t-\tau}\}_{\tau=1}^m$.
+Lad $\{X_{t-\tau}\}_{\tau=1}^m$ betegne de $m$ seneste observerede afkast ved tidspunkt $t$, hvor vindueslængden typisk vælges som $m=250$, svarende til ét års handelsdage. Den prædiktive fordeling for det fremtidige afkast $X_t$ approksimeres da ved den empiriske fordeling af $\{X_{t-\tau}\}_{\tau=1}^m$.
 
-VaR ved signifikansniveau $\alpha$ estimeres herefter som den empiriske $\alpha$-fraktil af de historiske afkast. Vi skriver derfor (Christoffersen 2012):
+VaR ved signifikansniveau $\alpha$ estimeres herefter som den empiriske $\alpha$-fraktil af de historiske afkast. Vi skriver derfor (Christoffersen, 2012):
 \[
 VaR_{\alpha,t}^{HS}
 =
 -\mathrm{Percentile}\left(\{X_{t-\tau}\}_{\tau=1}^m,\,100\alpha\right)
 \]
 
-I praksis sorteres de historiske afkast i stigende orden, og $VaR_{\alpha,t}$ vælges som den værdi, således at $\alpha$-andelen af observationerne ligger under $-VaR_{\alpha,t}$. Da fraktilen typisk ligger mellem to observationer, anvendes ofte lineær interpolation til at bestemme den præcise værdi.
+I praksis sorteres de historiske afkast i stigende orden, og $VaR_{\alpha,t}$ vælges som den værdi, således at $\alpha$-andelen af observationerne ligger under $-VaR_{\alpha,t}$. Da fraktilen typisk ligger mellem to observationer, anvendes lineær interpolation til at bestemme den præcise værdi.
 
 Når $VaR_{\alpha,t}^{HS}$ er bestemt, kan Expected Shortfall estimeres som gennemsnittet af de historiske afkast, der ligger under den estimerede VaR-grænse.
 Her kan ES estimeres ved (Hull, 2015):
@@ -370,38 +371,38 @@ Historisk simulation har den fordel, at metoden direkte afspejler de observerede
 
 En naturlig udvidelse af ovenstående er vægtet historisk simulation (WHS), hvor de historiske afkast ikke tillægges lige stor vægt. I standard HS antages det implicit, at alle $m$ observationer er lige informative om fremtiden, men i praksis kan nyere observationer være mere relevante, særligt i perioder med skiftende markedsforhold.
 
-I WHS tilskrives hvert afkast $\{X_{t-\tau}\}_{\tau=1}^m$ derfor en vægt $w_\tau$, som vi definere (Christoffersen, 2012):
+I WHS tilskrives hvert afkast $\{X_{t-\tau}\}_{\tau=1}^m$ derfor en vægt $v_\tau$, som vi definere (Christoffersen, 2012):
 \[
-w_\tau = \frac{(1-\eta)\eta^{\tau-1}}{1-\eta^m}, \quad 0 < \eta < 1
+v_\tau = \frac{(1-\eta)\eta^{\tau-1}}{1-\eta^m}, \quad 0 < \eta < 1
 \]
-hvor det bemærkes at $w_\tau$ går mod 0, når $\tau$ bliver stor og at $\sum^m_{\tau=1}w_\tau=1$. Derudover antages det som oftest at $\eta\in(0.95,0.99)$ 
+hvor det bemærkes at $w_\tau$ går mod 0, når $\tau$ bliver stor og at $\sum^m_{\tau=1}v_\tau=1$. Derudover antages det som oftest at $\eta\in(0.95,0.99)$ 
 
 
 VaR kan estimeres, ved at lade de observerede afkast være sorteret i stigende orden som
 \[
 X_{(1)} \le X_{(2)} \le \cdots \le X_{(m)},
 \]
-og lad $w_{(1)},\dots,w_{(m)}$ betegne de tilsvarende omordnede vægte. Historisk vægtet simulation-VaR ved niveau $\alpha$ defineres da som
+og lad $v_{(1)},\dots,v_{(m)}$ betegne de tilsvarende omordnede vægte. Historisk vægtet simulation-VaR ved niveau $\alpha$ defineres da som
 \[
 VaR^{WHS}_{\alpha,t}
 =
--\inf\left\{x\in\mathbb{R} : \sum_{i=1}^m w_{(i)} \mathbf{1}_{\{X_{(i)}\le x\}} \ge \alpha \right\}.
+-\inf\left\{x\in\mathbb{R} : \sum_{i=1}^m v_{(i)} \mathbf{1}_{\{X_{(i)}\le x\}} \ge \alpha \right\}.
 \]
 
 Ækvivalent kan man definere de kumulerede vægte ved
 \[
-W_k = \sum_{i=1}^k w_{(i)}, \qquad k\in\{1,\dots,m\}.
+V_k = \sum_{i=1}^k v_{(i)}, \qquad k\in\{1,\dots,m\}.
 \]
 Fra dette kan man bestemme $
-k_\alpha = \inf\{k\in\{1,\dots,m\} : W_k \ge \alpha\}$, hvor der vil gælde at $
+k_\alpha = \inf\{k\in\{1,\dots,m\} : V_k \ge \alpha\}$, hvor der vil gælde at $
 VaR^{WHS}_{\alpha,t} = -X_{(k_\alpha)}$. Ligesom i HS anvendes der lineær lineær interpolation til at bestemme den præcise værdi for VaR.
 
 Når $VaR^{WHS}_{\alpha,t}$ er bestemt kan $ES_{\alpha,t}^{WHS}$ estimeres tilsvarende $ES_{\alpha,t}^{HS}$  dog som et vægtet gennemsnit af haleobservationerne:
 \[
 ES_{\alpha,t}^{WHS}
 =
--\frac{\sum_{\tau=1}^{m} w_\tau X_{t-\tau}\mathbf{1}_{\{X_{t-\tau}\leq -VaR_{\alpha,t}^{WHS}\}}}
-{\sum_{\tau=1}^{m} w_\tau \mathbf{1}_{\{X_{t-\tau}\leq -VaR_{\alpha,t}^{WHS}\}}}
+-\frac{\sum_{\tau=1}^{m} v_\tau X_{t-\tau}\mathbf{1}_{\{X_{t-\tau}\leq -VaR_{\alpha,t}^{WHS}\}}}
+{\sum_{\tau=1}^{m} v_\tau \mathbf{1}_{\{X_{t-\tau}\leq -VaR_{\alpha,t}^{WHS}\}}}
 \]
 
 WHS bevarer fordelene ved historisk simulation, herunder at metoden er ikke-parametrisk og tager højde for skævhed og tykke haler, men adresserer samtidig en central svaghed ved HS ved at give større vægt til nyere information. Til gengæld introducerer metoden et ekstra valg af parameteren $\eta$, som påvirker, hvor hurtigt vægtene aftager, og dermed hvor følsom modellen er over for nye observationer.
@@ -441,9 +442,9 @@ H_1 :\quad & ES^F_{\alpha,t} \geq ES_{\alpha,t}, \quad \forall t \text{ og } > \
 \end{split}
 \]
 Vi ser, at den estimerede $\text{VaR}_\alpha$ fortsat er korrekt under $H_1$, hvilket afspejler, at VaR allerede er backtestet og derfor fastlagt. Testen er desuden ufølsom over for antallet af overskridelser, da den beregnes som et gennemsnit over selve overskridelserne.
-Under vores betingelser af teststørrelse, gælder der pr. proposition A.2 i Acerbi og Szekely (2014):
+Under vores betingelser af teststørrelse, gælder der pr. A.2 i Acerbi \& Szekely (2014):
 $$
-E_{H_0}[Z_1 \mid N_T > 0] = 0 \quad \text{og} \quad E_{H_1}[Z_1 \mid N_T > 0] < 0
+\mathbb{E}_{H_0}[Z_1 \mid N_T > 0] = 0 \quad \text{og} \quad \mathbb{E}_{H_1}[Z_1 \mid N_T > 0] < 0
 $$
 Det betyder, at $Z_1$ under nulhypotesen forventes at være tæt på $0$, mens negative værdier af $Z_1$ forventes under den alternative hypotese, hvor modellen undervurderer størrelsen af de ekstreme tab.
 
@@ -471,8 +472,8 @@ H_1 :\quad & ES^F_{\alpha,t} \geq ES_{\alpha,t}, \quad \forall t \text{ og } > \
 $Z_2$ adskiller sig fra $Z_1$, da det ikke kræves at $VaR$ er backtestet i forvejen.
 
 Vi har at:
-$$E_{H_0}[Z_2] = 0 \quad \text{og} \quad E_{H_1}[Z_2] < 0$$
-Pr. proposition A.3 i Acerbi og Szekely (2014)
+$$\mathbb{E}_{H_0}[Z_2] = 0 \quad \text{og} \quad \mathbb{E}_{H_1}[Z_2] < 0$$
+Pr. A.3 i Acerbi \& Szekely (2014)
 
 \subsection{Test 3: estimering af ES baseret på realiserede rangordninger}
 Til den tredje backtest udnyttes egenskaben, at hvis modellens prædiktive fordeling er korrekt, vil rangene
@@ -491,7 +492,7 @@ Z_3(\mathbf{X}) =
 -\frac{1}{T}\sum_{t=1}^{T}
 \frac{ES^{(T)}_{\alpha}(P_t^{-1}(\mathbf{U}))}
 {\mathbb{E}_V\left[ES^{(T)}_{\alpha}(P_t^{-1}(\mathbf{V}))\right]}
-+1,
++1
 $$
 hvor $\mathbf{V}$ er en vektor af uafhængige og identisk fordelte $U(0,1)$-variable.
 
@@ -507,9 +508,9 @@ H_1 :\quad & P_t \succeq F_t, \quad \forall t \text{ og } \succ \text{ for minds
 
 Her betegner $\succeq$ førsteordens stokastisk dominans. Test 3 adskiller sig fra test 1 og 2 ved, at den ikke kun undersøger haleobservationer, men i stedet anvender transformationen $U_t = P_t(X_t)$, som afhænger af hele den prædiktive fordeling.
 
-Jf. Proposition A.4 i Acerbi og Szekely (2014) gælder
+Jf. A.4 i Acerbi \& Szekely (2014) gælder
 $$
-E_{H_0}[Z_3]=0 \quad \text{og} \quad E_{H_1}[Z_3]<0
+\mathbb{E}_{H_0}[Z_3]=0 \quad \text{og} \quad \mathbb{E}_{H_1}[Z_3]<0
 $$
 
 \subsection{VaR backtest}
@@ -526,7 +527,7 @@ I_t =
 \]
 være en indikator for, om VaR overskrides på dag \( t \). Under en korrekt specificeret model antages disse indikatorer at være uafhængige og identisk fordelte som Bernoulli-variable med parameter \( \alpha \):
 \[
-I_t \sim \text{i.i.d. Bernoulli}(\alpha)
+I_t \;\stackrel{\text{i.i.d.}}{\sim}\; \text{Bernoulli}(\alpha)
 \]
 
 Summen af overskridelser over \( T \) dage er da
@@ -547,9 +548,9 @@ H_1: P(I_t = 1) > \alpha
 
 Alternativt kan dette udtrykkes i forventninger:
 \[
-H_0: E(VaR_{\text{exceed}}) = T\alpha,
+H_0: \mathbb{E}[VaR_{\text{exceed}}] = T\alpha,
 \quad
-H_1: E(VaR_{\text{exceed}}) > T\alpha
+H_1: \mathbb{E}[VaR_{\text{exceed}}] > T\alpha
 \]
 
 Testen baseres på fordelingen af \( VaR_{\text{exceed}} \). Givet et signifikansniveau \( \eta \) bestemmes en kritisk værdi \( d_{\text{crit},\eta} \), således at:
@@ -580,9 +581,9 @@ Exceedence Residuals backtesten foreslået af McNeil \& Frey (2000) anvendes og 
 
 $$r_t=\frac{ES_{\alpha,t}^P+X_t}{\hat{\sigma_t}}I_t$$
 
-Hvor $I_t=\mathbf{1}_{\{X_t\leq -VaR_{\alpha, t}^P\}}$ og $\hat{\sigma_t}$ er estimater for den betingede volatilitet. Yderligere antages det at $\sum_{t=1}^TI_t>0$ og vi definerer teststørrelsen:
+Hvor $\hat{\sigma_t}$ er et estimat for den betingede volatilitet til tidspunkt $t$. Yderligere antages det at $N_T>0$ og vi definerer teststørrelsen:
 
-$$\bar{r}=\frac{\sum_{t=1}^Tr_t}{\sum_{t=1}^TI_t}$$
+$$\bar{r}=\frac{\sum_{t=1}^Tr_t}{N_T}$$
 
 I forlængelse med vores formål for backtesting af ES, opstilles følgende nulhypotese og alternative hypotese for teststørrelsen: 
 \[
@@ -591,7 +592,7 @@ H_0: \bar{r} \geq0 \\
 H_1: \bar{r} <0
 \end{split}
 \]
-I overensstemmelse med projektets styrkefunktion for ES backtests defineres styrken af ER testen som:
+I overensstemmelse med projektets styrkefunktion for ES-backtests defineres styrken af ER testen som:
 $$\xi_{\bar{r}}=1-P(\bar{r}\geq d_{crit,\eta})$$
 
 \subsection{Conditional Calibration Backtest}
@@ -616,7 +617,7 @@ som opfylder
 \[
 \mathbb{E}\big[V(r_{1,t},r_{2,t},X_t)\mid \mathcal F_{t-1}\big]=0
 \]
-hvis og kun hvis $(r_{1,t},r_{2,t})$ svarer til det sande betingede risikopar (Se appendiks A1). En model siges derfor at være (betinget) kalibreret, hvis fejlene ikke udviser systematiske mønstre givet den tilgængelige information.
+hvis og kun hvis $(r_{1,t},r_{2,t})(r_{1,t},r_{2,t})=(\mathrm{VaR}_{\alpha,t},\ \mathrm{ES}_{\alpha,t})$, altså at de to komponenter svarer til det sande betingede risikopar (Se appendiks A.1). En model siges derfor at være (betinget) kalibreret, hvis fejlene ikke udviser systematiske mønstre givet den tilgængelige information.
 
 For $\mathcal{F}_{t-1}$-målelige testfunktioner $h_t$ defineres
 \[
@@ -654,13 +655,87 @@ Da testen omfatter to komponenter, anvendes en Bonferroni-korrektion, således a
 \min(\pi_1,\pi_2) < \frac{\eta}{2}.
 \]
 
-\subsection{Duration-Severity backtest??? (2024)}
+\newpage
 
 \section{Analyse af Z-teststørrelser}
 
+\subsection{Z-tests og VaR under t-fordelte afkast}
+
+Vi anvender t-fordelingen som den simple fordeling, der skal simulere afkast. Afkastdata vil misspecificeres, således at den sande fordeling får tykkere haler under den simple datagenererende proces end den prædiktive fordeling. Dette gøres ved at justere frihedsgrader $\nu$. Vi undersøger $Z_1$, $Z_2$ og $Z_3$ fra Acerbi \& Szekely (2014). Sideløbende analyserer vi teststyrken for VaR backtesten (se afsnit 3.4). Teststyrkerne undersøges ved en t-fordeling og en standardiseret t-fordeling, hvor den prædiktive model bruger 10 frihedsgrader. For $Z_1$ analyseres desuden tilfældet, hvor $VaR_{2.5\%}$ holdes fast. Dette skyldes, at $Z_1$ har korrekt kalibreret VaR som forudsætning. Den misspecificerede fordeling justeres derfor ved en lokationsforskydning, så dens VaR matcher det prædiktive niveau.
+
+I Figur xx ses fordelingen af afkast fra to t-fordelinger, hhv. $X_t\sim t_{10}$ og $X_t\sim t_{3}$, som repræsenterer den prædiktive fordeling og den sande fordeling. Hvis afkastdata faktisk kommer fra en t-fordeling med 3 frihedsgrader ($H_1$), ses det, at den prædiktive model ($H_0$) undervurderer risiko. Betragter man $H_1$-fordelingens overskridelser er de både hyppigere, men også mere ekstreme.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{plot med overskridelser.png}
+    \caption{\small \textbf{\textit{Figur xx:}} Simulerede stier for afkast $X_t\sim t_{10}$ og $X_t\sim t_{3}$, der repræsenterer $H_0$ og $H_1$ fordelinger. $ES_{2.5\%}$ under $H_0$ er angivet som $-ES_{2.5\%}^{H_0}$ og VaR-overskridelser er vist for simulerede afkast der overskrider $-VaR_{2.5\%}^{H_0}$.}
+\end{figure}
+
+
+De teoretiske værdier for $VaR_{1\%}$, $VaR_{2.5\%}$ og $ES_{2.5\%}$ 
+er angivet i Tabel 1 for t-fordelinger med forskellige frihedsgrader. Det ses i Figur xx, at forholdet $ES_{\alpha_1} / VaR_{\alpha_2}$ aftager, gradvist som t-fordelingen konvergerer mod normalfordelingen. For lave frihedsgrader vokser dette forhold betydeligt, som afspejler, at ES i højere grad er følsom over for misspecifikation i fordelingen af afkast.
+
+Det er netop denne misspecifikation, hvor VaR i nogen grad kan fremstå 
+korrekt kalibreret, mens ES undervurderes væsentligt. I det følgende analyseres derfor, hvor godt Z-teststørrelser opfanger denne misspecifikation. 
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.45\textwidth}
+\small
+\centering
+\setlength{\tabcolsep}{15pt}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{tabular}{@{}c ccc@{}}
+\toprule
+$\nu$ & VaR$_{2.5\%}$ & ES$_{2.5\%}$ & VaR$_{1\%}$ \\
+\midrule
+\multicolumn{4}{l}{$t$-fordeling} \\
+3   & 3.182 & 5.040 & 4.541 \\
+5   & 2.571 & 3.522 & 3.365 \\
+10  & 2.228 & 2.819 & 2.764 \\
+100 & 1.984 & 2.379 & 2.364 \\
+\midrule
+\multicolumn{4}{l}{Standardiseret $t$-fordeling} \\
+3   & 1.837 & 2.910 & 2.622 \\
+5   & 1.991 & 2.728 & 2.607 \\
+10  & 1.993 & 2.521 & 2.472 \\
+100 & 1.964 & 2.355 & 2.341 \\
+\bottomrule
+\end{tabular}
+\captionof{figure}{\small \textbf{\textit{Tabel 1:}} Teoretiske værdier for $\text{VaR}_\alpha$ og $\text{ES}_\alpha$ under $t$-fordelinger med varierende frihedsgrader $\nu$.}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}[b]{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth, trim={0.5cm 0.5cm 0.5cm 0.5cm}, clip]{ES:VaR.png}
+
+\captionof{figure}{\small \textbf{\textit{Figur xx:}} Forholdet $\text{ES}_{\alpha1}/\text{VaR}_{\alpha2}$ som funktion af $\nu$. De stiplede linjer i figuren angiver de asymptotiske grænser svarende til normalfordelingen.}
+\end{minipage}
+
+\end{figure}
+
 \subsection{Styrke af teststørrelser}
 
-Figur xx viser teststyrken for VaR- og Z-teststørrelserne under fire forskellige t-fordelinger med 10 frihedsgrader under $H_0$, mens $H_1$ varierer fra 3 til 9 frihedsgrader. Figur xx (a) viser teststyrker for data trukket fra en t-fordeling uden standardisering og fast VaR, og der observeres en klar sammenhæng mellem teststyrke og faldende antal frihedsgrader. Alle tre teststørrelser afviser korrekt modellen, som er forventeligt, idet lavere frihedsgrader medfører tungere haler og flere udsving i P\&L-fordelingen.
+For at undersøge teststyrkerne fastsættes signifikansniveauet til 0.0412 som følge den diskrete VaR backtest. Under nulhypotesen følger antallet af overskridelser netop en binomialfordeling. Da antal VaR-overskridelser $N$ er diskret, eksisterer der ikke en kritisk værdi $q$ således at
+\[
+\mathbb{P}(N > q) = 0.05.
+\]
+I stedet vælges den kritiske værdi $q$ som
+\[
+q = \min \{n \in \mathbb{N} : \mathbb{P}(N > n) \leq 0.05 \}.
+\]
+
+Det faktiske signifikansniveau givet $T=250$ bliver dermed
+\[
+\alpha = \mathbb{P}(N > q)=0.0412,
+\]
+
+Dette niveau anvendes konsekvent på tværs af alle test for at sikre 
+sammenlignelighed gennem projektet.
+
+Figur xx viser teststyrken for VaR- og Z-teststørrelserne under fire forskellige t-fordelinger med 10 frihedsgrader under $H_0$, mens $H_1$ varierer fra 3 til 9 frihedsgrader. Figur xx (a) viser teststyrker for data trukket fra en t-fordeling uden standardisering og fast VaR, og der observeres en klar sammenhæng mellem teststyrke og faldende antal frihedsgrader. Alle tre teststørrelser afviser korrekt modellen, som er forventeligt, idet lavere frihedsgrader medfører tungere haler og flere udsving i fordelingen af afkast.
 
 \begin{figure}[H]
 \centering
@@ -684,7 +759,7 @@ Figur xx viser teststyrken for VaR- og Z-teststørrelserne under fire forskellig
 \includegraphics[width=\linewidth]{std fast var t fordeling (4) Acerbi.png}
 \caption{\small Teststyrker, hvor prædiktionsmodellen følger\\ en standardiseret t-fordeling, $\nu=10$, fast $VaR_{2.5\%}$}
 \end{subfigure}
-\caption{\small \textbf{\textit{Figur xx:}} Teststyrker ved misspecifikation under forskellige frihedsgrader ved diverse t-fordelinger med 10 frihedsgrader i den prædiktive model. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 100.000 Monte-Carlo simulationer. For risikomålene anvendes halesandsynligheden $\alpha = 0.025$ for Z-teststørrelser, mens VaR-teststørrelsen baseres på den regulatoriske $\alpha = 0.01$.}
+\caption{\small \textbf{\textit{Figur xx:}} Teststyrker ved misspecifikation under forskellige frihedsgrader ved diverse t-fordelinger med 10 frihedsgrader i den prædiktive model. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 100000 Monte-Carlo simulationer. For risikomålene anvendes halesandsynligheden $\alpha = 0.025$ for Z-teststørrelser, mens VaR-teststørrelsen baseres på den regulatoriske $\alpha = 0.01$.}
 \label{fig:powerplots}
 \end{figure}
 
@@ -692,83 +767,66 @@ Figur xx (b) viser teststyrker for data trukket fra en standardiseret t-fordelin
 
 Da VaR-testen ser på 1\%-kvantilen, observerer vi en lavere teststyrke, idet 1\%-kvantilen ikke flytter sig markant under standardisering. Da $Z_2$ simultant tester antal $VaR_{2.5\%}$ overskridelser og størrelsen af disse tab, har $Z_2$-teststørrelsen også svært ved at afvise modellen, når antallet af frihedsgrader falder, idet standardiseringen af t-fordelingen mindsker forskellen af de forventede haleværdier mellem $H_0$ og misspecifikation. $Z_3$ reagerer i højere grad på haleformen, som kan forklare forskellen i teststyrken mellem de tre teststørrelser, hvor $Z_3$, i begrænset omfang, klarer sig bedre.
 
-Figur xx (c) viser teststyrker for data trukket fra en t-fordeling med fast $VaR_{2.5\%}$, således at $H_1$-fordelingen skaleres, så dens $2.5\%$-kvantil sammenfalder med nulhypotesens afkastfordeling. Idet vi fastholder VaR kan $Z_1$ inddrages i analysen. Det ses, at $Z_1$ opnår den højeste teststyrke, idet testen måler gennemsnittet af de realiserede tab betinget på VaR overskridelser. Da $Z_1$ ignorerer fejl i frekvensen af overskridelser isoleres misspecifikationen af ES, og testen forkaster korrekt modellen. $Z_2$ og VaR-testen falder derimod markant i teststyrke sammenlignet med Figur xx (a), fordi fast VaR eliminerer frekvensen af VaR overskridelser, som under t-fordelingen drev teststyrken. $Z_3$ bevarer en betydelig del af sin teststyrke, da den baseres på rangordninger og det direkte forhold mellem det empiriske og prædiktive halegennemsnit over de $T\alpha$ mest ekstreme observationer uanset VaR.
+Figur xx (c) viser teststyrker for data trukket fra en t-fordeling med fast $VaR_{2.5\%}$, således at $H_1$-fordelingen skaleres, så dens $2.5\%$-kvantil sammenfalder med nulhypotesens afkastfordeling. Idet vi fastholder VaR kan $Z_1$ inddrages i analysen. Det ses, at $Z_1$ opnår den højeste teststyrke, idet testen måler gennemsnittet af de realiserede tab betinget på VaR-overskridelser. Da $Z_1$ ignorerer fejl i frekvensen af overskridelser isoleres misspecifikationen af ES, og testen forkaster korrekt modellen. $Z_2$ og VaR-testen falder derimod markant i teststyrke sammenlignet med Figur xx (a), fordi fast VaR eliminerer frekvensen af VaR-overskridelser, som under den normale t-fordeling drev teststyrken. $Z_3$ bevarer en betydelig del af sin teststyrke, da den baseres på rangordninger og det direkte forhold mellem det empiriske og prædiktive halegennemsnit over de $T\alpha$ mest ekstreme observationer uanset VaR.
 
 Figur xx (d) viser tilfældet med standardiseret t-fordeling og fast $VaR_{2.5\%}$. Teststyrkerne er lavere end i (c), men følger samme udvikling. $Z_1$ bevarer den højeste styrke, mens $Z_2$ og VaR-testen ligger tæt på signifikansniveauet.
 
 Figur xx viser, at teststyrkerne af Z-teststørrelserne og VaR-testen afhænger af hvilken misspecifikationen, der anvendes. Frekvensen af VaR-overskridelser driver teststyrken af $Z_2$ og VaR-testen, mens teststyrken af $Z_1$ i højere grad drives af de realiserede tab, hvor teststyrken $Z_3$ drives af haleformen. $Z_3$ er dermed mest robust på tværs af misspecifikationerne, mens $Z_1$ opnår højest styrke, når VaR allerede er korrekt kalibreret.
 
 
-\subsection{Stabilitet af $Z_2$-testen}
-Et centralt resultat i Acerbi og Szekely (2014) er stabiliteten af de kritiske værdier for $Z_2$ på tværs af forskellige fordelingstyper. Som vist i afsnit 2.3 muliggør denne stabilitet en væsentlig forenkling af backtestingproceduren, analogt med Basel-komiteens traffic-light system for VaR.
-\begin{table}[h]
+\subsection{Stabilitet af $Z$-testene}
+Et centralt resultat i Acerbi og Szekely (2014) er stabiliteten af de kritiske 
+værdier for $Z_2$ på tværs af forskellige Student-$t$-fordelinger. Vi undersøger her, 
+i hvilken grad de kritiske værdier for backtestene baseret på $Z_1$, $Z_2$ og $Z_3$ 
+varierer på tværs af fordelinger med forskellige frihedsgrader $\nu$ og middelværdier 
+$\mu \in \{-1, 0, 1\}$, beregnet ved $M = 100000$ Monte Carlo-simulationer.
+
+Tabel \ref{tab:stab_z2} viser de kritiske værdier for $Z_2$ ved 5\% og 0.01\% signifikansniveauer. På trods af  ændringer i haletykkelse varierer 5\%-grænsen kun marginalt omkring $-0.7$, mens 0.01\%-grænsen ligger omkring $-1.75$ på tværs af alle kombinationer af $\nu$ og $\mu$. Afvigelserne er størst ved meget tunge haler ($\nu = 3$), men dette er ikke nødvendigvis problematisk, da sådanne fordelinger i sig selv repræsenterer forhøjet risiko. 
+Den praktiske konsekvens er væsentlig, idet $Z_2$ kan implementeres uden Monte Carlo-simulering og uden lagring af de fulde prædiktive fordelinger $P_t$. 
+Det er tilstrækkeligt at gemme to størrelser per dag, nemlig det realiserede tab ved en VaR-overskridelse $X_t I_t$ samt det estimerede $ES_{\alpha,t}^P$. 
+Dette bliver særligt relevant i mere komplekse modeller, som GARCH(1,1), hvor den prædiktive fordeling $P_t$ varierer over tid og ellers skulle gemmes for hver dag (se afsnit XX).
+
+\begin{figure}[H]
 \centering
-\begin{tabular}{l ccc ccc}
-& \multicolumn{6}{c}{Signifikansniveau} \\
-& \multicolumn{3}{c}{5\%} & \multicolumn{3}{c}{0.01\%} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7}
-& \multicolumn{3}{c}{$\mu$} & \multicolumn{3}{c}{$\mu$} \\
-$\nu$ & $-1$ & $0$ & $1$ & $-1$ & $0$ & $1$ \\
-\cmidrule(lr){2-7}
-3   & -0.35 & -0.43 & -0.54 & -4.49 & -5.06 & -6.34 \\
-5   & -0.20 & -0.26 & -0.36 & -1.27 & -2.04 & -2.56 \\
-10  & -0.13 & -0.17 & -0.27 & -0.72 & -0.94 & -1.47 \\
-100 & -0.08 & -0.12 & -0.20 & -0.37 & -0.56 & -0.98 \\
-\bottomrule
-\end{tabular}
-\caption*{\small \textbf{\textit{Tabel xx:}} Kritiske værdier ved 5\% og 0,01\% signifikansniveauer for $Z_1$ på tværs af Student-$t$-fordelinger med forskellige $\nu$ og $\mu$}
-\end{table}
+\begin{minipage}[t]{0.48\textwidth}
+\input{stabilitet af z1}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\input{stabilitet af z2}
+\end{minipage}
+\end{figure}
+\input{stabilitet af z3}
 
-\begin{table}[h]
-\centering
-\begin{tabular}{l ccc ccc}
-& \multicolumn{6}{c}{Signifikansniveau} \\
-& \multicolumn{3}{c}{5\%} & \multicolumn{3}{c}{0.01\%} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7}
-& \multicolumn{3}{c}{$\mu$} & \multicolumn{3}{c}{$\mu$} \\
-$\nu$ & $-1$ & $0$ & $1$ & $-1$ & $0$ & $1$ \\
-\cmidrule(lr){2-7}
-3   & -0.79 & -0.82 & -0.87 & -4.07 & -4.20 & -6.20 \\
-5   & -0.72 & -0.74 & -0.78 & -1.96 & -2.11 & -2.35 \\
-10  & -0.70 & -0.71 & -0.74 & -1.90 & -1.82 & -1.96 \\
-100 & -0.70 & -0.70 & -0.72 & -1.75 & -1.77 & -1.79 \\
-\bottomrule
-\end{tabular}
-\caption*{\small \textbf{\textit{Tabel xx:}} Kritiske værdier ved 5\% og 0,01\% signifikansniveauer for $Z_2$ på tværs af Student-$t$-fordelinger med forskellige $\nu$ og $\mu$}
-\end{table}
 
-\begin{table}[h]
-\centering
-\begin{tabular}{l ccc ccc}
-& \multicolumn{6}{c}{Signifikansniveau} \\
-& \multicolumn{3}{c}{5\%} & \multicolumn{3}{c}{0.01\%} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7}
-& \multicolumn{3}{c}{$\mu$} & \multicolumn{3}{c}{$\mu$} \\
-$\nu$ & $-1$ & $0$ & $1$ & $-1$ & $0$ & $1$ \\
-\cmidrule(lr){2-7}
-3   & -0.42 & -0.49 & -0.62 & -4.02 & -4.29 & -6.38 \\
-5   & -0.24 & -0.31 & -0.44 & -1.09 & -1.43 & -1.87 \\
-10  & -0.16 & -0.21 & -0.33 & -0.46 & -0.61 & -0.99 \\
-100 & -0.11 & -0.15 & -0.27 & -0.27 & -0.38 & -0.70 \\
-\bottomrule
-\end{tabular}
-\caption*{\small \textbf{\textit{Tabel xx:}} Kritiske værdier ved 5\% og 0,01\% signifikansniveauer for $Z_3$ på tværs af Student-$t$-fordelinger med forskellige $\nu$ og $\mu$}
-\end{table}
-Tabel \ref{tab:z2_critical_values} illustrerer dette ved at sammenligne kritiske værdier på tværs af Student-$t$ fordelinger med varierende frihedsgrader og middelværdier $\mu$. På trods af betydelige ændringer i haletykkelse varierer 5\%-grænsen kun marginalt omkring $-0.7$, mens 0.01\%-grænsen ligger omkring $-1.8$ for de fleste fordelinger. Vi bemærker, at afvigelserne for ekstremt heavy-tailed fordelinger ($\nu = 3$) sandsynligvis er en fordel, da sådanne fordelinger repræsenterer forhøjet risiko i sig selv.
+Som det fremgår af tabel 
+\ref{tab:stab_z1} og \ref{tab:stab_z3}, forholder det sig anderledes for $Z_1$ og $Z_3$. For begge teststørrelser er der 
+tydelig variation i de kritiske værdier på tværs af $\nu$ og $\mu$, og det er 
+ikke tilstrækkeligt at vælge én fast kritisk værdi. For $Z_1$ skyldes dette, 
+at teststørrelsen normaliserer med antallet af overskridelser $N_T$ frem for 
+med $ES_{\alpha,t}^P$. Da $N_T$ er et rent antal og ikke følger afkastenes 
+skala på samme måde som $ES_{\alpha,t}^P$, bliver teststørrelsen mere følsom 
+over for fordelingens haletykkelse. De kritiske værdier afhænger derfor systematisk af både 
+$\nu$ og $\mu$. For $Z_3$ skyldes variationen, at teststørrelsen ikke kun 
+ser på halen af fordelingen, men tager hele den prædiktive fordeling $P_t$ 
+i betragtning. Fordelingen af $Z_3$ afhænger derfor direkte af hele 
+kvantilstrukturen og varierer systematisk med $\nu$ og $\mu$. Begge 
+teststørrelser kræver lagring af den prædiktive fordeling for at bestemme 
+meningsfulde kritiske værdier, hvilket gør dem mere beregningstunge end $Z_2$.
 
-Den praktiske konsekvens er, at $Z_2$ kan implementeres uden Monte Carlo-simulering og uden lagring af de fulde prædiktive fordelinger $P_t$. Det er tilstrækkeligt at gemme to størrelser per dag: det realiserede tab ved en VaR-overskridelse $X_t I_t$ samt det estimerede $ES_{\alpha,t}$.
-
+\FloatBarrier
 \subsection{Delkonklusion}
 
 Stabilitet af Z-tests + teststyrker (skal stemme overens med resultat fra Acerbi)
 
+\newpage
+
 \section{Parametrisk udvidelse med variansmodel}
 \subsection{GARCH(1,1) som datagenererende proces}
 Som førnævnt har GARCH(1,1)-processen til formål at modellere volatilitetsklynger. Vi har indtil videre anvendt forskellige t-fordelinger og antaget at afkast er uafhængige, men dette er en urealistisk antagelse. For at anvende GARCH(1,1) som datagenererende proces, ønsker vi at estimere følgende parametre i modellen:  
-
 $$
 \begin{aligned}
-\varepsilon_t=\sigma_tz_t, \quad z_t \overset{iid}{\sim} t_\nu(0,1) \\
+\varepsilon_t=\sigma_tz_t, \quad z_t \;\stackrel{\text{i.i.d.}}{\sim}\; t_\nu(0,1) \\
 \sigma_t^2=\omega+\alpha\varepsilon_{t-1}^2+\beta\sigma_{t-1}^2
 \end{aligned}
 $$
@@ -778,41 +836,59 @@ R-pakken quantmod anvendes til at hente afkastdata fra indekset S\&P500. Log-afk
 \begin{table}[h!]
 \centering
 \renewcommand{\arraystretch}{1.5}
-\begin{tabular}{|c|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|}
 \hline
-\textbf{Volatilitetsperiode} & \textbf{$\hat{\omega}$} & \textbf{$\hat{\alpha}$} & \textbf{$\hat{\beta}$} & \textbf{$\hat{\nu}$} \\
+\textbf{Volatilitetsperiode} & \textbf{$\hat{\omega}$} & \textbf{$\hat{\alpha}$} & \textbf{$\hat{\beta}$} & \textbf{$\hat{\nu}$} & $\sqrt{\mathbb{E}[\sigma^2]}$\\
 \hline
-01.01.2013 - 31.12.2015 & 0.077 & 0.188 & 0.696 & 8.819 \\
-01.01.2021 - 31.12.2023 & 0.009 & 0.063 & 0.930 & 17.478 \\
+01.01.2013 - 31.12.2015 & $7{.}63\times 10^{-6}$ & 0.188 & 0.696 & 8.819 & 0.00811 \\
+01.01.2021 - 31.12.2023 & $9{.}08\times 10^{-7}$ & 0.063 & 0.930 & 17.478 & 0.01140 \\
 \hline
 \end{tabular}
-\caption*{\small \textbf{\textit{Tabel xx:}} Estimerede parametre i GARCH(1,1)-modellen for hhv.\ lav volatilitet (2013-2015) og høj volatilitet (2021-2023), baseret på daglige log-afkast fra S\&P500 hentet fra R-pakken quantmod.}
+\caption*{\small \textbf{\textit{Tabel 5:}} Estimerede parametre i GARCH(1,1)-modellen for hhv.\ lav volatilitet (2013-2015) og høj volatilitet (2021-2023), baseret på daglige log-afkast fra S\&P500 (i decimalform, dvs.\ ikke skaleret med 100). Den ubetingede daglige volatilitet svarer til 0{.}811\% (Lav vol.) hhv.\ 1{.}140\% (Høj vol.).}
 \end{table}
 
-For begge perioder har vi en stationær proces, idet $\hat{\alpha}+\hat{\beta}<1$, herunder $\hat{\alpha}+\hat{\beta}=0.884$ for perioden med lav volatilitet og $\hat{\alpha}+\hat{\beta}=0.993$ for perioden med høj volatilitet. Den ubetingede varians for de to perioder er dermed:
-$$\mathbb{E}[\sigma^2]_{Low Vol}=\frac{0.077}{1-0.188-0.696}=0.664$$ 
-$$\mathbb{E}[\sigma^2]_{High Vol}=\frac{0.009}{1-0.063-0.930}=1.286$$
+\FloatBarrier
+For begge perioder har vi en stationær proces, idet $\hat{\alpha}+\hat{\beta}<1$, 
+herunder $\hat{\alpha}+\hat{\beta}=0{.}884$ for perioden med lav volatilitet og 
+$\hat{\alpha}+\hat{\beta}=0{.}993$ for perioden med høj volatilitet. 
+Den ubetingede varians for de to perioder er dermed:
+$$
+\mathbb{E}[\sigma^2]_{\text{LowVol}}
+=\frac{7{.}63\times 10^{-6}}{1-0{.}188-0{.}696}
+=6{.}60\times 10^{-5},
+$$
+$$
+\mathbb{E}[\sigma^2]_{\text{HighVol}}
+=\frac{9{.}08\times 10^{-7}}{1-0{.}063-0{.}930}
+=1{.}18\times 10^{-4}.
+$$
 
-Det ses, at volatiliteten er højere for perioden 2021-2023, som primært skyldes eftervirkningerne af COVID-19, inflation, rentestigninger og generelt makroøkonomisk uro. Perioden 2013-2015 er karakteriseret ved stabil vækst og lav inflation, og derfor ses lavere volatilitet. 
+Den tilhørende ubetingede daglige volatilitet er
+$\sqrt{\mathbb{E}[\sigma^2]_{\text{LowVol}}} = 0{.}811\%$ og 
+$\sqrt{\mathbb{E}[\sigma^2]_{\text{HighVol}}} = 1{.}140\%$, 
+hvilket stemmer overens med historiske volatilitetsniveauer for S\&P500. 
+Det ses, at volatiliteten er højere for perioden 2021-2023, hvilket primært 
+skyldes eftervirkningerne af COVID-19, inflation, rentestigninger og generelt 
+makroøkonomisk uro. Perioden 2013-2015 er karakteriseret ved stabil vækst 
+og lav inflation, og derfor ses lavere volatilitet.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{Hist + vol til GARCH.png}
-    \caption{\small \textbf{\textit{Figur xx:}} Prædiktive afkastfordelinger (venstre) og 10 stikprøvestier 
-af $\sigma_t$ (højre) simuleret fra en GARCH(1,1)-processen med de estimerede parametre for volatilitetsregimerne i tabel xx. Histogrammerne er baseret på alle $M \cdot T = 2{,}5$ 
-mio.\ simulerede observationer, og den stiplede linje angiver det ubetingede volatilitetsniveau $\sqrt{\mathbb{E}[\sigma^2]}$.}
+    \caption{\small \textbf{\textit{Figur xx:}} Prædiktive afkastfordelinger (venstre) og 10 stikprøvestier af $\sigma_t$ (højre) simuleret fra en GARCH(1,1)-proces med anvendelse af de estimerede parametre for volatilitetsregimerne i Tabel 5. Histogrammerne er baseret på alle $M \cdot T = 2{.}5$ 
+mio.\ simulerede observationer, og den prædiktive volatilitet udledes i $T=250$ dage. Den stiplede linje angiver det ubetingede volatilitetsniveau $\sqrt{\mathbb{E}[\sigma^2]}$.}
 \end{figure}
 
-Figur xx illustrerer, hvordan de estimerede parametre påvirker den prædiktive GARCH(1,1)-proces. Afkastfordelingen for regimet med høj volatilitet er bredere og har tungere haler end for regimet med lav volatilitet. Stikprøvestierne for volatilitet stemmer ydermere overens med de estimerede persistenser ($\hat{\alpha}_{low}+\hat{\beta}_{low} = 0.884$) og $\hat{\alpha}_{high}+\hat{\beta}_{high} = 0.993$ (høj volatilitet). $\sigma_t$ svinger relativt hurtigt omkring det ubetingede niveau, mens stierne for høj volatilitet i højere grad danner klynger og vandrer længere væk fra det ubetingede niveau i længere perioder. Specielt er det forskellen i persistens, vi forventer vil påvirke teststørrelsernes følsomheden under misspecifikation i den efterfølgende analyse.
+Figur xx illustrerer, hvordan de estimerede parametre påvirker den prædiktive GARCH(1,1)-proces. Afkastfordelingen for regimet med høj volatilitet er bredere og har tungere haler end for regimet med lav volatilitet. Stikprøvestierne for volatilitet stemmer ydermere overens med de estimerede persistenser $\hat{\alpha}_{low}+\hat{\beta}_{low} = 0.884$ (lav volatilitet) og $\hat{\alpha}_{high}+\hat{\beta}_{high} = 0.993$ (høj volatilitet). $\sigma_t$ svinger relativt hurtigt omkring det ubetingede niveau, mens stierne for høj volatilitet i højere grad danner klynger og vandrer længere væk fra det ubetingede niveau i længere perioder. Specielt er det forskellen i persistens, vi forventer vil påvirke teststørrelsernes følsomheden under misspecifikation i den efterfølgende analyse.
 
 
 \subsection{Følsomhed under misspecifikation af GARCH(1,1)}
 
 I forbindelse med misspecifikation af parametrene i GARCH(1,1)-processen indfører vi to nye backtests, herunder Exceedance Residuals Backtesten af McNeil og Frey (2000) samt Conditional Calibration Backtest af Nolde og Ziegel (2017). For at undersøge, hvor følsomme teststørrelserne er ved misspecifikation opstilles tre cases, der har til formål at misspecificere processen på forskellige måder.
 
-De tre cases undersøger, om hvorvidt projektets backtests afviser den prædiktive model, som baseres på estimaterne fra ovenstående tabel, hvis data kommer fra en GARCH(1,1)-process med andre parametre end dem vi har estimeret for de to volatilitetsperioder. 
+De tre cases undersøger, om hvorvidt projektets backtests afviser den prædiktive model, som baseres på estimaterne fra Tabel 5, hvis data kommer fra en GARCH(1,1)-process med andre parametre end dem vi har estimeret for de to volatilitetsperioder. 
 
-I overensstemmelse med forrige analyse simuleres afkastdata i en periode på $T=250$ dage med $M=10.000$ Monte-Carlo simulationer. Som tidligere anvendes et signifikansniveau på 0.0412 og niveauerne for VaR og ES er hhv. $\alpha=0.01$ og $\alpha=0.025$.  
+I overensstemmelse med forrige analyse simuleres afkastdata i en periode på $T=250$ dage med $M=10000$ Monte-Carlo simulationer. Som tidligere anvendes et signifikansniveau på 0.0412 og niveauerne for VaR og ES er hhv. $\alpha=0.01$ og $\alpha=0.025$.  
 
 $Z_1$-testen vil i det følgende udelades i GARCH(1,1)-simulationerne, da testen ikke tager højde for tidsvarierende volatilitet. Da GARCH(1,1)-processen netop modellerer heteroskedasticitet, kan $Z_1$-testen føre til misvisende resultater, hvorfor Acerbi's $Z_2$ og $Z_3$ er mere robuste i sammenhæng med GARCH(1,1). 
 
@@ -829,25 +905,25 @@ Når persistensen derimod er lavere, påvirker $\omega$ volatiliteten mere direk
 \begin{subfigure}{0.48\textwidth}
 \centering
 \includegraphics[width=\linewidth]{Ændring i UV, Lav vol.png}
-\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=0.077$, $\hat{\alpha}=0.188$, $\hat{\beta}=0.696$, $\hat{\nu}=8.819$}
+\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=7{.}63\times 10^{-6}$, $\hat{\alpha}=0.188$, $\hat{\beta}=0.696$, $\hat{\nu}=8.819$}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
 \centering
 \includegraphics[width=\linewidth]{Ændring i UV, Høj vol.png}
-\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=0.009$, $\hat{\alpha}=0.063$, $\hat{\beta}=0.930$, $\hat{\nu}=17.478$}
+\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=9{.}08\times 10^{-7}$, $\hat{\alpha}=0.063$, $\hat{\beta}=0.930$, $\hat{\nu}=17.478$}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
 \centering
 \includegraphics[width=\linewidth]{Ændring i UV, Lav vol, nu=3.png}
-\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ \hspace{0.3cm} $\hat{\omega}=0.077$, $\hat{\alpha}=0.188$, $\hat{\beta}=0.696$, $\hat{\nu}=3$}
+\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ \hspace{0.3cm} $\hat{\omega}=7{.}63\times 10^{-6}$, $\hat{\alpha}=0.188$, $\hat{\beta}=0.696$, $\hat{\nu}=3$}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
 \centering
 \includegraphics[width=\linewidth]{Ændring i UV, Lav vol, nu=100.png}
-\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=0.077$, $\hat{\alpha}=0.188$, $\hat{\beta}=0.696$, $\hat{\nu}=100$}
+\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=7{.}63\times 10^{-6}$, $\hat{\alpha}=0.188$, $\hat{\beta}=0.696$, $\hat{\nu}=100$}
 \end{subfigure}
 
-\caption{\small \textbf{\textit{Figur xx:}} Teststyrker ved parallel misspecifikation af den ubetingede varians via $\omega$. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 10.000 Monte-Carlo simulationer. VaR-teststørrelsen baseres på $\alpha = 0.01$ imens de øvrige teststørrelser bruger $\alpha = 0.025$. Den stiplede linje angiver $\hat{\omega}$ under den prædiktive model.}
+\caption{\small \textbf{\textit{Figur xx:}} Teststyrker ved parallel misspecifikation af den ubetingede varians via $\omega$. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 10000 Monte-Carlo simulationer. VaR-teststørrelsen baseres på niveauet $\alpha = 0.01$ imens de øvrige teststørrelser bruger niveauet $\alpha = 0.025$. Den stiplede linje angiver $\hat{\omega}$ under den prædiktive model.}
 \label{fig:powerplots}
 \end{figure}
 Vi undersøger yderligere robustheden af teststyrken for perioden med lav volatilitet ved at lade innovationerne komme fra en t-fordeling med hhv. 3 og 100 frihedsgrader i stedet for de estimerede 8.8 frihedsgrader fra den prædiktive model. Det ses i Figur xx (c), at tungere haler generelt mindsker teststyrken, særligt for $Z_3$. Problemet opstår, da haleobservationerne er ekstremt variable, og da bliver estimatet $ES_\alpha^{(T)}$ i $Z_3$ meget ustabil, jf. afsnit 3.3. $Z_2$ undgår delvist dette problem, da teststørrelsen stabiliserer ekstreme observationer, da man bruger den estimerede ES til normalisering. 
@@ -862,7 +938,7 @@ mens Case 2b justerer $\omega = (\hat{\omega}/1-\hat{\alpha}-\hat{\beta})(1-k(\a
 
 Figur xx (a) viser teststyrken under Case 2a. Det ses, at styrken stiger 
 for alle teststørrelser, når persistensen øges, hvor VaR-testen og 
-$Z_2$ opnår de højeste styrker. Idet $\hat{\omega}$ holdes fast, vokser 
+$Z_2$ opnår de højeste styrker. Idet $\omega$ holdes fast, vokser 
 den ubetingede varians med persistensen. Case 2a reproducerer derfor i høj grad det scenarie vi har fra Case 1, hvor styrken drives direkte af misspecifikation af baseline variansniveauet.
 
 Figur xx (b) viser resultatet, når den ubetingede varians holdes fast. $Z_2$, $Z_3$ og VaR-testen ligger omtrent på 
@@ -885,14 +961,14 @@ absorberer de fleste volatilitetsklynger gennem standardiseringen ses der heller
 \begin{subfigure}{0.48\textwidth}
 \centering
 \includegraphics[width=\linewidth]{Ændering i persistens fast omega, Lav vol.png}
-\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=0.077$, $\hat{\alpha}=0.188$, $\hat{\beta}=0.696$, $\hat{\nu}=8.819$}
+\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=7{.}63\times 10^{-6}$, $\hat{\alpha}=0.188$, $\hat{\beta}=0.696$, $\hat{\nu}=8.819$}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
 \centering
 \includegraphics[width=\linewidth]{Ændering i persistens fast sigma2, Lav vol.png}
-\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=0.077$, $\hat{\alpha}=0.188$, $\hat{\beta}=0.696$, $\hat{\nu}=8.819$}
+\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=7{.}63\times 10^{-6}$, $\hat{\alpha}=0.188$, $\hat{\beta}=0.696$, $\hat{\nu}=8.819$}
 \end{subfigure}
-\caption{\textbf{\textit{Figur xx:}} Teststyrker ved misspecifikation af persistens via $\hat{\alpha}+\hat{\beta}$ for hhv. fast $\omega$ og fast $\mathbb{E}[\sigma^2]$. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 10.000 Monte-Carlo simulationer. VaR-teststørrelsen baseres på $\alpha = 0.01$ imens de øvrige teststørrelser bruger $\alpha = 0.025$. Den stiplede linje angiver $\hat{\alpha}+\hat{\beta}$ under den prædiktive model.}
+\caption{\textbf{\textit{Figur xx:}} Teststyrker ved misspecifikation af persistens via $\hat{\alpha}+\hat{\beta}$ for hhv. fast $\omega$ og fast $\mathbb{E}[\sigma^2]$. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 10000 Monte-Carlo simulationer. VaR-teststørrelsen baseres på niveauet $\alpha = 0.01$ imens de øvrige teststørrelser bruger niveauet $\alpha = 0.025$. Den stiplede linje angiver $\hat{\alpha}+\hat{\beta}$ under den prædiktive model.}
 \label{fig:powerplots}
 \end{figure}
 
@@ -918,14 +994,14 @@ Case 3 viser dermed en grænse for backtestenes følsomhed under misspecifikatio
 \begin{subfigure}{0.48\textwidth}
 \centering
 \includegraphics[width=\linewidth]{Ændring i dynamik, Lav vol.png}
-\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=0.077$, $\hat{\alpha}=0.188$, $\hat{\beta}=0.696$, $\hat{\nu}=8.819$}
+\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=7{.}63\times 10^{-6}$, $\hat{\alpha}=0.188$, $\hat{\beta}=0.696$, $\hat{\nu}=8.819$}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
 \centering
 \includegraphics[width=\linewidth]{Ændring i dynamik, Høj vol.png}
-\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=0.009$, $\hat{\alpha}=0.063$, $\hat{\beta}=0.930$, $\hat{\nu}=17.478$}
+\caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=9{.}08\times 10^{-7}$, $\hat{\alpha}=0.063$, $\hat{\beta}=0.930$, $\hat{\nu}=17.478$}
 \end{subfigure}
-\caption{\textbf{\textit{Figur xx:}} Teststyrker ved misspecifikation af dynamikken i volatiliteten. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 10.000 Monte-Carlo simulationer. VaR-teststørrelsen baseres på $\alpha = 0.01$ imens de øvrige teststørrelser bruger $\alpha = 0.025$. Den stiplede linje angiver $\hat{\alpha}$ under den prædiktive model.}
+\caption{\textbf{\textit{Figur xx:}} Teststyrker ved misspecifikation af dynamikken i volatiliteten. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 10000 Monte-Carlo simulationer. VaR-teststørrelsen baseres på niveauet $\alpha = 0.01$ imens de øvrige teststørrelser bruger niveauet $\alpha = 0.025$. Den stiplede linje angiver $\hat{\alpha}$ under den prædiktive model.}
 \label{fig:powerplots}
 \end{figure}
 
@@ -936,8 +1012,534 @@ På tværs af de tre cases aftager backtestenes evne til at detektere misspecifi
 
 Analysen på baggrund af de tre cases peger dermed foreløbigt på en begrænsning ved de undersøgte backtests. En GARCH(1,1)-proces kan således være misspecificeret, uden at teststørrelserne opfanger det, så længe fejlen ikke forskyder risikoniveauet systematisk.
 
-\section{Appendiks}
-\subsection{A1}
+\section{HS \& WHS}
+I de foregående afsnit har vi anvendt parametriske metoder til at estimere $\text{VaR}_{\alpha,t}$ og $\text{ES}_{\alpha,t}$, hvilket forudsætter kendskab til den prædiktive fordeling $P_t$. I dette afsnit undersøger vi i stedet to ikke-parametriske metoder, historisk simulation (HS) og vægtet historisk simulation (WHS), som begge er introduceret i afsnit 2.6. Metoderne estimerer risikomålene direkte på baggrund af historiske afkast uden at antage en bestemt parametrisk fordeling. Formålet med afsnittet er at undersøge, om HS og WHS fejler på systematisk forskellig vis, og dermed motivere brugen af Duration-Severity backtesten i afsnit 7.
+
+
+\subsection{Implementering}
+
+Vi simulerer afkastdata fra en GARCH(1,1)-proces, som beskrevet i afsnit
+2.4, der repræsenterer den sande datagenererende proces.
+Parametrene er estimeret på baggrund af S\&P500-data for perioden med
+høj volatilitet (2021--2023), jf.\ Tabel 5, hvilket sikrer at
+simuleringerne afspejler realistiske markedsforhold samtidig med at
+den sande datagenererende proces er kendt.
+Simuleringen anvender en burn-in periode på 500 dage, der forkastes
+inden testperioden påbegyndes, således at den simulerede volatilitet
+afspejler en realistisk starttilstand frem for den langsigtede
+middelværdi $\mathbb{E}[\sigma^2] = \omega/(1-\alpha-\beta)$.
+
+For HS estimeres $\text{VaR}_{\alpha,t}^{HS}$ og
+$\text{ES}_{\alpha,t}^{HS}$ ved de empiriske fraktiler og
+halegennemsnittet af de seneste $m$ observerede afkast med lineær
+interpolation, jf.\ afsnit 2.6.1.
+For WHS sættes $\eta = 0.99$ i overensstemmelse med Christoffersen
+(2012).
+VaR og ES estimeres ved signifikansniveauet $\alpha = 0.025$, og
+risikomålene fra de to ikke-parametriske metoder sammenlignes med den
+parametriske GARCH-model.
+
+I afsnit 6.2 anvendes et rullende vindue på $m = 250$ dage til
+illustration af metodernes egenskaber på én simuleret sti.
+I afsnit 6.3 undersøges systematisk hvordan valget af $m \in
+\{125, 250, 500, 1000\}$ påvirker estimaterne og backtestenes evne
+til at opfange fejlene, med en testperiode på $T = 250$ dage for
+alle vinduesstørrelser.
+
+$Z_3$ teststørrelsen udelades i dette afsnit, da beregningen 
+kræver evaluering af $P_t^{-1}(U_t)$ for hver dag $t$. 
+Da HS og WHS er ikke-parametriske metoder er $P_t$ givet ved 
+en diskret empirisk fordeling, hvilket giver ustabile 
+rang-baserede estimater. Beregningerne er desuden 
+beregningsmæssigt krævende ved $M = 10.000$ Monte 
+Carlo-simulationer.
+
+\subsection{Analyse af simulerede stier}
+Figur xx og Figur xx+1 illustrerer to simulerede stier af log-afkast fra GARCH(1,1)-processen for perioden med høj volatilitet, $t \in [251, 500]$, sammen med estimaterne for VaR og ES. Begge figurer er baseret på den samme simulerede sti, men sammenligner henholdsvis HS og WHS med den parametriske GARCH-model.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{Skærmbillede 2026-04-30 kl. 11.33.44.png}
+    \caption{\small \textbf{\textit{Figur xx:}} Simuleret sti af log-afkast fra en GARCH(1,1)-proces med parametre $\hat{\omega}=9{.}08\times10^{-7}$, $\hat{\alpha}=0.063$, $\hat{\beta}=0.930$, $\hat{\nu}=17.478$. Estimater for $\text{VaR}_{2.5\%}$ og $\text{ES}_{2.5\%}$ er vist for den parametriske GARCH-model og historisk simulation med $m=250$. Grønne cirkler angiver VaR-overskridelser under GARCH og lyserøde punkter angiver VaR-overskridelser under HS.}
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{Skærmbillede 2026-04-30 kl. 11.38.20.png}
+        \caption{\small \textbf{\textit{Figur xx+1:}} Simuleret sti af log-afkast fra samme GARCH(1,1)-proces som Figur xx. Estimater for $\text{VaR}_{2.5\%}$ og $\text{ES}_{2.5\%}$ er vist for den parametriske GARCH-model og vægtet historisk simulation med $m=250$ og $\eta=0.99$. Grønne cirkler angiver VaR-overskridelser under GARCH og lyserøde punkter angiver VaR-overskridelser under WHS.}
+        \label{fig:placeholder}
+    \end{figure}
+        \label{fig:placeholder}
+ \end{figure}
+Det ses i begge figurer, at den parametriske GARCH-model reagerer hurtigt på volatilitetsændringer, da $\text{VaR}_{\alpha,t}^{GARCH}$ og $\text{ES}_{\alpha,t}^{GARCH}$ opdateres dagligt med den betingede volatilitet $\sigma_t$. I perioden $t \in [251, 430]$ er volatiliteten lav, og GARCH-modellen estimerer tilsvarende lavere risikomål. Fra $t \approx 430$ stiger volatiliteten markant, og GARCH-modellen reagerer hurtigt med højere estimater for VaR og ES.
+
+Sammenlignes GARCH med HS ses det, at $\text{VaR}_{\alpha,t}^{HS}$ og $\text{ES}_{\alpha,t}^{HS}$ er relativt stabile i perioden med lav volatilitet og reagerer langsommere på den stigende volatilitet fra $t \approx 430$. Dette skyldes, at det rullende vindue på 250 dage indeholder historiske afkast fra den foregående periode, og den empiriske halefordeling opdateres derfor gradvist. Som konsekvens heraf undervurderer HS risikoen i perioden med høj volatilitet, og vi observerer markant flere VaR-overskridelser (11) end forventet (6.25). Overskridelserne er desuden klumpede, idet de opstår tæt på hinanden i tid, fordi HS-estimaterne ikke tilpasser sig hurtigt nok til den ændrede volatilitetsdynamik.
+
+$\text{VaR}_{\alpha,t}^{WHS}$ og $\text{ES}_{\alpha,t}^{WHS}$ reagerer hurtigere end HS-estimaterne grundet vægtningen af nyere observationer. Fra $t \approx 430$ stiger WHS-estimaterne noget hurtigere end HS-estimaterne, og antallet af VaR-overskridelser (8) er tættere på det forventede niveau (6.25). Overskridelserne er desuden mere spredt over tid sammenlignet med HS.
+
+\subsection{Analyse af vindueslængden}
+
+Valget af vindueslængden $m$ afvejer to modstridende hensyn. Et kortere 
+vindue giver hurtigere reaktion på volatilitetsændringer, men medfører 
+ustabile estimater baseret på færre observationer. Et længere vindue glatter 
+estimaterne, men reagerer for langsomt når volatiliteten ændrer sig 
+(Christoffersen, 2012).
+
+Fra Figur xx ses det tydeligt at kortere vindueslængder reagerer 
+hurtigere på volatilitetsændringer. Særligt fra $t \approx 1100$, 
+hvor volatiliteten stiger markant, falder $m = 125$ hurtigst og 
+dybest, mens $m = 1000$ næsten ikke reagerer. Reaktionshastigheden 
+aftager således med vindueslængden. Til gengæld giver et kortere 
+vindue mere volatile estimater, da enkeltobservationer vægter 
+relativt højere. Særligt når en ekstrem observation falder ind i 
+eller ud af vinduet vil estimaterne springe markant, hvilket ses 
+i det trappelignende mønster i Figur xx.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Skærmbillede 2026-05-12 kl. 17.10.22.png}
+\caption{\small VaR ved varierende vinduesstørrelse}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Skærmbillede 2026-05-12 kl. 17.08.41.png}
+\caption{\small ES ved varierende vinduesstørrelse}
+\end{subfigure}
+\caption*{\small \textbf{\textit{Figur xx:}} Estimater for $\text{VaR}_{2.5\%}^{HS}$ og $\text{ES}_{2.5\%}^{HS}$ ved 
+varierende vindueslængde $m \in \{125, 250, 500, 1000\}$. 
+Simuleret fra en GARCH(1,1)-proces med parametre for høj volatilitet 
+(2021--2023).}
+\end{figure}
+
+For WHS er billedet anderledes, jf.\ Figur xx (a) og Figur xx (b). 
+For WHS følger estimaterne hinanden tæt på tværs af alle fire vindueslængder, og ved $m\geq250$ synes kurverne at være uadskillelige.
+Dette skyldes den eksponentielle vægtning med $\eta = 0.99$, der reducerer betydningen af ældre observationer uanset vinduets 
+størrelse (se appendiks B.2). Valget af $m$ er dermed mindre afgørende for WHS end for HS.
+
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Skærmbillede 2026-05-13 kl. 11.13.43.png}
+\caption{\small VaR ved varierende vinduesstørrelse}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Skærmbillede 2026-05-13 kl. 11.14.38.png}
+\caption{\small ES ved varierende vinduesstørrelse}
+\end{subfigure}
+\caption*{\small \textbf{\textit{Figur xx:}} Estimater for $\text{VaR}_{2.5\%}^{WHS}$ og $\text{ES}_{2.5\%}^{WHS}$ ved 
+varierende vindueslængde $m \in \{125, 250, 500, 1000\}$. 
+Simuleret fra en GARCH(1,1)-proces med parametre for høj volatilitet 
+(2021--2023).}
+\end{figure}
+
+Tabel xx viser det gennemsnitlige antal VaR-overskridelser ved 
+$M = 10000$ Monte Carlo-simulationer. GARCH-modellen rammer 
+tilnærmelsesvis det forventede antal på $T \cdot \alpha = 6.25$ 
+på tværs af alle vindueslængder, da modellen ikke afhænger af $m$. 
+For HS ses et systematisk overskud af VaR-overskridelser på tværs 
+af alle $m$ -- mellem 6.91 og 7.10 -- uden nogen klar tendens med 
+stigende $m$, hvilket indikerer at problemet ikke afhjælpes 
+ved at justere vindueslængden.
+For WHS er overskuddet mindre end for HS på tværs af alle 
+vindueslængder (6.52--6.67 mod 6.91--7.10), og begge metoder 
+undervurderer risikoen uanset valget af $m$.
+
+
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lcccc}
+\textbf{Beregningsmetode} & 
+\textbf{$m=125$} & 
+\textbf{\makecell{$m=250$}} & 
+\textbf{\makecell{$m=500$}} & 
+\textbf{\makecell{$m=1000$}} \\
+\midrule
+Parametrisk (GARCH)           & 6.23 & 6.24 &  6.21  & 6.22 \\
+Ikke-parametrisk (HS)         & 6.91 & 7.10 & 7.08 & 6.98 \\
+Ikke-parametrisk (WHS)        & 6.53 & 6.52 & 6.54 & 6.67 \\
+
+\bottomrule
+\end{tabular}
+\caption*{\small \textbf{\textit{Tabel xx:}} Gennemsnitlige estimater af VaR-overskridelser over $M = 10000$ Monte Carlo-simulationer fra en GARCH(1,1)-proces med parametre for perioden med høj volatilitet (2021-2023). $T = 250$ dage, $\alpha = 0.025$, $\eta = 0.99$.}
+\end{table}
+
+Tabel xx og Tabel xx+1 viser afvisningsraterne for de fire 
+teststørrelser ved varierende $m$. For både HS og WHS ses det samme 
+mønster på tværs af vindueslængderne. $Z_2$ og VaR har en svag stigende tendens med $m$, men relativt stabile. ER er ligeledes relativ stabel, med svagt faldende med $m$. Derimod ses det at CC stiger med $m$ for begge metoder.
+
+Stigning i CC-testens afvisningsrate med $m$ skyldes 
+at CC-testen er betinget og tester om fejlene udviser systematiske 
+mønstre givet den tilgængelige information. Et større vindue medfører 
+at estimaterne reagerer langsommere på volatilitetsændringer, 
+hvilket medfører at overskridelserne klumper sig i tid. Det er 
+præcis dette mønster CC-testen er konstrueret til at identificere, 
+og styrken vokser derfor med vindueslængden.
+
+Stigningen i CC-testens afvisningsrate er mere udtalt for HS end 
+for WHS, hvilket er konsistent med at HS's estimater reagerer 
+langsommere på volatilitetsændringer end WHS's. Generelt ses det 
+på tværs af alle teststørrelser og vindueslængder at 
+afvisningsraterne er højere for HS end for WHS.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+\input{Afvisningsrater HS}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\input{Afvisningsrater WHS}
+\end{minipage}
+\end{figure} 
+
+Sammenfattende viser analysen at valget af vindueslængden $m$ har 
+begrænset effekt på WHS, mens HS er mere følsom over for dette valg. 
+For WHS giver den eksponentielle vægtning næsten identiske estimater 
+på tværs af alle undersøgte vindueslængder, og antallet af 
+VaR-overskridelser varierer minimalt. For HS er estimaterne derimod 
+afhængige af vindueslængden, og frekvensproblemet er vedvarende 
+uanset valget af $m$.
+
+På tværs af alle vindueslængder og teststørrelser performer WHS 
+bedre end HS — med færre VaR-overskridelser og lavere 
+afvisningsrater.
+
+
+
+\subsection{Tæthedsfunktioner for backtests}
+
+For at vurdere, om eksisterende backtests kan afsløre disse fejl, 
+beregnes teststørrelserne $Z_2$, VaR-overskridelsestesten, ER samt 
+CC over de $M = 10000$ simulerede stier. 
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Skærmbillede 2026-05-11 kl. 15.56.02.png}
+\caption{\small Tæthed af Z2}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Skærmbillede 2026-05-11 kl. 15.58.44.png}
+\caption{\small Histogram over VaR-overskridelser}
+\end{subfigure}
+\begin{subfigure}{0.18\textwidth}
+\centering
+\vspace{0.1cm}
+\includegraphics[width=\linewidth]{Skærmbillede 2026-05-05 kl. 13.41.39.png}
+\end{subfigure}
+
+\vspace{0.1cm}
+
+\begin{subfigure}{0.32\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Skærmbillede 2026-05-11 kl. 16.02.40.png}
+\caption{\small ER teststørrelse}
+\end{subfigure}
+\begin{subfigure}{0.32\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Skærmbillede 2026-05-11 kl. 16.03.39.png}
+\caption{\small CC - 1. komponent}
+\end{subfigure}
+\begin{subfigure}{0.32\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Skærmbillede 2026-05-11 kl. 16.04.26.png}
+\caption{\small CC - 2. komponent}
+\end{subfigure}
+\caption*{\small \textbf{\textit{Figur xx:}} Tæthedsfunktioner og histogrammer 
+for teststørrelserne $Z_2$, VaR-overskridelsestest, ER samt CC komponent 1 
+(VaR frekvens) og komponent 2 (ES givet VaR) under GARCH (blå), HS (lyserød) 
+og WHS (grøn). Den stiplede lodrette linje angiver den kritiske værdi 
+bestemt under GARCH-antagelsen ved signifikansniveauet 0.0412. Beregnet 
+ved $M=10000$ Monte Carlo-simulationer, $T=250$ dage, $w=250$, 
+$\alpha=0.025$ og $\eta=0.99$.}
+\end{figure}
+Figur xx (a) viser tæthederne for $Z_2$. Fordelingerne for HS og WHS 
+er begge bredere og mere spredte end GARCH-fordelingen, med større 
+andele både til venstre og til højre for nulpunktet. Dette afspejler 
+at HS og WHS periodisk både under- og overvurderer risikoen, konsistent 
+med observationen fra figurerne i afsnit 6.2, hvor HS undervurderer 
+risikoen i perioder med stigende volatilitet men overestimerer i 
+perioder med faldende volatilitet. Den større spredning for HS 
+sammenlignet med WHS er konsistent med at HS reagerer langsommere 
+på volatilitetsændringer.
+
+For VaR-overskridelsestesten (b) er fordelingerne for HS og WHS 
+forskudt mod højre sammenlignet med GARCH, dvs. mod flere 
+overskridelser, konsistent med at begge metoder undervurderer 
+risikoen ved at sætte VaR-grænsen for højt. Forskydningen er 
+størst for HS, hvilket afspejler at HS fejler mest på frekvensen, 
+jf. Tabel xx.
+
+For ER-testen (c) og CC komponent 2 (e) er fordelingerne for HS 
+og WHS forskudt mod lavere teststørrelser sammenlignet med GARCH, 
+hvilket indikerer at begge metoder overestimerer ES givet en 
+VaR-overskridelse. Dette er konsistent med observationen i Tabel xx, 
+hvor "Gns. est. ES | sand VaR" er højere end GARCH's realiserede 
+tab på 2.47 for begge metoder. CC komponent 1 (d) bekræfter 
+frekvensproblemet for HS, idet HS-fordelingen er markant mere 
+højreskæv end GARCH og WHS.
+
+Samlet set giver de eksisterende backtests ikke et entydigt billede 
+af fejltyperne — $Z_2$ viser en øget spredning i begge retninger, 
+mens VaR-testen indikerer undervurdering og ER samt CC komponent 2 
+indikerer overvurdering af risiko.
+
+Samlet set giver de eksisterende backtests ikke et entydigt billede 
+af fejltyperne — nogle tests indikerer undervurdering af risiko mens 
+andre indikerer overvurdering.
+
+Sammenligningen af HS og WHS viser, at WHS generelt performer bedre på tværs af begge volatilitetsregimer. I perioden med høj volatilitet er den eksponentielle vægtning af nyere observationer afgørende, da WHS hurtigere tilpasser risikoestimaterne til ændrede markedsforhold end HS. Dette afspejles i færre VaR-overskridelser og et ES-estimat tættere på det realiserede tab. I perioden med lav volatilitet er forskellen mellem metoderne minimal, og begge metoder rammer tæt på det forventede antal overskridelser — dog med en svag tendens til at overestimere haleformen relativt til GARCH. Da WHS er ikke-parametrisk på samme måde som HS og ikke introducerer yderligere beregningskompleksitet, taler resultaterne for at WHS er at foretrække frem for HS i praksis.
+
+
+\section{Duration-Severity backtest}
+
+De backtests vi har præsenteret i de foregående afsnit, herunder VaR backtest, Conditional Calibration backtest, Exceedance Residuals backtest samt $Z_1$, $Z_2$ og $Z_3$ besvarer hver ét
+afgrænset spørgsmål, men ingen dekomponerer ES-kalibreringen i
+\emph{frekvens} (hvor ofte VaR overskrides) og \emph{severity} (hvor dybt i halen de realiserede tab ligger) samtidig eller tester selve formen af halefordelingen ud over rate og middelværdi. Duration-Severity backtesten (DS) af Hué et al. (2024) adresserer dette ved at splitte testen i flere komponenter, herunder frekvens, severity og global, hvor det globale komponent kombinerer både frekvens og severity og deres tidslige og indbyrdes afhængigheder gennem bivariate momentbetingelser. 
+
+\subsection{Framework}
+
+Lad $X_t$ betegne det realiserede afkast på dag $t$. Givet informationsmængden $\{\mathcal{F}_{t-1}\}$ fås den betingede fordelingsfunktion af $X_t$:
+$$F_t(X_t\,|\,\mathcal{F}_{t-1})=u_t$$ 
+Under korrekt specificeret model er $u_t \;\stackrel{\text{i.i.d.}}{\sim}\; U(0,1)$
+(standard PIT-egenskab). En overskridelse af VaR på niveau $\alpha$ defineres ved hit-indikatoren $I_t$ (se afsnit 3.1).
+
+Lad $t_1 < t_2 <...< t_N$ være tidspunkterne for de $N$ observerede
+overskridelser i et testvindue af længde $T$ (f.eks $T=250$).
+
+\subsubsection{Duration}
+
+De tidslige afstande mellem overskridelser af VaR defineres som
+$$d_i = t_i - t_{i-1},\qquad i=1,\dots,N,\qquad t_0 \equiv 0.$$
+Pr. Prop. 2.1 i Hué et al. (2024) gælder følgende betingelser under $H_0$:
+\[
+d_i \;\stackrel{\text{i.i.d.}}{\sim}\; \text{Geom}(\alpha),
+\qquad
+\mathbb{E}[d_i]=\frac{1}{\alpha},
+\qquad
+\text{Var}(d_i)=\frac{1-\alpha}{\alpha^2}
+\]
+
+\subsubsection{Severity}
+Dybden af den $i$'te overskridelse af VaR defineres som den kumulerede
+overskridelsesproces evalueret på tidspunktet ved overskridelse
+
+$$H_t(\alpha)=\frac{1}{\alpha}(\alpha - u_t)I_t=\frac{\alpha-u_{t_i}}{\alpha} \;\in\; [0,1], \quad i=1,...,N$$
+
+hvilket svarer til $H_i = H_{t_i}(\alpha)$ og måler, hvor langt inde i halen observationen ligger.
+$H_i = 0$ er et realiseret tab lige ved VaR grænsen og $H_i = 1$
+er et tab uendelig dybt i halen. Pr. Hypotese 1. i Hué et al. (2024) gælder følgende betingelser under $H_0$:\[
+H_i \;\stackrel{\text{i.i.d.}}{\sim}\; U(0,1)
+\]
+Desuden er $\{d_i\}$ og $\{H_i\}$ under $H_0$ indbyrdes uafhængige pr. 
+Prop. 2.1 i Hué et al. (2024).
+
+\subsubsection{Ortogonale polynomier til momentbetingelser}
+Nulhypotesen $H_0$ er ækvivalent med, at alle højere ordens momenter af
+$d_i \sim\text{i.i.d.  Geom}(\alpha)$ og $H_i \sim\text{i.i.d. } U(0,1)$ stemmer overens med deres teoretiske værdier. Dette bliver netop testet via ortogonale polynomier, hvor der for enhver stokastisk variabel gælder $\mathbb{E}[P_j(X)]=0, \quad \forall j\geq 1$, under den korrekte referencefordeling, hvor $P_j(X)$ er sekvensen af ortogonale polynomier af $j$'te grad. For test af duration (frekvens) anvendes Meixner polynomier og for test af severity anvendes Legendre polynomier.
+
+Lad familien af shiftede Meixner polynomier $\{M_j\}_{j\geq 0}$ være ortogonale mht. Geom$(\alpha)$-fordelingen. Vi har følgende rekursion:
+\[
+\begin{array}{l}
+M_0(d,\alpha) = 1, \\[6pt]
+M_1(d,\alpha) = \frac{1 - \alpha d}{\sqrt{1-\alpha}}, \\[6pt]
+M_{j+1}(d,\alpha) = \frac{(1-\alpha)(2j+1) + \alpha(j-d+1)}{(j+1)\sqrt{1-\alpha}}\,M_j(d,\alpha) - \frac{j}{j+1}\,M_{j-1}(d,\alpha), \quad \forall j\geq1
+\end{array}
+\]
+Pr. A.1 i Hué et al. (2024).
+
+Lad familien af de shiftede og normaliserede Legendre polynomier $\{L_j\}_{j\geq 0}$ være ortonormale mht. $U(0,1)$. Med $Y=2H-1$ defineres følgende ikke-normaliserede shiftede Legendre polynomier:
+\[
+\begin{array}{l}
+\widetilde L_0(Y)=1,\\[6pt]
+
+\widetilde L_1(Y)=Y,\\[6pt]
+
+\widetilde L_{j+1}(Y) = \tfrac{2j+1}{j+1}\,Y\,\widetilde L_j(Y) - \tfrac{j}{j+1}\,\widetilde L_{j-1}(Y), \quad \forall j\geq1\\[6pt]
+
+\end{array}\]
+
+hvorefter de følgende ortonormale shiftede Legendre polynomier på $U(0,1)$ fås ved:
+\[
+\begin{array}{l}
+L_0(H) = 1,\\[6pt]
+
+L_1(H) = \sqrt{3}\,(2H-1),\\[6pt]
+
+L_{j+1}(H)=\sqrt{2(j+1)+1}\,\widetilde L_{j+1}(Y), \quad \forall j\geq1
+\end{array}\]
+Pr. A.2 i Hué et al. (2024)
+
+\subsubsection{Teststørrelser}
+
+Vi tester $K$ univariate momenter af $\{M_j\}_{j\geq 0}$ og $\{L_j\}_{j\geq 0}$ i hver dimension samt de bivariate momenter skåret af ved $k+j \leq K'$ for parrene $(k,j), \quad k,j\geq 1$. Vi bruger $K=4$ og $K'=3$ som er de maksimale konfigurationer. De univariate og bivariate momentbetingelser tager udgangspunkt i ligningerne (2.24)-(2.29) i Hué et al. (2024) og teststørrelsen tager afsæt i ligning (2.30). 
+
+For frekvenstesten (duration) testes den ortogonale betingelse $\mathbb{E}[M_j(d_i,\alpha)]=0, \quad \forall j=1,...,K$ ved momenterne af varighed (duration): 
+$$m_j^{\,F} = \frac{1}{N}\sum_{i=1}^{N} M_j(d_i,\alpha),\quad j=1,\dots,K$$
+
+Da bliver teststørrelsen for frekvens:
+$$T_{F} = NV_F'V_F=N\,\sum_{j=1}^{K} \bigl( m_j^{\,F}\bigr)^2 \;\overset{d}{\longrightarrow}\; \chi^2(K),$$
+hvor $V_F$ er vektoren, hvor hver indgang er et af momentbetingelserne for varighed, $V_F=(m_1^F,...,m_K^F)^\top$. $V'_FV_F$ er dermed skalarproduktet af $V_F$ med sig selv, som er summen af de kvadrerede momentbetingelser. 
+
+Parallelt med frekvenstesten testes den ortogonale betingelse $\mathbb{E}[L_j(H_i)]=0$ ved momenterne af severity, og vi får følgende teststørrelse:
+$$m_j^{\,S} = \frac{1}{N}\sum_{i=1}^{N} L_j(H_i),\qquad T_{S} = N\,\sum_{j=1}^{K} \bigl( m_j^{\,S}\bigr)^2 \;\overset{d}{\longrightarrow}\; \chi^2(K).$$
+Begge teststørrelser forkastes i højre hale som følge af $\chi^2$-fordelingen. 
+
+Den globale test kombinerer de $2K$ univariate momenter med de bivariate
+momentbetingelser. For $\forall j,k\geq1, \quad k+j\leq K'=3$ testes følgende betingelser:
+
+\begin{align*}
+\text{(1)} &\quad \mathbb{E}[M_j(d_i,\alpha)M_k(d_{i+1},\alpha)] =0, 
+&\qquad \text{(2)} &\quad\mathbb{E}[L_j(H_i)L_k(H_{i+1})]=0, \\ 
+\text{(3)} &\quad \mathbb{E}[M_j(d_i,\alpha)L_k(H_i)]=0, 
+&\qquad \text{(4)} &\quad\mathbb{E}[M_j(d_{i+1},\alpha)L_k(H_{i})]=0.
+\end{align*}
+
+Da bliver krydsmomenterne:
+\begin{align*}
+m^{\,(1)}_{k,j} &= \frac{1}{N}\sum_{i=1}^{N} M_j(d_{i},\alpha)\,M_k(d_{i+1},\alpha),
+ & m^{\,(2)}_{k,j} &= \frac{1}{N}\sum_{i=1}^{N} L_j(H_i)\,L_k(H_{i+1}), \notag\\
+m^{\,(3)}_{k,j} &= \frac{1}{N}\sum_{i=1}^{N} M_j(d_i,\alpha)\,L_k(H_i),
+ & m^{\,(4)}_{k,j} &= \frac{1}{N}\sum_{i=1}^{N} M_j(d_{i+1},\alpha)\,L_k(H_{i}).
+\end{align*}
+De $2K$ univariate og $2K'(K'-1)$ bivariate momenter staples i én samlet
+vektor $$m^G=\left(m_1^F,...,m_4^F,m_1^S,...,m_4^S,m_{1,1}^{(1)},...,m_{2,1}^{(4)}\right)^\top$$ og den globale teststørrelse bliver
+$$
+T_G \;=\; N\,\bigl\lVert m^G\bigr\rVert_2^2 \;\overset{d}{\longrightarrow}\; \chi^2\bigl(2K + 2K'(K'-1)\bigr).
+$$
+Med $K=4$ og $K'=3$ har den globale test 20 frihedsgrader.
+
+For teststørrelserne er $\chi^2$-fordelingen blot en asymptotisk tilnærmelse. I praksis bruges $T=250$ og vi korrigerer med 10000 Monte-Carlo simulationer og får den faktiske fordeling af teststørrelserne $T_\Sigma, \quad \Sigma=\{F,S,G\}$ under $H_0$. Vi anvender det justerede niveau 0.0412 jf. afsnit 4.2 for at opnå konsistens med øvrige tests i projektet. På 10000 Monte-Carlo stier under $H_0$ beregnes $T_\Sigma$ og deres tilhørende p-værdier via $\chi^2$-fordelingsfunktionen (CDF), sådan at $$p_\Sigma^{emp}=1-F_{\chi^2(K)}(T_\Sigma^{emp})$$
+Den empiriske 4.12\%-kvantil af de simulerede p-værdier bliver vores kritiske værdi $q_\Sigma^{emp}$ og fra den observerede $T_\Sigma^{obs}$ fås $$p_\Sigma^{obs}=1-F_{\chi^2(K)}(T_\Sigma^{obs})$$
+og testen forkaster hvis $p_\Sigma^{obs}<q_\Sigma^{emp}$.
+
+De tre teststørrelser har hver sin diagnostiske rolle, hvor $T_F$ skal detektere misspecifikation i frekvensen af VaR-overskridelser (afvigelser fra Geom$(\alpha)$ i varighederne mellem overskridelser). $T_S$ detekterer afvigelser i halens form, dvs. om de realiserede tab ved VaR-overskridelser er $U(0,1)$-fordelt som modellen forudsiger. $T_G$ kombinerer de to teststørrelser gennem krydsmomenter og tester samlet den fulde betingede halefordeling.
+
+
+
+\subsection{Kontrolleret misspecifikation}
+
+I følgende afsnit påbegyndes undersøgelsen af projektets centrale 
+forskningsspørgsmål: kan Duration-Severity Backtesten diagnosticere 
+\emph{typen} af modelfejl i situationer, hvor klassiske ES-backtests 
+blot afviser modellen uden at pege på, hvor problemet ligger? Først undersøges testens diagnostiske egenskaber ved kontrolleret misspecifikation, hvor fejlen er kendt på forhånd. Simulationerne tager afsæt i Hué et al. (2024), men anvender projektets risikoniveau 
+$\alpha = 0{.}025$ og signifikansniveau $0{.}0412$, konsistent med projektets øvrige analyser.
+
+\subsubsection{Datagenererende processer}
+
+Vi simulerer $(d_i, H_i)$ under fire datagenererende processer (DGP):
+\begin{itemize}
+\itemsep0em
+\item $H_0$: $d_i \sim \text{Geom}(\alpha)$, $H_i \sim U(0,1)$, indbyrdes 
+uafhængige.
+\item $D_1$: $d_i \sim \text{Geom}(\alpha)$, $H_i \sim U(0{.}2,\,0{.}8)$.
+Korrekt frekvens, men fejl i severity, herunder forkert haleform (se Figur xx i appendiks B.xx).
+\item $D_2$: $d_i - 1 \sim \text{NB}((1-\alpha)/\alpha,\, 0{.}5)$, 
+$H_i \sim U(0,1)$. Korrekt haleform (severity), men 
+durations har forkert spredning.
+\item $D_3$: kombination, hvor både $d_i$ og $H_i$ er misspecificeret.
+\end{itemize}
+
+De alternative datagenererende processor er omhyggeligt valgt således, at $D_1$ fastholder $\mathbb{E}[H_i] = 1/2$ og $D_2$ fastholder $\mathbb{E}[d_i] = 1/\alpha$, hvilket medfører at det 
+forventede antal overskridelser stadig er $T/\mathbb{E}[d_i] = T\alpha$. Førsteordensbetingelserne for $Z_2$ (middelværdien af $H_i$) og VaR backtesten (antallet $T\alpha$) er dermed korrekt kalibreret 
+under hver alternativhypotese, hvilket muliggør undersøgelsen af DS testens diagnostiske evne ved at bruge højere ordens momenter via ortogonale polynomier.
+
+Figur xx viser fordelingerne af $H_i$ og $d_i$ ved $T = 250$. $D_2$ koncentrerer durations omkring middelværdien $1/\alpha = 40$ mens 
+durations under nulhypotesen er højreskævt aftagende. $D_1$ afgrænser 
+severities til [0.2, 0.8], mens $H_0$ dækker [0, 1].
+
+% INDSÆT 2x1 FIGURE: fordeling af d_i og fordeling af H_i
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{DS, Fordeling af di.png}
+\end{subfigure}\hfill
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{DS, Fordeling af Hi.png}
+\end{subfigure}
+\caption{\textbf{\textit{Figur xx:}} Empiriske tætheder af $d_i$ (venstre) 
+og $H_i$ (højre) under $H_0$ og de alternative hypoteser ved 
+$T = 250$, baseret på 5000 simulationer.}
+\end{figure}
+
+\subsubsection{Teststyrker under misspecifikation}
+
+Kritiske værdier kalibreres under $H_0$ via Monte-Carlo-simulation med $M_0 = 100{.}000$ replikationer pr.\ 
+stikprøvestørrelse $T$. Teststyrken under hver alternativhypotese estimeres ved $M_1 = 10{.}000$ Monte-Carlo replikationer for $T \in \{250, 500, \dots, 2500\}$. 
+Vi anvender de maksimale konfigurationer $K = 4$ og $K' = 3$, jf.  
+afsnit 7.1.4. Frekvenstesten (duration) testes alene på de univariate 
+Meixnermomenter $\mathbb{E}[M_j(d_i, \alpha)] = 0$, severitytesten testes parallelt på de univariate Legendremomenter $\mathbb{E}[L_j(H_i)] = 0$. De bivariate momentbetingelser inkluderes alene i den globale test. 
+
+% INDSÆT HEATMAP (3 paneler) 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{heatmap DS 7.2.png}
+\caption{\textbf{\textit{Figur xx:}} Størrelseskorrigerede teststyrker$^{*}$ 
+for frekvens-, severity- og globaltesten under $D_1$, $D_2$ og $D_3$ 
+som funktion af $T$. Undersøgt ved signifikansniveau 
+$0{.}0412$, $\alpha = 0{.}025$, $K = 4$, $K' = 3$, $M_0 = 100000$ og 
+$M_1 = 10000$. De tilsvarende linjeplots findes i appendiks~xx.}
+\vspace{0.5em}
+{\footnotesize \raggedright $^{*}$Da kritiske værdier kalibreres empirisk under $H_0$ 
+via Monte-Carlo-simulation, rapporterer vi størrelseskorrigerede 
+teststyrker frem for nominelle teststyrker baseret på asymptotiske 
+kritiske værdier fra $\chi^2$-fordelingen. \par}
+\end{figure}
+
+\subsubsection{Diagnostisk evne}
+
+Heatmappet i Figur xx viser tydeligt den diagnostiske 
+struktur. Severitytesten reagerer alene på fejl i haleformen, hvor styrken under $D_1$ stiger fra $0{.}05$ ved $T=250$ til $1{.}00$ ved 
+$T=1250$, mens den under $D_2$ forbliver ved nominelt niveau $\sim0{.}0412$ for alle $T$. Parallelt reagerer frekvenstesten alene på 
+fejl i spredningen af durations, hvor maksimal styrke, $1.00$, allerede fås ved $T=500$ under $D_2$, mens 
+styrken under $D_1$ holdes ved $\sim0{.}0412$. Under $D_3$, hvor begge 
+komponenter er misspecificeret, afviser begge tests med høj styrke, som driver den globale teststyrke. 
+Den globale teststyrke er ved små $T$ svagere end de to isolerede tests, da dens $\chi^2(20)$-approksimation er skæv ved få 
+VaR-overskridelser, og først ved $T \geq 1500$ konvergerer den globale test mod fuld styrke under $D_3$.
+
+\subsection{Sammenligning med øvrige backtests: severity-misspecifikation}
+
+I afsnit \ref{sec:7.2} undersøgte vi DS-backtestens diagnostiske egenskaber under kontrollerede misspecifikationer formuleret direkte i $(d_i, H_i)$-rummet. Vi vender nu tilbage til en mere realistisk parametrisk misspecifikation og undersøger, om DS-testen kan diagnosticere fejltypen i situationer, hvor projektets øvrige backtests blot forkaster modellen. I dette afsnit isolerer vi en ren \emph{severityfejl}; den parallelle frekvensfejl undersøges i afsnit \ref{sec:7.4} via misspecifikation af GARCH-processen.
+
+
+\subsubsection{Datagenererende proces}
+
+\subsubsection{Styrke af teststørrelser}
+
+figur (linjeplot eller heatmap?)
+
+\subsubsection{Diagnostisk fortolkning}
+
+\subsection{Sammenligning med øvrige backtests: frekvens-misspecifikation (GARCH)}
+
+\subsection{DS på HS/WHS}
+
+\subsection{Diskussion}
+
+\subsection{Delkonklusion}
+
+\section{Konklusion}
+
+
+
+
+
+
+\section{Appendiks A: Matematiske beviser}
+
+\subsection*{A.1}
 Vi betraget identifikationsfunktionen givet ved
 \[
 V(r_{1,t}, r_{2,t}, X_t)
@@ -974,13 +1576,24 @@ $$\mathrm{VaR}_{\alpha,t} - \mathrm{ES}_{\alpha,t} - (\mathrm{VaR}_{\alpha,t}+\m
 Dermed har vi vist det ønskede
 
 
-\begin{figure}[H]
+\section{Appendiks B: Supplerende Figurer og Tabeller}
+
+\subsection*{B.1 Alternative visualiseringer af teststyrker}
+
+\begin{figure}[h!]
     \centering
     \includegraphics[width=16cm]{00000e.png}
-    \caption{\small \textbf{\textit{Figur xx:}} Heatmap over teststyrker ved misspecifikation under forskellige frihedsgrader ved diverse t-fordelinger med 10 frihedsgrader i den prædiktive model. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 100.000 Monte-Carlo simulationer. For risikomålene anvendes halesandsynligheden $\alpha = 0.025$ for Z-teststørrelser, mens VaR-teststørrelsen baseres på den regulatoriske $\alpha = 0.01$.
+    \caption{\small \textbf{\textit{Figur xx:}} Heatmap over teststyrker ved misspecifikation under forskellige frihedsgrader ved diverse t-fordelinger med 10 frihedsgrader i den prædiktive model. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 100000 Monte-Carlo simulationer. For risikomålene anvendes halesandsynligheden $\alpha = 0.025$ for Z-teststørrelser, mens VaR-teststørrelsen baseres på den regulatoriske $\alpha = 0.01$.
 }
 \end{figure}
 
+\subsection*{B.2 Visualisering af aftagende vægtning af observation ved WHS}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Skærmbillede 2026-05-13 kl. 14.48.15.png}
+    \caption*{\small \textbf{\textit{Figur xx:}} Vægte $v_\tau$ som funktion af $\tau$ for WHS ved varierende vindueslængde $m \in \{125, 250, 500, 1000\}$ og $\eta = 0.99$.}
+    \label{fig:placeholder}
+\end{figure}
 
 \end{document}
