@@ -1,6 +1,7 @@
 % VIGTIGT! For at dokumentet kan compile, skal man benytte XeLaTeX eller LuaLaTeX som compiler.
 \documentclass[12pt]{article}
 
+\usepackage{multirow}    % \multirow
 \usepackage{float}
 \usepackage{placeins}
 \usepackage{pgfplots}
@@ -73,6 +74,7 @@ Dato: & XX XX XXXX
 \setcounter{page}{1}
 
 \section{Indledning}
+...
 
 \newpage
 
@@ -97,7 +99,7 @@ Hvis fordelingsfunktionen for $X_t$ er kontinuert og strengt voksende, kan defin
 VaR_{\alpha,t} = - P_t^{-1}(\alpha)
 \end{equation}
 Fortolkningen er således, at $\text{VaR}_{\alpha,t}$ er det mindste tab, som med sandsynlighed $1-\alpha$ ikke overskrides i den kommende periode. I denne opgave fokuseres der på \textit{one-day VaR}, hvor risikomålet angiver det maksimale forventede tab over én dag ved et givent signifikansniveau. 
-\\(Ref. Acerbi (2014) + Hult \& Lindskog (2007))
+\\(Ref. Acerbi \& Szekely (2014) + Hult \& Lindskog (2007))
 
 \subsubsection{Expected Shortfall (ES)}
 
@@ -130,7 +132,7 @@ ES_{\alpha,t} = -\frac{1}{\alpha} \int_{0}^{\alpha} P_t^{-1}(u)\,du .
 Expected Shortfall fokuserer således på den venstre hale af afkastfordelingen 
 og giver et mål for det gennemsnitlige tab i de mest ekstreme udfald. 
 Af denne grund anses ES ofte for at være et mere informativt risikomål end VaR, 
-da det tager højde for størrelsen af tabene ud over VaR-grænsen (Acerbi, 2014).
+da det tager højde for størrelsen af tabene ud over VaR-grænsen (Acerbi \& Szekely, 2014).
 
 \subsection{VaR vs. ES}
 
@@ -143,50 +145,12 @@ Figur 3 er et eksempel på to tæthedsfunktioner, der repræsenterer to fordelin
     \caption{\small \textbf{\textit{Figur 3:}} Eksempel på to fordelinger af afkast med samme VaR og forskellig ES.}
 \end{figure}
 
-For et risikomål $\rho$ gælder, at både VaR og ES opfylder monotonicitet: 
-$$X \leq Y \Longrightarrow \rho(X) \geq \rho(Y)$$ 
-Dette indebærer, at hvis en portefølje $X$ giver lavere afkast end en portefølje $Y$, så er $X$ mere risikabel. Begge risikomål opfylder også positiv homogenitet:
-$$\rho(\phi X)=\phi \rho(X), \quad \phi\geq0$$
-Dette medfører, at risikoen er proportional til positionens størrelse. VaR og ES opfylder begge translationsinvarians: 
-$$\rho(X+c)=\rho(X)-c$$
-Som indebærer, at hvis der tilføjes likviditet $c$, falder risikoen med $c$. ES opfylder også subadditivitet: 
-$$\rho(X+Y)\leq \rho(X)+\rho(Y)$$
-Dette indebærer, at diversifikation ikke må øge risikoen, og da ES opfylder disse fire betingelser, er det nødvendigvis et kohærent risikomål (Artzner, 1999). Det kan påvises at VaR bryder subadditivitet ved følgende simple eksempel (Acerbi, 2001):
-
-Betragt to forskellige obligationer, A og B, hvis misligholdelser ikke kan indtræffe samtidig. Hvis A bliver misligholdt er $P(\text{B misligholder} \mid \text{A misligholder}) = 0$ og omvendt. I tilfælde af misligholdelse har obligationerne to forskellige restitutionsværdier, 50 og 95, med 4\% og 1\% sandsynlighed. Begge obligationer indløses til værdi 100, hvis misligholdelse ikke finder sted. Vi opstiller tre porteføljer, A, B og A+B samt hvert udfald: 
-
-\begin{table}[h!]
-\centering
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-\textbf{Udfald} & \textbf{A} & \textbf{B} & \textbf{A+B} & \textbf{\textit{P}} \\
-\hline
-1 & 95  & 100 & 195 & 1\% \\
-2 & 50  & 100 & 150 & 4\% \\
-3 & 100 & 95  & 195 & 1\% \\
-4 & 100 & 50  & 150 & 4\% \\
-5 & 100 & 100 & 200 & 90\% \\
-\hline
-\end{tabular}
-\end{table}
-
-På baggrund af ovenstående udfald bestemmes de forventede værdier til 
-$$\mathbb{E}(A)=\mathbb{E}(B)=95\cdot0.01+50\cdot0.04+100\cdot0.95=97.95, \quad \mathbb{E}(A+B)=\mathbb{E}(A)+\mathbb{E}(B)=195.90$$
-
-Ved et signifikansniveau $\alpha=0.05$ fås $VaR_{5\%}(A)=VaR_{5\%}(B)=2.95$. For porteføljen med begge obligationer, A+B, haves at
-
-$$VaR_{5\%}(A+B)=2\cdot97.95-(100+50)=45.90$$
-
-ES for porteføljerne A og B er givet ved 
-
-$$ES_{5\%}=\frac{4}{5}\cdot(97.95-50)+\frac{1}{5}\cdot(97.95-95)=38.95$$
-
-Da de værste 5\% af udfaldene for porteføljen A+B alle resulterer i en værdi på 150, følger det, at $ES_{5\%}(A+B)=45.90$ for den samlede portefølje. Det følger, at 
-
-$$VaR_{5\%}(A+B)=45.90>5.90=VaR_{5\%}(A)+VaR_{5\%}(B)$$
-som bryder subadditivitet. ES opfylder derimod altid subadditivitet, også i dette tilfælde, idet 
-$$ES_{5\%}(A+B)=45.90<77.90 = ES_{5\%}(A)+ES_{5\%}(B)$$
+For et risikomål $\rho$ gælder, at både VaR og ES opfylder monotonicitet, $X \leq Y \Rightarrow \rho(X) \geq \rho(Y)$, positiv homogenitet, $\rho(\phi X) = \phi \rho(X)$ for $\phi \geq 0$, og translationsinvarians, $\rho(X+c) = \rho(X) - c$. ES opfylder derudover subadditivitet,
+\begin{equation*}
+\rho(X+Y) \leq \rho(X) + \rho(Y),
+\end{equation*}
+som indebærer at diversifikation ikke kan øge risikoen. Da ES opfylder alle fire betingelser, er det nødvendigvis et kohærent risikomål (Artzner, 1999). VaR bryder derimod subadditivitet, hvilket kan vises eksplicit ved et simpelt eksempel med to ukorrelerede obligationer (Acerbi et al., 2001), se appendiks A.1.
+ 
 Brud på subadditivitet understreger en af de centrale forskelle mellem VaR og ES. Eksemplet illustrerer, at VaR kan give en misvisende risikovurdering i diversificerede porteføljer og lede til uhensigtsmæssige investeringsbeslutninger. ES tager derimod højde for hele halen og størrelsen af tabene i ekstreme tilfælde, hvilket gør det til et kohærent og mere robust risikomål.
 
 \subsection{Fordeling af afkast}
@@ -575,7 +539,7 @@ Testens styrke er:
 \xi_{VaR_\alpha} = 1 - P(VaR_{\text{exceed}} \leq d_{\text{crit},\eta})
 \]
 
-\subsection{Exceedance Residuals Backtest}
+\subsection{Exceedance Residuals backtest}
 
 Exceedence Residuals backtesten foreslået af McNeil \& Frey (2000) anvendes og baserer sig på forskellen mellem de observerede afkast ved overskridelse af VaR og det prædikterede $ES_{\alpha,t}^P$. For afkast $X_t$ defineres $r_t$ som de standardiserede overskridelsesresidualer:
 
@@ -595,7 +559,7 @@ H_1: \bar{r} <0
 I overensstemmelse med projektets styrkefunktion for ES-backtests defineres styrken af ER testen som:
 $$\xi_{\bar{r}}=1-P(\bar{r}\geq d_{crit,\eta})$$
 
-\subsection{Conditional Calibration Backtest}
+\subsection{Conditional Calibration backtest}
 
 Lad $X_t$ betegne det realiserede afkast, og lad $\{(r_{1,t},r_{2,t})\}_{t=1}^n$ være forudsigelser for $\mathrm{VaR}_{\alpha,t}$ og $\mathrm{ES}_{\alpha,t}$ baseret på informationsmængden $\{\mathcal{F}_t\}$. Fra Nolde \& Ziegel (2017) har vi, at den optimale forudsigelse ved tid $t-1$ er det sande betingede risikopar
 \[
@@ -617,7 +581,7 @@ som opfylder
 \[
 \mathbb{E}\big[V(r_{1,t},r_{2,t},X_t)\mid \mathcal F_{t-1}\big]=0
 \]
-hvis og kun hvis $(r_{1,t},r_{2,t})(r_{1,t},r_{2,t})=(\mathrm{VaR}_{\alpha,t},\ \mathrm{ES}_{\alpha,t})$, altså at de to komponenter svarer til det sande betingede risikopar (Se appendiks A.1). En model siges derfor at være (betinget) kalibreret, hvis fejlene ikke udviser systematiske mønstre givet den tilgængelige information.
+hvis og kun hvis $(r_{1,t},r_{2,t})(r_{1,t},r_{2,t})=(\mathrm{VaR}_{\alpha,t},\ \mathrm{ES}_{\alpha,t})$, altså at de to komponenter svarer til det sande betingede risikopar (se appendiks A.2). En model siges derfor at være (betinget) kalibreret, hvis fejlene ikke udviser systematiske mønstre givet den tilgængelige information.
 
 For $\mathcal{F}_{t-1}$-målelige testfunktioner $h_t$ defineres
 \[
@@ -775,7 +739,7 @@ Figur xx viser, at teststyrkerne af Z-teststørrelserne og VaR-testen afhænger 
 
 
 \subsection{Stabilitet af $Z$-testene}
-Et centralt resultat i Acerbi og Szekely (2014) er stabiliteten af de kritiske 
+Et centralt resultat i Acerbi \& Szekely (2014) er stabiliteten af de kritiske 
 værdier for $Z_2$ på tværs af forskellige Student-$t$-fordelinger. Vi undersøger her, 
 i hvilken grad de kritiske værdier for backtestene baseret på $Z_1$, $Z_2$ og $Z_3$ 
 varierer på tværs af fordelinger med forskellige frihedsgrader $\nu$ og middelværdier 
@@ -968,7 +932,7 @@ absorberer de fleste volatilitetsklynger gennem standardiseringen ses der heller
 \includegraphics[width=\linewidth]{Ændering i persistens fast sigma2, Lav vol.png}
 \caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=7{.}63\times 10^{-6}$, $\hat{\alpha}=0.188$, $\hat{\beta}=0.696$, $\hat{\nu}=8.819$}
 \end{subfigure}
-\caption{\textbf{\textit{Figur xx:}} Teststyrker ved misspecifikation af persistens via $\hat{\alpha}+\hat{\beta}$ for hhv. fast $\omega$ og fast $\mathbb{E}[\sigma^2]$. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 10000 Monte-Carlo simulationer. VaR-teststørrelsen baseres på niveauet $\alpha = 0.01$ imens de øvrige teststørrelser bruger niveauet $\alpha = 0.025$. Den stiplede linje angiver $\hat{\alpha}+\hat{\beta}$ under den prædiktive model.}
+\caption{\small \textbf{\textit{Figur xx:}} Teststyrker ved misspecifikation af persistens via $\hat{\alpha}+\hat{\beta}$ for hhv. fast $\omega$ og fast $\mathbb{E}[\sigma^2]$. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 10000 Monte-Carlo simulationer. VaR-teststørrelsen baseres på niveauet $\alpha = 0.01$ imens de øvrige teststørrelser bruger niveauet $\alpha = 0.025$. Den stiplede linje angiver $\hat{\alpha}+\hat{\beta}$ under den prædiktive model.}
 \label{fig:powerplots}
 \end{figure}
 
@@ -1001,7 +965,7 @@ Case 3 viser dermed en grænse for backtestenes følsomhed under misspecifikatio
 \includegraphics[width=\linewidth]{Ændring i dynamik, Høj vol.png}
 \caption{\small Teststyrker, hvor prædiktionsmodel bruger:\\ $\hat{\omega}=9{.}08\times 10^{-7}$, $\hat{\alpha}=0.063$, $\hat{\beta}=0.930$, $\hat{\nu}=17.478$}
 \end{subfigure}
-\caption{\textbf{\textit{Figur xx:}} Teststyrker ved misspecifikation af dynamikken i volatiliteten. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 10000 Monte-Carlo simulationer. VaR-teststørrelsen baseres på niveauet $\alpha = 0.01$ imens de øvrige teststørrelser bruger niveauet $\alpha = 0.025$. Den stiplede linje angiver $\hat{\alpha}$ under den prædiktive model.}
+\caption{\small \textbf{\textit{Figur xx:}} Teststyrker ved misspecifikation af dynamikken i volatiliteten. Undersøgt med et signifikansniveau på 0.0412, T = 250 og M = 10000 Monte-Carlo simulationer. VaR-teststørrelsen baseres på niveauet $\alpha = 0.01$ imens de øvrige teststørrelser bruger niveauet $\alpha = 0.025$. Den stiplede linje angiver $\hat{\alpha}$ under den prædiktive model.}
 \label{fig:powerplots}
 \end{figure}
 
@@ -1116,7 +1080,7 @@ Simuleret fra en GARCH(1,1)-proces med parametre for høj volatilitet
 For WHS er billedet anderledes, jf.\ Figur xx (a) og Figur xx (b). 
 For WHS følger estimaterne hinanden tæt på tværs af alle fire vindueslængder, og ved $m\geq250$ synes kurverne at være uadskillelige.
 Dette skyldes den eksponentielle vægtning med $\eta = 0.99$, der reducerer betydningen af ældre observationer uanset vinduets 
-størrelse (se appendiks B.2). Valget af $m$ er dermed mindre afgørende for WHS end for HS.
+størrelse (se appendiks B.4). Valget af $m$ er dermed mindre afgørende for WHS end for HS.
 
 
 \begin{figure}[H]
@@ -1469,15 +1433,15 @@ severities til [0.2, 0.8], mens $H_0$ dækker [0, 1].
 \centering
 \includegraphics[width=\linewidth]{DS, Fordeling af Hi.png}
 \end{subfigure}
-\caption{\textbf{\textit{Figur xx:}} Empiriske tætheder af $d_i$ (venstre) 
+\caption{\small \textbf{\textit{Figur xx:}} Empiriske tætheder af $d_i$ (venstre) 
 og $H_i$ (højre) under $H_0$ og de alternative hypoteser ved 
 $T = 250$, baseret på 5000 simulationer.}
 \end{figure}
 
 \subsubsection{Teststyrker under misspecifikation}
 
-Kritiske værdier kalibreres under $H_0$ via Monte-Carlo-simulation med $M_0 = 100{.}000$ replikationer pr.\ 
-stikprøvestørrelse $T$. Teststyrken under hver alternativhypotese estimeres ved $M_1 = 10{.}000$ Monte-Carlo replikationer for $T \in \{250, 500, \dots, 2500\}$. 
+Kritiske værdier kalibreres under $H_0$ via Monte-Carlo-simulation med $M_0 = 100000$ replikationer pr.\ 
+stikprøvestørrelse $T$. Teststyrken under hver alternativhypotese estimeres ved $M_1 = 10000$ Monte-Carlo replikationer for $T \in \{250, 500, \dots, 2500\}$. 
 Vi anvender de maksimale konfigurationer $K = 4$ og $K' = 3$, jf.  
 afsnit 7.1.4. Frekvenstesten (duration) testes alene på de univariate 
 Meixnermomenter $\mathbb{E}[M_j(d_i, \alpha)] = 0$, severitytesten testes parallelt på de univariate Legendremomenter $\mathbb{E}[L_j(H_i)] = 0$. De bivariate momentbetingelser inkluderes alene i den globale test. 
@@ -1486,11 +1450,11 @@ Meixnermomenter $\mathbb{E}[M_j(d_i, \alpha)] = 0$, severitytesten testes parall
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{heatmap DS 7.2.png}
-\caption{\textbf{\textit{Figur xx:}} Størrelseskorrigerede teststyrker$^{*}$ 
+\caption{\small \textbf{\textit{Figur xx:}} Størrelseskorrigerede teststyrker$^{*}$ 
 for frekvens-, severity- og globaltesten under $D_1$, $D_2$ og $D_3$ 
 som funktion af $T$. Undersøgt ved signifikansniveau 
 $0{.}0412$, $\alpha = 0{.}025$, $K = 4$, $K' = 3$, $M_0 = 100000$ og 
-$M_1 = 10000$. De tilsvarende linjeplots findes i appendiks~xx.}
+$M_1 = 10000$. De tilsvarende linjeplots findes i appendiks xx.}
 \vspace{0.5em}
 {\footnotesize \raggedright $^{*}$Da kritiske værdier kalibreres empirisk under $H_0$ 
 via Monte-Carlo-simulation, rapporterer vi størrelseskorrigerede 
@@ -1511,16 +1475,35 @@ VaR-overskridelser, og først ved $T \geq 1500$ konvergerer den globale test mod
 
 \subsection{Sammenligning med øvrige backtests: severity-misspecifikation}
 
-I afsnit \ref{sec:7.2} undersøgte vi DS-backtestens diagnostiske egenskaber under kontrollerede misspecifikationer formuleret direkte i $(d_i, H_i)$-rummet. Vi vender nu tilbage til en mere realistisk parametrisk misspecifikation og undersøger, om DS-testen kan diagnosticere fejltypen i situationer, hvor projektets øvrige backtests blot forkaster modellen. I dette afsnit isolerer vi en ren \emph{severityfejl}; den parallelle frekvensfejl undersøges i afsnit \ref{sec:7.4} via misspecifikation af GARCH-processen.
-
+I afsnit 7.2 undersøgte vi DS-backtestens diagnostiske evne under kontrolleret misspecifikation af $(d_i, H_i)$. Vi undersøger nu en mere realistisk parametrisk misspecifikation og sammenligner med projektets øvrige backtests, for at se, om DS kan diagnosticere fejl i severity, hvor de øvrige backtests blot ville forkaste. Fejl i frekvens undersøges i afsnit 7.4 via misspecifikation af GARCH-processen.
 
 \subsubsection{Datagenererende proces}
 
+Undersøgelsen tager udgangspunkt i et fast $VaR_{2.5\%}$ setup, som blev introduceret i afsnit 4.2. Under nulhypotesen følger afkast en t-fordeling med 10 frihedsgrader. Under de alternative hypoteser kommer afkast fra en $t$-fordeling med tungere haler, der forskydes således, at $\mathrm{VaR}_{0.025}$ fastholdes på $H_0$ niveauet. Forskydningen sikrer, at $\mathbb{P}(X_t < -\mathrm{VaR}^{P}_\alpha) = \alpha$ under enhver alternativ hypotese, hvilket bevarer det forventede antal overskridelser. 
+
+Vi sammenligner DS-backtestens tre komponenter $T_F$, $T_S$ og $T_G$ med fem klassiske backtests fra de tidligere kapitler, herunder VaR-backtesten på niveau $\alpha = 0{.}01$, $Z_2$, $Z_3$, ER-backtesten med konstant estimeret volatilitet $\hat{\sigma}_t = \sqrt{\nu_{H_0}/(\nu_{H_0}-2)}$ (da afkast er i.i.d. under nulhypotesen) og CC-backtesten.
+
+
+$Z_1$ udelades, idet teststørrelsen under et fast $VaR_{2.5\%}$ setup med konstant $\mathrm{ES}^{P}_\alpha$ er en affin transformation af ER, jf. appendiks A.3. Da $\bar{r} = (\mathrm{ES}^{P}_\alpha / \hat{\sigma})\cdot Z_1$ leverer $Z_1$ en identisk teststyrke under enhver ensidet test. Alle teststørrelser kalibreres under $H_0$ ved $M_0 = 100000$ via Monte-Carlo-simulation, konsistent med afsnit 7.2. Styrken af teststørrelser under $H_1$ for $\nu\in\{3,\dots,9\}$ estimeres ved $M_1 = 10000$ replikationer ved $T = 250$ dage. Signifikansniveauet sættes til $0{.}0412$, konsistent med projektets øvrige analyser, jf. afsnit 4.2.
+
 \subsubsection{Styrke af teststørrelser}
 
-figur (linjeplot eller heatmap?)
-
+Figur xx viser teststyrkerne for alle otte teststørrelser ved $\nu \in \{3, \dots, 9\}$. Det tilsvarende heatmap findes i appendiks B.xx.
+ 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{7.3 linjeplot.png}
+\caption{\small \textbf{\textit{Figur xx:}} Teststyrker, hvor prædiktionsmodellen følger en t-fordeling, $\nu=10$, fast $VaR_{2.5\%}$. Beregnet ved $T = 250$, $\alpha = 0{.}025$, signifikansniveau $0{.}0412$, $M_0 = 100000$ og $M_1 = 10000$.}
+\label{fig:7_3_heatmap}
+\end{figure}
+ 
+Frekvenstesten $T_F$ ligger ved signifikansniveau 0.0412 på tværs af samtlige $\nu$ under $H_1$, hvilket afspejler at vores setup med fast  $VaR_{2.5\%}$ bevarer fordelingen af $d_i$ under $H_1$. Severitytesten $T_S$ stiger monotont fra $0{.}05$ ved $\nu = 9$ til $0{.}57$ ved $\nu = 3$. Den globale test $T_G$ drives primært af $T_S$ men ligger lavere, da det kun er fejl i severity der bidrager under de bivariate momentbetingelser.
+ 
+Som forventet reagerer ER og $Z_3$ kraftigst blandt de øvrige backtests, jf. figur xx (c) (afsnit 4.2). CC-backtesten tester ligger nær eller under signifikansniveauet ved alle $\nu$. CC tester både frekvens og severity, og da frekvensen ikke er misspecificeret er første komponent i identifikationsfunktionen $V$ korrekt kalibreret. Bonferroni-korrektionen straffer denne ubalance, når kun andet komponent i $V$ (severity) bærer signal mens første komponent $V$ (frekvens) ligger ved nul.
+ 
 \subsubsection{Diagnostisk fortolkning}
+ 
+ER, $Z_3$ og $Z_2$ forkaster modellen omkring $\nu \le 5$, men ingen af dem skelner mellem fejl i haleformen og fejl i frekvensen af VaR-overskridelser. DS-backtestens univariate momentbetingelser under $T_F$ og $T_S$ diagnosticerer fejlen direkte, idet $T_F$ ligger ved signifikansniveauet samtidig med, at $T_S$ stiger ved faldende $\nu$. 
 
 \subsection{Sammenligning med øvrige backtests: frekvens-misspecifikation (GARCH)}
 
@@ -1536,11 +1519,55 @@ figur (linjeplot eller heatmap?)
 
 
 
+\newpage
+\section{Appendiks A: Matematiske udledninger}
 
-\section{Appendiks A: Matematiske beviser}
+\subsection*{A.1 Brud på subadditivitet for VaR}
 
-\subsection*{A.1}
-Vi betraget identifikationsfunktionen givet ved
+Det kan vises ved et simpelt eksempel, at VaR bryder subadditivitet (Acerbi et al., 2001). Betragt to forskellige obligationer, A og B, hvis misligholdelser ikke kan indtræffe samtidig. Hvis A bliver misligholdt er $\mathbb{P}(\text{B misligholder} \mid \text{A misligholder}) = 0$ og omvendt. I tilfælde af misligholdelse har obligationerne to forskellige restitutionsværdier, 50 og 95, med 4\% og 1\% sandsynlighed. Begge obligationer indløses til værdi 100, hvis misligholdelse ikke finder sted. Vi opstiller tre porteføljer, A, B og A+B samt hvert udfald:
+ 
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Udfald} & \textbf{A} & \textbf{B} & \textbf{A+B} & \textbf{\textit{P}} \\
+\hline
+1 & 95  & 100 & 195 & 1\% \\
+2 & 50  & 100 & 150 & 4\% \\
+3 & 100 & 95  & 195 & 1\% \\
+4 & 100 & 50  & 150 & 4\% \\
+5 & 100 & 100 & 200 & 90\% \\
+\hline
+\end{tabular}
+\end{table}
+ 
+På baggrund af ovenstående udfald bestemmes de forventede værdier til
+\begin{equation*}
+\mathbb{E}(A) = \mathbb{E}(B) = 95 \cdot 0.01 + 50 \cdot 0.04 + 100 \cdot 0.95 = 97.95, \quad \mathbb{E}(A+B) = \mathbb{E}(A) + \mathbb{E}(B) = 195.90.
+\end{equation*}
+ 
+Ved et signifikansniveau $\alpha = 0.05$ fås $\mathrm{VaR}_{5\%}(A) = \mathrm{VaR}_{5\%}(B) = 2.95$. For porteføljen med begge obligationer, A+B, haves
+\begin{equation*}
+\mathrm{VaR}_{5\%}(A+B) = 2 \cdot 97.95 - (100 + 50) = 45.90.
+\end{equation*}
+ 
+ES for porteføljerne A og B er givet ved
+\begin{equation*}
+\mathrm{ES}_{5\%} = \frac{4}{5} \cdot (97.95 - 50) + \frac{1}{5} \cdot (97.95 - 95) = 38.95.
+\end{equation*}
+ 
+Da de værste 5\% af udfaldene for porteføljen A+B alle resulterer i en værdi på 150, følger det, at $\mathrm{ES}_{5\%}(A+B) = 45.90$ for den samlede portefølje. Det følger, at
+\begin{equation*}
+\mathrm{VaR}_{5\%}(A+B) = 45.90 > 5.90 = \mathrm{VaR}_{5\%}(A) + \mathrm{VaR}_{5\%}(B),
+\end{equation*}
+som bryder subadditivitet. ES opfylder derimod altid subadditivitet, også i dette tilfælde, idet
+\begin{equation*}
+\mathrm{ES}_{5\%}(A+B) = 45.90 < 77.90 = \mathrm{ES}_{5\%}(A) + \mathrm{ES}_{5\%}(B).
+\end{equation*}
+
+\subsection*{A.2 Identifikationsegenskab for ($\text{VaR}_{\alpha}$, $\text{ES}_{\alpha}$)-parret}
+Vi betragter identifikationsfunktionen givet ved
 \[
 V(r_{1,t}, r_{2,t}, X_t)
 =
@@ -1575,10 +1602,260 @@ Dermed får vi fra (6.1) at
 $$\mathrm{VaR}_{\alpha,t} - \mathrm{ES}_{\alpha,t} - (\mathrm{VaR}_{\alpha,t}+\mathrm{ES}_{\alpha,t})=0$$
 Dermed har vi vist det ønskede
 
+\newpage
+\subsection*{A.3 Ækvivalens af $Z_1$ og ER under konstant prædiktiv hale}
 
+Under konstant $\mathrm{ES}^{P}_\alpha$ og $\hat{\sigma}$ (i.i.d.-set-up med fixed VaR) gælder
+\begin{equation*}
+Z_1 = \frac{\bar{X}_{\text{exc}}}{\mathrm{ES}^{P}_\alpha} + 1, \qquad \bar{r} = \frac{\mathrm{ES}^{P}_\alpha + \bar{X}_{\text{exc}}}{\hat{\sigma}},
+\end{equation*}
+hvor $\bar{X}_{\text{exc}} = \frac{1}{N_T}\sum_t X_t I_t$. Elimination af $\bar{X}_{\text{exc}}$ giver
+\begin{equation*}
+\bar{r} = \frac{\mathrm{ES}^{P}_\alpha}{\hat{\sigma}} \cdot Z_1.
+\end{equation*}
+Da $\mathrm{ES}^{P}_\alpha / \hat{\sigma} > 0$ er en strengt monoton transformation, bevares ranking af stier, og forkastelsesområderne $\{Z_1 < q^{Z_1}_\eta\}$ og $\{\bar{r} < q^{\bar{r}}_\eta\}$ er den samme begivenhed. Teststyrken er derfor identisk under enhver ensidet alternativ hypotese. Antagelsen om konstans brydes i kapitel 5, hvor $\mathrm{ES}^{P}_{\alpha,t}$ og $\hat{\sigma}_t$ varierer over $t$ og $Z_1$ og $\bar{r}$ bliver strukturelt forskellige.
+
+
+\newpage
 \section{Appendiks B: Supplerende Figurer og Tabeller}
 
-\subsection*{B.1 Alternative visualiseringer af teststyrker}
+\subsection*{B.1 Genskabte teststyrketabeller fra Acerbi \& Szekely (2014)}
+
+{\renewcommand{\arraystretch}{0.85}
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}c c c c ccc@{}}
+\toprule
+& $\nu$ i $H_0$ & Signifikansniveau (\%) & $\nu$ i $H_1$ & $Z_2$ (\%) & $Z_3$ (\%) & VaR$_{1\%}$ (\%) \\
+\midrule
+\multirow{10}{*}{\rotatebox{90}{$t$-fordeling}}
+& \multirow{6}{*}{100} & \multirow{3}{*}{4.1}  & 10 & 39.5 & 52.7 & 37.7 \\
+&                      &                       & 5  & 85.5 & 92.8 & 81.7 \\
+&                      &                       & 3  & 99.3 & 99.8 & 98.6 \\
+\cmidrule(l){3-7}
+&                      & \multirow{3}{*}{10.8} & 10 & 56.9 & 67.2 & 55.3 \\
+&                      &                       & 5  & 92.5 & 96.3 & 90.7 \\
+&                      &                       & 3  & 99.7 & 99.9 & 99.5 \\
+\cmidrule(l){2-7}
+& \multirow{4}{*}{10}  & \multirow{2}{*}{4.1}  & 5  & 43.4 & 49.0 & 37.9 \\
+&                      &                       & 3  & 92.4 & 94.0 & 87.1 \\
+\cmidrule(l){3-7}
+&                      & \multirow{2}{*}{10.8} & 5  & 60.1 & 64.9 & 55.5 \\
+&                      &                       & 3  & 96.4 & 97.1 & 93.8 \\
+\midrule
+\multirow{10}{*}{\rotatebox{90}{Standardiseret $t$-fordeling}}
+& \multirow{6}{*}{100} & \multirow{3}{*}{4.1}  & 10 & \phantom{0}8.5 & 21.9 & 10.5 \\
+&                      &                       & 5  & 13.2 & 43.2 & 16.3 \\
+&                      &                       & 3  & 12.2 & 50.9 & 12.4 \\
+\cmidrule(l){3-7}
+&                      & \multirow{3}{*}{10.8} & 10 & 18.3 & 34.0 & 22.1 \\
+&                      &                       & 5  & 24.4 & 54.3 & 30.4 \\
+&                      &                       & 3  & 21.0 & 58.6 & 25.0 \\
+\cmidrule(l){2-7}
+& \multirow{4}{*}{10}  & \multirow{2}{*}{4.1}  & 5  & \phantom{0}7.8 & 18.7 & \phantom{0}8.6 \\
+&                      &                       & 3  & \phantom{0}8.2 & 31.5 & \phantom{0}7.4 \\
+\cmidrule(l){3-7}
+&                      & \multirow{2}{*}{10.8} & 5  & 16.4 & 30.2 & 18.6 \\
+&                      &                       & 3  & 15.1 & 41.2 & 17.0 \\
+\bottomrule
+\end{tabular}
+\caption{\small \textbf{\textit{Tabel xx:}} Teststyrke for $Z_2$, $Z_3$ og VaR$_{1\%}$-backtesten under forskellige halestørrelser i $H_1$.}
+\end{table}
+}
+
+\vspace{-1em}
+
+{\renewcommand{\arraystretch}{0.85}
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}c c c c cccc@{}}
+\toprule
+& $\nu$ i $H_0$ & Signifikansniveau (\%) & $\nu$ i $H_1$ & $Z_1$ (\%) & $Z_2$ (\%) & $Z_3$ (\%) & VaR$_{1\%}$ (\%) \\
+\midrule
+\multirow{10}{*}{\rotatebox{90}{$t$-fordeling}}
+& \multirow{6}{*}{100} & \multirow{3}{*}{4.1}  & 10 & 28.9 & \phantom{0}7.5 & 26.4 & 11.4 \\
+&                      &                       & 5  & 66.8 & 16.2 & 56.5 & 21.3 \\
+&                      &                       & 3  & 91.5 & 37.3 & 80.2 & 33.5 \\
+\cmidrule(l){3-8}
+&                      & \multirow{3}{*}{10.8} & 10 & 44.5 & 16.4 & 38.4 & 23.2 \\
+&                      &                       & 5  & 77.9 & 27.9 & 65.4 & 37.2 \\
+&                      &                       & 3  & 94.7 & 49.3 & 84.2 & 51.2 \\
+\cmidrule(l){2-8}
+& \multirow{4}{*}{10}  & \multirow{2}{*}{4.1}  & 5  & 28.9 & 10.0 & 27.3 & 11.8 \\
+&                      &                       & 3  & 73.3 & 28.4 & 63.3 & 25.0 \\
+\cmidrule(l){3-8}
+&                      & \multirow{2}{*}{10.8} & 5  & 45.3 & 19.8 & 40.0 & 24.1 \\
+&                      &                       & 3  & 83.0 & 40.6 & 71.7 & 41.7 \\
+\midrule
+\multirow{10}{*}{\rotatebox{90}{Standardiseret $t$-fordeling}}
+& \multirow{6}{*}{100} & \multirow{3}{*}{4.1}  & 10 & 20.5 & \phantom{0}6.5 & 19.8 & \phantom{0}8.8 \\
+&                      &                       & 5  & 46.8 & 11.2 & 41.1 & 14.6 \\
+&                      &                       & 3  & 69.3 & 19.9 & 59.9 & 20.3 \\
+\cmidrule(l){3-8}
+&                      & \multirow{3}{*}{10.8} & 10 & 34.8 & 14.8 & 31.0 & 19.3 \\
+&                      &                       & 5  & 61.1 & 21.4 & 51.8 & 28.1 \\
+&                      &                       & 3  & 79.0 & 31.6 & 67.8 & 35.6 \\
+\cmidrule(l){2-8}
+& \multirow{4}{*}{10}  & \multirow{2}{*}{4.1}  & 5  & 19.3 & \phantom{0}7.7 & 18.8 & \phantom{0}8.7 \\
+&                      &                       & 3  & 42.9 & 14.8 & 39.1 & 13.7 \\
+\cmidrule(l){3-8}
+&                      & \multirow{2}{*}{10.8} & 5  & 33.2 & 16.6 & 30.4 & 19.0 \\
+&                      &                       & 3  & 57.5 & 25.8 & 50.3 & 26.7 \\
+\bottomrule
+\end{tabular}
+\caption{\small \textbf{\textit{Tabel xx:}} Teststyrke for $Z_2$, $Z_3$ og VaR$_{1\%}$-backtesten under forskellige halestørrelser i $H_1$, fast $VaR_{2.5\%}$.}
+\end{table}
+}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}c c cc@{}}
+\toprule
+& $\nu$ & ES$_{2.5\%}$ & VaR$_{1\%}$ \\
+\midrule
+\multirow{4}{*}{$t$-fordeling}
+    & 3   & 5.040 & 4.541 \\
+    & 5   & 3.522 & 3.365 \\
+    & 10  & 2.819 & 2.764 \\
+    & 100 & 2.379 & 2.364 \\
+\midrule
+\multirow{4}{*}{Standardiseret $t$-fordeling}
+    & 3   & 2.910 & 2.622 \\
+    & 5   & 2.728 & 2.607 \\
+    & 10  & 2.521 & 2.472 \\
+    & 100 & 2.355 & 2.341 \\
+\bottomrule
+\end{tabular}
+\caption{\small \textbf{\textit{Tabel xx:}} Teoretiske værdier for $\text{VaR}_\alpha$ og $\text{ES}_\alpha$ under $t$-fordelinger med varierende frihedsgrader $\nu$.}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}c c cc@{}}
+\toprule
+& $\nu$ & ES$_{2.5\%}$ & VaR$_{1\%}$ \\
+\midrule
+\multirow{4}{*}{$t$-fordeling}
+    & 3   & 3.841 & 3.342 \\
+    & 5   & 2.935 & 2.778 \\
+    & 10  & 2.575 & 2.520 \\
+    & 100 & 2.379 & 2.364 \\
+\midrule
+\multirow{4}{*}{Standardiseret $t$-fordeling}
+    & 3   & 3.036 & 2.748 \\
+    & 5   & 2.701 & 2.579 \\
+    & 10  & 2.493 & 2.443 \\
+    & 100 & 2.355 & 2.341 \\
+\bottomrule
+\end{tabular}
+\caption{\small \textbf{\textit{Tabel xx:}} Teoretiske værdier for $\text{VaR}_\alpha$ og $\text{ES}_\alpha$ under $t$-fordelinger med varierende frihedsgrader $\nu$, fast $VaR_{2.5\%}$}
+\end{table}
+
+\newpage
+
+\subsection*{B.2 Genskabte teststyrketabeller fra Acerbi \& Szekely (2014)}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Tætheder for t-fordeling.png}
+\caption{\small Tætheder for $t$-fordelingen}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{t Z2.png}
+\caption{\small $Z_2$-backtest}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{t Z3.png}
+\caption{\small $Z_2$-backtest}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{t VaR.png}
+\caption{\small $VaR_{1\%}$-backtest}
+\end{subfigure}
+
+\caption{\small \textit{\textbf{Figur xx:}} Tætheder for $t$-fordelingen samt resultater af tre backtests under $H_0$ med $\nu = 100$ og $H_1$ med $\nu = 10, 5, 3$. Panel (a) viser tæthederne for de fire $t$-fordelinger. Panel (b), (c) og (d) følger opsætningen i Figure 1 i Acerbi \& Szekely (2014). Det øverste delplot viser $F(z)$ under $H_0$ og $1 - F(z)$ under $H_1$ for teststørrelsen $Z$, hvor en lodret linje skærer de to kurver i henholdsvis Type I-sandsynligheden (signifikansniveauet) og Type II-sandsynligheden, så testens styrke kan aflæses. Det nederste delplot viser tæthederne af teststørrelsen under $H_0$ og $H_1$. Jo mere adskilte kurverne er, desto kraftigere er testen. De lodrette grønne linjer markerer signifikansniveauerne $0.05$ og $0.10$, mens de lodrette sorte linjer markerer de tilsvarende nærmeste diskrete niveauer ($0.0412$ og $0.1078$), som er opnåelige med $VaR$-backtesten.}
+\end{figure}
+
+\newpage
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{Tæthed std t.png}
+\caption{\small Tætheder for $t$-fordelingen}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{std t Z2.png}
+\caption{\small $Z_2$-backtest}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{std t Z3.png}
+\caption{\small $Z_2$-backtest}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{VaR std t.png}
+\caption{\small $VaR_{1\%}$-backtest}
+\end{subfigure}
+
+\caption{\small \textit{\textbf{Figur xx:}} Som Figur xx, men for standardiseret $t$-fordeling}
+\end{figure}
+
+\newpage
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.55\textwidth}
+\centering
+\includegraphics[width=\linewidth]{fast var t.png}
+\caption{\small Tætheder for $t$-fordelingen, fast $VaR_{2.5\%}$}
+\end{subfigure}
+
+\vspace{0.5em}
+
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{fast var Z1.png}
+\caption{\small $Z_1$-backtest}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{fast var Z2.png}
+\caption{\small $Z_2$-backtest}
+\end{subfigure}
+
+\vspace{0.5em}
+
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{fast var Z3.png}
+\caption{\small $Z_3$-backtest}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{fast var VaR.png}
+\caption{\small $VaR_{1\%}$-backtest}
+\end{subfigure}
+\caption{\small \textit{\textbf{Figur xx:}} Som Figur xx, men for $t$-fordeling med fast $VaR_{2.5\%}$.}
+\end{figure}
+
+\newpage
+
+\subsection*{B.3 Alternative visualiseringer af teststyrker}
 
 \begin{figure}[h!]
     \centering
@@ -1587,13 +1864,29 @@ Dermed har vi vist det ønskede
 }
 \end{figure}
 
-\subsection*{B.2 Visualisering af aftagende vægtning af observation ved WHS}
+\newpage
+
+\subsection*{B.4 Visualisering af aftagende vægtning af observation ved WHS}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{Skærmbillede 2026-05-13 kl. 14.48.15.png}
+    \includegraphics[width=0.7\linewidth]{Skærmbillede 2026-05-13 kl. 14.48.15.png}
     \caption*{\small \textbf{\textit{Figur xx:}} Vægte $v_\tau$ som funktion af $\tau$ for WHS ved varierende vindueslængde $m \in \{125, 250, 500, 1000\}$ og $\eta = 0.99$.}
     \label{fig:placeholder}
 \end{figure}
+
+
+
+\subsection*{B.5 Alternativ visualisering af teststyrker med DS}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\linewidth]{7.3 heatmap.png}
+    \caption{\small \textbf{\textit{Figur xx:}} Heatmap over teststyrker, hvor prædiktionsmodellen følger en t-fordeling, $\nu=10$, fast $VaR_{2.5\%}$. Beregnet ved $T = 250$, $\alpha = 0{.}025$, signifikansniveau $0{.}0412$, $M_0 = 100000$ og $M_1 = 10000$.}
+\end{figure}
+
+
+
+
 
 \end{document}
