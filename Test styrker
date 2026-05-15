@@ -56,20 +56,20 @@ ES_stdt_nu_10  <- ES(qt, p = alpha_0.025, df = nu_10) * tau_10
 ES_stdt_nu_100 <- ES(qt, p = alpha_0.025, df = nu_100) * tau_100
 
 cat("t-fordeling\n",
-  sprintf("VaR (2.5%%):  nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n",
+  sprintf("VaR (2.5%%): nu=3: %.4f nu=5: %.4f nu=10: %.4f nu=100: %.4f\n",
           VaR_nu_3, VaR_nu_5, VaR_nu_10, VaR_nu_100),
-  sprintf("ES  (2.5%%):  nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n",
+  sprintf("ES  (2.5%%): nu=3: %.4f nu=5: %.4f nu=10: %.4f nu=100: %.4f\n",
           ES_nu_3, ES_nu_5, ES_nu_10, ES_nu_100),
-  sprintf("VaR (1%%):    nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n\n",
+  sprintf("VaR (1%%): nu=3: %.4f nu=5: %.4f nu=10: %.4f nu=100: %.4f\n\n",
           VaR_nu_3_alph_0.01, VaR_nu_5_alph_0.01,
           VaR_nu_10_alph_0.01, VaR_nu_100_alph_0.01),
 
   "Standardiseret t-fordeling\n",
-  sprintf("VaR (2.5%%):  nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n",
+  sprintf("VaR (2.5%%): nu=3: %.4f nu=5: %.4f nu=10: %.4f nu=100: %.4f\n",
           VaR_stdt_nu_3, VaR_stdt_nu_5, VaR_stdt_nu_10, VaR_stdt_nu_100),
-  sprintf("ES  (2.5%%):  nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n",
+  sprintf("ES  (2.5%%): nu=3: %.4f nu=5: %.4f nu=10: %.4f nu=100: %.4f\n",
           ES_stdt_nu_3, ES_stdt_nu_5, ES_stdt_nu_10, ES_stdt_nu_100),
-  sprintf("VaR (1%%):    nu=3: %.4f  nu=5: %.4f  nu=10: %.4f  nu=100: %.4f\n",
+  sprintf("VaR (1%%): nu=3: %.4f nu=5: %.4f nu=10: %.4f nu=100: %.4f\n",
           VaR_stdt_nu_3_alph_0.01, VaR_stdt_nu_5_alph_0.01,
           VaR_stdt_nu_10_alph_0.01, VaR_stdt_nu_100_alph_0.01))
 
@@ -142,6 +142,36 @@ X_t_H1_10 <- list(df5 = X_t_5, df3 = X_t_3)
 # Alternative fordelinger under H_1 defineres for standardiseret t fordeling
 X_stdt_H1_100 <- list(df10 = X_stdt_10, df5 = X_stdt_5, df3 = X_stdt_3)
 X_stdt_H1_10 <- list(df5 = X_stdt_5, df3 = X_stdt_3)
+
+```
+
+```{r}
+# ES værdier og VaR værdier for t-fordeling, fast VaR2.5%
+
+cat("t-fordeling, fast VaR(2.5%)\n",
+  sprintf("VaR (2.5%%): nu=3: %.4f nu=5: %.4f nu=10: %.4f nu=100: %.4f\n",
+          VaR_nu_100, VaR_nu_100, VaR_nu_100, VaR_nu_100),
+  sprintf("ES  (2.5%%): nu=3: %.4f nu=5: %.4f nu=10: %.4f nu=100: %.4f\n",
+          ES_nu_3 - Forskydning_100_3, ES_nu_5 - Forskydning_100_5,
+          ES_nu_10 - Forskydning_100_10, ES_nu_100),
+  sprintf("VaR (1%%): nu=3: %.4f nu=5: %.4f nu=10: %.4f nu=100: %.4f\n\n",
+          VaR_nu_3_alph_0.01 - Forskydning_100_3,
+          VaR_nu_5_alph_0.01 - Forskydning_100_5,
+          VaR_nu_10_alph_0.01 - Forskydning_100_10,
+          VaR_nu_100_alph_0.01),
+
+  "Standardiseret t-fordeling, fast VaR(2.5%)\n",
+  sprintf("VaR (2.5%%): nu=3: %.4fnu=5: %.4f nu=10: %.4f nu=100: %.4f\n",
+          VaR_stdt_nu_100, VaR_stdt_nu_100, VaR_stdt_nu_100, VaR_stdt_nu_100),
+  sprintf("ES  (2.5%%): nu=3: %.4f  nu=5: %.4f nu=10: %.4f nu=100: %.4f\n",
+          ES_stdt_nu_3 - Forskydning_stdt_100_3,
+          ES_stdt_nu_5 - Forskydning_stdt_100_5,
+          ES_stdt_nu_10 - Forskydning_stdt_100_10, ES_stdt_nu_100),
+  sprintf("VaR (1%%): nu=3: %.4f nu=5: %.4f nu=10: %.4f nu=100: %.4f\n\n",
+          VaR_stdt_nu_3_alph_0.01 - Forskydning_stdt_100_3,
+          VaR_stdt_nu_5_alph_0.01 - Forskydning_stdt_100_5,
+          VaR_stdt_nu_10_alph_0.01 - Forskydning_stdt_100_10,
+          VaR_stdt_nu_100_alph_0.01))
 
 ```
 
@@ -591,7 +621,6 @@ Z_styrke_stdt_fixedVaR_100
 Z_styrke_stdt_fixedVaR_10
 
 ```
-
 
 ```{r}
 # Definer N_T for alle t fordelinger med fixed VaR 2.5% under H1 til VaR test
