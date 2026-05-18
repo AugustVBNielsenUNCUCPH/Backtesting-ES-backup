@@ -395,7 +395,7 @@ plot(x_vals,
      type = "l", lwd = 3,
      ylim = c(0, 0.4),
      xlab = "", ylab = "",
-     main = expression("Tætheder for t-fordeling"))
+     main = expression("Tætheder for t-fordeling, fast"~VaR[2.5*"%"]))
 abline(h = seq(0,1,0.1), v = axTicks(1), col = "grey70", lty = 1)
 lines(x_vals, dt(x_vals, df = nu_100), lwd = 3, col = "deeppink3")
 lines(x_vals, dt(x_vals - Forskydning_100_10, df = nu_10), lwd = 3, col = "deepskyblue4")
