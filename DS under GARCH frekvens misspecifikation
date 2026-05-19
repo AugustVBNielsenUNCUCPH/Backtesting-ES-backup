@@ -1,0 +1,203 @@
+---
+title: "DS under GARCH frekvens misspecifikation"
+output: html_document
+date: "2026-05-18"
+---
+
+```{r}
+set.seed(2026)
+alpha <- 0.025
+
+ds_di_Hi <- function(X, sigma, VaR, alpha, nu) {
+  M <- nrow(X)
+  tau <- sqrt((nu - 2)/nu)
+
+  lapply(1:M, function(m) {
+    idx <- which(X[m, ] < -VaR[m, ])
+    if (length(idx) < 2) return(list(d = integer(0), H = numeric(0)))
+
+    d <- diff(c(0, idx))
+    z <- X[m, idx] / sigma[m, idx] / tau
+    u <- pmin(pmax(pt(z, df = nu), 1e-10), 1 - 1e-10)
+    H <- pmin(pmax((alpha - u) / alpha, 1e-10), 1 - 1e-10)
+
+    list(d = d, H = H)})}
+
+# ds_test_di_Hi anvendes fra tidligere kode i vores environment 
+ds_pv <- function(dH, alpha) {
+  t(sapply(dH, function(x) {
+    if (length(x$d) < 2) c(global = NA, freq = NA, sev = NA)
+    else ds_test_di_Hi(x$d, x$H, alpha)}))}
+```
+
+```{r}
+# Empiriske kritiske værdier under H0, lav volatilitet
+DS_H0_low <- ds_pv(ds_di_Hi(
+  sim_H0_low$X, sim_H0_low$sigma, VaR_H0_low, alpha, nu_l), alpha)
+
+q_DS_freq_low <- quantile(DS_H0_low[, "freq"], 0.0412, na.rm = TRUE)
+q_DS_sev_low <- quantile(DS_H0_low[, "sev"], 0.0412, na.rm = TRUE)
+q_DS_global_low <- quantile(DS_H0_low[, "global"], 0.0412, na.rm = TRUE)
+```
+
+```{r}
+# Case 2a: misspecifikation af persistens med fast omega (lav volatilitet)
+persist_l <- alpha_l + beta_l
+persist_seq <- seq(0.75, 0.99, length.out = 25)
+
+c_seq_l <- persist_seq / persist_l
+alpha_alt_vec_l <- alpha_l * c_seq_l
+beta_alt_vec_l <- beta_l * c_seq_l
+
+n_pts <- length(persist_seq)
+power_VaR_2a <- numeric(n_pts)
+power_Z2_2a <- numeric(n_pts)
+power_Z3_2a <- numeric(n_pts)
+power_CC_2a <- numeric(n_pts)
+power_ER_2a <- numeric(n_pts)
+power_TF_2a <- numeric(n_pts)
+power_TS_2a <- numeric(n_pts)
+power_TG_2a <- numeric(n_pts)
+
+for(i in 1:n_pts) {
+  alpha_alt <- alpha_alt_vec_l[i]
+  beta_alt <- beta_alt_vec_l[i]
+
+  sim_H1 <- simulate_garch(
+    T, omega_l, alpha_alt, beta_alt, nu_l, burn_in, M)
+
+  sigma_H0 <- simulate_sigma_from_X(
+    sim_H1$X, omega_l, alpha_l, beta_l)
+
+  VaR_H1 <- VaR_GARCH_stdt(sigma_H0, alpha_VaRtest, nu_l)
+  VaR_H1_0.025 <- VaR_GARCH_stdt(sigma_H0, alpha, nu_l)
+  ES_H1 <- ES_GARCH_stdt(sigma_H0, alpha, nu_l)
+
+  Z2_H1 <- Z2_test_GARCH(sim_H1$X, VaR_H1_0.025, ES_H1, alpha)
+  Z3_H1 <- Z3_test_GARCH(sim_H1$X, sigma_H0, alpha, nu_l)
+  CC_H1 <- CC_test_GARCH(sim_H1$X, VaR_H1_0.025, ES_H1, alpha)
+  ER_H1 <- ER_test_GARCH(sim_H1$X, ES_H1, VaR_H1_0.025, sigma_H0)
+  VaR_hits <- VaR_stat_GARCH(sim_H1$X, VaR_H1)
+
+  DS_H1 <- ds_pv(ds_di_Hi(
+    sim_H1$X, sigma_H0, VaR_H1_0.025, alpha, nu_l), alpha)
+
+  power_VaR_2a[i] <- mean(VaR_hits > q_VaR)
+  power_Z2_2a[i] <- mean(Z2_H1 < q_Z2_low)
+  power_Z3_2a[i] <- mean(Z3_H1 < q_Z3_low)
+  power_CC_2a[i] <- CC_power(CC_H0_low, CC_H1)
+  power_ER_2a[i] <- ER_power(ER_H1, q_ER_low)
+  power_TF_2a[i] <- mean(DS_H1[, "freq"] < q_DS_freq_low, na.rm = TRUE)
+  power_TS_2a[i] <- mean(DS_H1[, "sev"] < q_DS_sev_low, na.rm = TRUE)
+  power_TG_2a[i] <- mean(DS_H1[, "global"] < q_DS_global_low, na.rm = TRUE)}
+```
+
+```{r fig.width = 8, fig.height = 6, dpi = 300}
+plot(persist_seq, power_Z2_2a,
+     type = "n",
+     lwd = 2,
+     ylim = c(0,1),
+     xlim = c(min(persist_seq), max(persist_seq)),
+     xlab = expression(alpha + beta),
+     ylab = "Styrke",
+     xaxt = "n",
+     yaxt = "n",
+     main = expression("Case 2a: Ændring i persistens, fast " * omega * " | Lav volatilitet"))
+abline(h = seq(0,1,0.1), col = "grey70")
+abline(v = persist_seq, col = "grey90")
+axis(2, at = seq(0,1,0.1),
+     labels = sprintf("%.1f", seq(0,1,0.1)), las = 1)
+axis(1, at = persist_seq,
+     labels = sprintf("%.3f", persist_seq), las = 2, cex.axis = 0.6)
+
+lines(persist_seq, power_VaR_2a, col = "darkgoldenrod2", lwd = 3)
+lines(persist_seq, power_Z2_2a, col = "cornflowerblue", lwd = 3)
+lines(persist_seq, power_Z3_2a, col = "deeppink3", lwd = 3)
+lines(persist_seq, power_CC_2a, col = "darkgreen", lwd = 3)
+lines(persist_seq, power_ER_2a, col = "purple", lwd = 3)
+lines(persist_seq, power_TF_2a, col = "deeppink", lwd = 3, lty = 2)
+lines(persist_seq, power_TS_2a, col = "darkcyan", lwd = 3, lty = 2)
+lines(persist_seq, power_TG_2a, col = "grey20", lwd = 3, lty = 2)
+
+abline(v = persist_l, col = "grey40", lwd = 2, lty = 3)
+
+legend("left",
+       legend = c(expression(VaR[1*"%"]),
+                  expression(Z[2]), expression(Z[3]),
+                  expression(CC), expression(ER),
+                  expression(T[F]), expression(T[S]), expression(T[G])),
+       col = c("darkgoldenrod2","cornflowerblue","deeppink3",
+               "darkgreen","purple","deeppink","darkcyan","grey20"),
+       lwd = 3,
+       lty = c(1,1,1,1,1,2,2,2),
+       bty = "n", cex = 0.85, ncol = 2)
+```
+
+```{r}
+# Case 2b: misspecifikation af persistens med fast ubetinget varians, lav volatilitet
+sigma2_bar_l <- omega_l / (1 - alpha_l - beta_l)
+omega_alt_vec_l_2b <- sigma2_bar_l * (1 - (alpha_alt_vec_l + beta_alt_vec_l))
+
+power_CC_2b <- numeric(n_pts)
+power_TF_2b <- numeric(n_pts)
+power_TS_2b <- numeric(n_pts)
+power_TG_2b <- numeric(n_pts)
+
+for(i in 1:n_pts) {
+  alpha_alt <- alpha_alt_vec_l[i]
+  beta_alt <- beta_alt_vec_l[i]
+  omega_alt <- omega_alt_vec_l_2b[i]
+
+  sim_H1 <- simulate_garch(
+    T, omega_alt, alpha_alt, beta_alt, nu_l, burn_in, M)
+
+  sigma_H0 <- simulate_sigma_from_X(
+    sim_H1$X, omega_l, alpha_l, beta_l)
+
+  VaR_H1_0.025 <- VaR_GARCH_stdt(sigma_H0, alpha, nu_l)
+  ES_H1 <- ES_GARCH_stdt(sigma_H0, alpha, nu_l)
+
+  CC_H1 <- CC_test_GARCH(sim_H1$X, VaR_H1_0.025, ES_H1, alpha)
+
+  DS_H1 <- ds_pv(ds_di_Hi(
+    sim_H1$X, sigma_H0, VaR_H1_0.025, alpha, nu_l), alpha)
+
+  power_CC_2b[i] <- CC_power(CC_H0_low, CC_H1)
+  power_TF_2b[i] <- mean(DS_H1[, "freq"] < q_DS_freq_low, na.rm = TRUE)
+  power_TS_2b[i] <- mean(DS_H1[, "sev"] < q_DS_sev_low, na.rm = TRUE)
+  power_TG_2b[i] <- mean(DS_H1[, "global"] < q_DS_global_low, na.rm = TRUE)}
+```
+
+```{r fig.width = 8, fig.height = 6, dpi = 300}
+plot(persist_seq, power_CC_2b,
+     type = "n",
+     lwd = 2,
+     ylim = c(0,1),
+     xlim = c(min(persist_seq), max(persist_seq)),
+     xlab = expression(alpha + beta),
+     ylab = "Styrke",
+     xaxt = "n",
+     yaxt = "n",
+     main = expression("Case 2b: Ændring i persistens, fast " * E * "[" * sigma^2 * "] | Lav volatilitet"))
+abline(h = seq(0,1,0.1), col = "grey70")
+abline(v = persist_seq, col = "grey90")
+axis(2, at = seq(0,1,0.1),
+     labels = sprintf("%.1f", seq(0,1,0.1)), las = 1)
+axis(1, at = persist_seq,
+     labels = sprintf("%.3f", persist_seq), las = 2, cex.axis = 0.6)
+
+lines(persist_seq, power_CC_2b, col = "darkgreen", lwd = 3)
+lines(persist_seq, power_TF_2b, col = "deeppink", lwd = 3, lty = 2)
+lines(persist_seq, power_TS_2b, col = "darkcyan", lwd = 3, lty = 2)
+lines(persist_seq, power_TG_2b, col = "grey20", lwd = 3, lty = 2)
+
+abline(v = persist_l, col = "grey40", lwd = 2, lty = 3)
+
+legend("left",
+       legend = c(expression(CC),
+                  expression(T[F]), expression(T[S]), expression(T[G])),
+       col = c("darkgreen","deeppink","darkcyan","grey20"),
+       lwd = 3,
+       lty = c(1,2,2,2),
+       bty = "n", cex = 0.9)
+```
