@@ -1,0 +1,216 @@
+---
+title: "DS under severity misspecifikation"
+output: html_document
+date: "2026-05-14"
+---
+
+```{r}
+set.seed(2026)
+library(pheatmap)
+library(gridExtra)
+library(cvar)
+
+T <- 250
+M0 <- 100000
+M1 <- 10000
+alpha <- 0.025
+alpha_VaRtest <- 0.01
+signifikansniveau <- 0.0412
+K_uni <- 4
+K_biv <- 3
+
+nu_H0 <- 10
+H1_seq <- 3:9
+```
+
+```{r}
+# ER og CC under i.i.d. (konstant VaR og ES) - tilpasset fra GARCH-versionerne i kapitel 5
+
+# ER, McNeil-Frey, med konstant sigma under i.i.d. (ubetinget volatilitet)
+ER_iid <- function(X, VaR_val, ES_val, sigma_val) {
+  I <- (X + VaR_val) < 0
+  r <- ((X + ES_val) * I) / sigma_val
+  rbar <- rowSums(r) / rowSums(I)
+  rbar[!is.finite(rbar)] <- NA
+  rbar}
+
+# CC, Nolde-Ziegel, konstant risikomål
+CC_iid <- function(X, VaR_val, ES_val, alpha) {
+  M <- nrow(X); T <- ncol(X)
+  T_CC <- matrix(0, M, 2)
+  for (i in 1:M) {
+    xt <- X[i, ]
+    I  <- (xt + VaR_val < 0) * 1
+    V  <- cbind(
+      alpha - I,
+      VaR_val - ES_val - (1/alpha) * I * (VaR_val + xt)
+    )
+    Omega <- crossprod(V) / T
+    T_CC[i, ] <- sqrt(T) * diag(Omega)^(-1/2) * colMeans(V)
+  }
+  T_CC}
+
+CC_power <- function(T_CC_null, T_CC) {
+  pi1 <- ecdf(T_CC_null[, 1])
+  pi2 <- ecdf(T_CC_null[, 2])
+  eta <- 2 * pmin(pi1(T_CC[, 1]), pi2(T_CC[, 2]))
+  eta <- pmin(eta, 1)
+  mean(eta < signifikansniveau)
+}
+```
+
+```{r DS_helpers}
+# (d_i, H_i) udledes fra afkastserie under H_0-prædiktion (t_10)
+afkast_til_dH <- function(X_row, VaR_val, nu_pred) {
+  I <- X_row + VaR_val < 0
+  if (sum(I) < 2) return(list(d = integer(0), H = numeric(0)))
+  times <- which(I)
+  d <- diff(c(0, times))
+  u <- pt(X_row[I], df = nu_pred)
+  H <- pmin(pmax((alpha - u) / alpha, 1e-8), 1 - 1e-8)
+  list(d = d, H = H)}
+
+DS_pvalues_matrix <- function(X, VaR_val, nu_pred, alpha, K_uni, K_biv) {
+  M <- nrow(X)
+  DS <- matrix(NA_real_, M, 3,
+               dimnames = list(NULL, c("global", "freq", "sev")))
+  for (i in 1:M) {
+    dH <- afkast_til_dH(X[i, ], VaR_val, nu_pred)
+    if (length(dH$d) >= 2) {
+      DS[i, ] <- ds_test_di_Hi(dH$d, dH$H, alpha, K_uni, K_biv)
+    }
+  }
+  DS}
+```
+
+```{r kalibrering_H0}
+# H_0: X_t ~ t_10 (uskaleret), ER- og CC-kalibrering plus DS-kritiske værdier
+# Genbruger den eksisterende X_t_10-matrix hvis tilgængelig
+X_H0 <- matrix(rt(T * M0, df = nu_H0), nrow = M0, ncol = T)
+
+# Ubetinget volatilitet for t_10 (uskaleret): sqrt(nu/(nu-2))
+sigma_H0 <- sqrt(nu_H0 / (nu_H0 - 2))
+
+ER_H0 <- ER_iid(X_H0, VaR_nu_10, ES_nu_10, sigma_H0)
+CC_H0 <- CC_iid(X_H0, VaR_nu_10, ES_nu_10, alpha)
+DS_H0 <- DS_pvalues_matrix(X_H0, VaR_nu_10, nu_H0, alpha, K_uni, K_biv)
+
+q_ER <- quantile(ER_H0, signifikansniveau, na.rm = TRUE)
+q_DS_freq <- quantile(DS_H0[, "freq"], signifikansniveau, na.rm = TRUE)
+q_DS_sev <- quantile(DS_H0[, "sev"], signifikansniveau, na.rm = TRUE)
+q_DS_global <- quantile(DS_H0[, "global"], signifikansniveau, na.rm = TRUE)
+```
+
+```{r styrke_matrix}
+# Power matrix: 7 tests × 7 nu-værdier
+power_matrix_7_3 <- matrix(NA, nrow = length(H1_seq), ncol = 8)
+colnames(power_matrix_7_3) <- c("VaR", "Z2", "Z3", "ER", "CC", "T_F", "T_S", "T_G")
+rownames(power_matrix_7_3) <- paste0("df = ", H1_seq)
+
+for (i in seq_along(H1_seq)) {
+
+  n <- H1_seq[i]
+
+  Forskydning_t_seq_10 <- VaR(qt, p = alpha, df = n) - VaR_nu_10
+
+  X_t_H1_seq_10_fixedVaR <- matrix(rt(T * M1, df = n), nrow = M1, ncol = T) +
+                            Forskydning_t_seq_10
+
+  # VaR_1%
+  N_fixedVaR <- VaR_exceptions(X_t_H1_seq_10_fixedVaR, VaR_nu_10_alph_0.01)
+  power_matrix_7_3[i, "VaR"] <- VaR_styrke(N_fixedVaR, q5)
+
+  # Z2
+  Z2_fixedVaR <- Z2(X_t_H1_seq_10_fixedVaR, VaR_nu_10, ES_nu_10, alpha)
+  power_matrix_7_3[i, "Z2"] <- Z_styrke(Z2_fixedVaR, qt_t_fixedVaR_10_Z2[1])
+
+  # Z3
+  Z3_fixedVaR <- Z3(X_t_H1_seq_10_fixedVaR, df_H0 = nu_H0, alpha,
+                    tau = 1, mu = 0)
+  power_matrix_7_3[i, "Z3"] <- Z_styrke(Z3_fixedVaR, qt_t_fixedVaR_10_Z3[1])
+
+  # ER
+  ER_fixedVaR <- ER_iid(X_t_H1_seq_10_fixedVaR, VaR_nu_10, ES_nu_10, sigma_H0)
+  power_matrix_7_3[i, "ER"] <- Z_styrke(ER_fixedVaR, q_ER)
+
+  # CC
+  CC_fixedVaR <- CC_iid(X_t_H1_seq_10_fixedVaR, VaR_nu_10, ES_nu_10, alpha)
+  power_matrix_7_3[i, "CC"] <- CC_power(CC_H0, CC_fixedVaR)
+
+  # DS
+  DS_fixedVaR <- DS_pvalues_matrix(X_t_H1_seq_10_fixedVaR, VaR_nu_10,
+                                    nu_H0, alpha, K_uni, K_biv)
+  power_matrix_7_3[i, "T_F"] <- mean(DS_fixedVaR[, "freq"] < q_DS_freq, na.rm = TRUE)
+  power_matrix_7_3[i, "T_S"] <- mean(DS_fixedVaR[, "sev"]  < q_DS_sev,  na.rm = TRUE)
+  power_matrix_7_3[i, "T_G"] <- mean(DS_fixedVaR[, "global"] < q_DS_global, na.rm = TRUE)}
+```
+
+```{r fig.width = 10, fig.height = 8, dpi = 300}
+breaks <- seq(0, 1, length.out = 51)
+
+pheatmap(
+  power_matrix_7_3,
+  cluster_rows = FALSE,
+  cluster_cols = FALSE,
+  display_numbers = TRUE,
+  color = hcl.colors(50, "BluYl"),
+  number_color = "black",
+  fontsize_number = 10,
+  fontsize = 10,
+  breaks = breaks,
+  main = expression("Severity misspecifikation under t-fordeling | fast "*VaR[2.5*"%"]))
+```
+
+```{r fig.width = 12, fig.height = 6, dpi = 300}
+# Linjeplot til appendiks, samme stil som figurerne i Heatmaps_og_styrke_plots.rmd
+plot(H1_seq,
+     lwd = 2,
+     ylim = c(0, 1),
+     xlim = c(min(H1_seq), max(H1_seq)),
+     xlab = "Frihedsgrader",
+     ylab = "Styrke",
+     yaxt = "n",
+     main = expression("Severity misspecifikation under t-fordeling | fast "*VaR[2.5*"%"]))
+
+abline(h = seq(0, 1, 0.1), v = axTicks(1), col = "grey70", lty = 1)
+
+axis(2,
+     at = seq(0, 1, 0.1),
+     labels = sprintf("%.1f", seq(0, 1, 0.1)),
+     las = 1)
+
+# Klassiske tests
+lines(H1_seq, power_matrix_7_3[, "VaR"], col = "darkgoldenrod2", lwd = 3)
+lines(H1_seq, power_matrix_7_3[, "Z2"],  col = "cornflowerblue", lwd = 3)
+lines(H1_seq, power_matrix_7_3[, "Z3"],  col = "deeppink3",      lwd = 3)
+lines(H1_seq, power_matrix_7_3[, "ER"],  col = "aquamarine2",         lwd = 3)
+lines(H1_seq, power_matrix_7_3[, "CC"],  col = "darkgreen",      lwd = 3)
+
+# DS-komponenter (stiplede)
+lines(H1_seq, power_matrix_7_3[, "T_F"], col = "deeppink", lwd = 3, lty = 2)
+lines(H1_seq, power_matrix_7_3[, "T_S"], col = "darkcyan",  lwd = 3, lty = 2)
+lines(H1_seq, power_T_G,                 col = "grey20",    lwd = 3, lty = 2)
+
+abline(h = signifikansniveau, col = "grey40", lwd = 2, lty = 3)
+
+legend("right",
+       legend = c(expression(VaR[1*"%"]),
+                  expression(Z2),
+                  expression(Z3),
+                  expression(ER),
+                  expression(CC),
+                  expression(T[F]),
+                  expression(T[S]),
+                  expression(T[G])),
+       col = c("darkgoldenrod2",
+               "cornflowerblue",
+               "deeppink3",
+               "aquamarine2",
+               "darkgreen",
+               "deeppink",
+               "darkcyan",
+               "grey20"),
+       lty = c(1, 1, 1, 1, 1, 2, 2, 2),
+       lwd = 3,
+       bty = "n")
+```
