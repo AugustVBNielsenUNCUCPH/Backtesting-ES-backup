@@ -1,0 +1,414 @@
+---
+title: "DS Backtest og kontrolleret misspecifikation"
+output: html_document
+date: "2026-05-11"
+---
+
+```{r fig.width = 10, fig.height = 6, dpi = 300}
+set.seed(2026)
+
+# Ortogonale polynomier
+## Shiftede Meixner-polynomier, ortogonale mht. Geom(a)
+meixner_poly <- function(j, x, alpha) {
+  x <- as.numeric(x)
+
+  if (j == 0) return(rep(1, length(x)))
+
+  Pm1 <- rep(1, length(x))
+  Pm <- (1 - alpha * x) / sqrt(1 - alpha)
+
+  if (j == 1) return(Pm)
+
+  for (m in 1:(j - 1)) {
+    num <- (1 - alpha) * (2*m + 1) + alpha * (m - x + 1)
+    denom <- (m + 1) * sqrt(1 - alpha)
+    coef <- num / denom
+    coef[!is.finite(coef)] <- 0
+
+    Pp1 <- coef * Pm - (m / (m + 1)) * Pm1
+
+    Pm1 <- Pm
+    Pm <- Pp1
+  }
+  Pm}
+
+## Shiftede og normaliserede Legendre-polynomier, ortonormale mht. U(0,1)
+legendre_poly <- function(j, y) {
+  y <- pmin(pmax(y, 1e-8), 1 - 1e-8)
+  x <- 2 * y - 1
+
+  if (j == 0) return(rep(1, length(y)))
+
+  Qm1 <- rep(1, length(y))
+  Qm <- x
+
+  if (j == 1) return(sqrt(3) * x)
+
+  for (m in 1:(j - 1)) {
+    Qp1 <- ((2*m + 1) / (m + 1)) * x * Qm - (m / (m + 1)) * Qm1
+    Qm1 <- Qm
+    Qm <- Qp1
+  }
+  sqrt(2*j + 1) * Qm}
+
+# DS backtest på (d_i, H_i)
+## test af K=4 univariate momenter i hver dimension og bivariate momenter afskåret ved K'=3.
+ds_test_di_Hi <- function(d, H, alpha, K_uni = 4, K_biv = 3) {
+  n <- length(d)
+  if (n < 2) return(c(global = NA, freq = NA, sev = NA))
+
+  Qs <- sapply(1:K_uni, function(j) mean(legendre_poly(j, H)))
+  Ps <- sapply(1:K_uni, function(j) mean(meixner_poly(j, d, alpha)))
+
+  cross <- c()
+  d_i <- d[-n]; d_ip <- d[-1]
+  H_i <- H[-n]; H_ip <- H[-1]
+  for (k in 1:(K_biv - 1)) for (j in 1:(K_biv - k)) {
+    cross <- c(cross,
+      mean(meixner_poly(k, d_i, alpha) * meixner_poly(j, d_ip, alpha)),
+      mean(legendre_poly(k, H_ip) * legendre_poly(j, H_i)),
+      mean(meixner_poly(k, d, alpha) * legendre_poly(j, H)),
+      mean(meixner_poly(k, d_ip, alpha) * legendre_poly(j, H_i))
+    )}
+
+  freq_V <- Ps
+  sev_V <- Qs
+  global_V <- c(Qs, Ps, cross)
+
+  c(
+    global = pchisq(n * sum(global_V^2), length(global_V), lower.tail = FALSE),
+    freq = pchisq(n * sum(freq_V^2), length(freq_V), lower.tail = FALSE),
+    sev = pchisq(n * sum(sev_V^2), length(sev_V), lower.tail = FALSE)
+  )}
+
+# DGP-simulationer (d_i, H_i), 3 datagenererende processer D1, D2 og D3 (H1) samt under H_0
+sim_H0 <- function(T, alpha) {
+  N_target <- ceiling(T * alpha) + 50 #Vi simulerer rigeligt med violations for at være sikker på dækning
+  d <- rgeom(N_target, alpha) + 1
+  cs <- cumsum(d)
+  d <- d[cs <= T]
+  H <- runif(length(d), 0, 1)
+  list(d = d, H = H)}
+
+sim_D1 <- function(T, alpha) {
+  out <- sim_H0(T, alpha)
+  out$H <- runif(length(out$d), 0.2, 0.8)
+  out}
+
+sim_D2 <- function(T, alpha) {
+  N_target <- ceiling(T * alpha) + 50 #Vi simulerer rigeligt med violations for at være sikker på dækning
+  d <- rnbinom(N_target, size = (1 - alpha) / alpha, prob = 0.5) + 1
+  cs <- cumsum(d)
+  d <- d[cs <= T]
+  H <- runif(length(d), 0, 1)
+  list(d = d, H = H)}
+
+sim_D3 <- function(T, alpha) {
+  out <- sim_D2(T, alpha)
+  out$H <- runif(length(out$d), 0.2, 0.8)
+  out}
+
+
+# Kalibrering under H_0 og kritiske værdier 
+alpha <- 0.025 #konsistent med projektet                      
+T_sekvens <- c(250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500)
+M0 <- 100000 #MC reps under H_0 (køres 8 gange i alt, én pr. T værdi)
+M1 <- 10000 #MC reps under H_1 (køres 3 gange pr. T værdi, i alt 24)
+K_uni <- 4
+K_biv <- 3
+signifikansniveau <- 0.0412 # konsistent med projekt
+
+crit_vals <- list()
+for (T_val in T_sekvens) {
+  DS0 <- matrix(NA_real_, M0, 3,
+                dimnames = list(NULL, c("global","freq","sev")))
+  for (i in seq_len(M0)) {
+    s <- sim_H0(T_val, alpha)
+    DS0[i, ] <- ds_test_di_Hi(s$d, s$H, alpha, K_uni, K_biv)
+  }
+  crit_vals[[as.character(T_val)]] <- list(
+    q_g = quantile(DS0[, "global"], signifikansniveau, na.rm = TRUE),
+    q_f = quantile(DS0[, "freq"], signifikansniveau, na.rm = TRUE),
+    q_s = quantile(DS0[, "sev"], signifikansniveau, na.rm = TRUE)
+  )}
+
+# Styrker
+DGPs <- list(D1 = sim_D1, D2 = sim_D2, D3 = sim_D3)
+
+styrke_resultater <- array(NA_real_,
+  dim = c(length(DGPs), length(T_sekvens), 3),
+  dimnames = list(DGP  = names(DGPs),
+                  T = as.character(T_sekvens),
+                  comp = c("global","freq","sev"))
+)
+
+for (dg in names(DGPs)) {
+  for (T_val in T_sekvens) {
+    cv <- crit_vals[[as.character(T_val)]]
+    rej <- matrix(NA_real_, M1, 3,
+                  dimnames = list(NULL, c("global","freq","sev")))
+    for (i in seq_len(M1)) {
+      s <- DGPs[[dg]](T_val, alpha)
+      pv <- ds_test_di_Hi(s$d, s$H, alpha, K_uni, K_biv)
+      rej[i, "global"] <- as.numeric(pv["global"] < cv$q_g)
+      rej[i, "freq"] <- as.numeric(pv["freq"] < cv$q_f)
+      rej[i, "sev"] <- as.numeric(pv["sev"] < cv$q_s)
+    }
+    styrke_resultater[dg, as.character(T_val), ] <- colMeans(rej, na.rm = TRUE)
+  }}
+
+
+# Plots
+col_freq <- "deeppink3"
+col_sev <- "cornflowerblue"
+col_global <- "darkcyan"
+
+dgp_cases <- list(
+  D1 = expression("Severity-fejl: "*H[i] %~% U(0.2, 0.8)),
+  D2 = expression("Frekvens-fejl: "*d[i]-1 %~% NB),
+  D3 = expression("Begge fejl")
+)
+
+for (dg in names(DGPs)) {
+  plot(T_sekvens,
+       styrke_resultater[dg, , "global"],
+       type = "n",
+       lwd = 2,
+       ylim = c(0, 1),
+       xlim = c(min(T_sekvens), max(T_sekvens)),
+       xlab = expression(T),
+       ylab = "Styrke",
+       xaxt = "n",
+       yaxt = "n",
+       main = dgp_cases[[dg]])
+  abline(h = seq(0, 1, 0.1), col = "grey70")
+  abline(v = T_sekvens,         col = "grey90")
+  axis(2,
+       at = seq(0, 1, 0.1),
+       labels = sprintf("%.1f", seq(0, 1, 0.1)),
+       las = 1)
+  axis(1,
+       at = T_sekvens,
+       labels = T_sekvens,
+       las = 2,
+       cex.axis = 0.7)
+  lines(T_sekvens, styrke_resultater[dg, , "global"],
+        col = col_global, lwd = 3)
+  lines(T_sekvens, styrke_resultater[dg, , "freq"],
+        col = col_freq, lwd = 3)
+  lines(T_sekvens, styrke_resultater[dg, , "sev"],
+        col = col_sev, lwd = 3)
+  abline(h = signifikansniveau, col = "grey40", lwd = 2, lty = 2)
+  legend("right",
+         legend = c("Global", "Frekvens", "Severity"),
+         col = c(col_global, col_freq, col_sev),
+         lwd = 3,
+         bty = "n")
+}
+
+```
+```{r fig.width = 10, fig.height = 4, dpi = 300}
+# Heatmap
+par(mfrow = c(1, 3), mar = c(4.5, 4.5, 2.5, 1), oma = c(0, 0, 2, 0))
+
+plot_heatmap <- function(mat, main_txt) {
+  nr <- nrow(mat); nc <- ncol(mat)
+  cols <- colorRampPalette(c("white", "aquamarine1", "aquamarine4"))(100)
+  image(1:nc, 1:nr, t(mat[nr:1, , drop = FALSE]),
+        col = cols, zlim = c(0, 1),
+        axes = FALSE, xlab = "T", ylab = "DGP",
+        main = main_txt)
+  axis(1, at = 1:nc, labels = colnames(mat), las = 2, cex.axis = 0.85)
+  axis(2, at = 1:nr, labels = rev(rownames(mat)), las = 1)
+  box()
+  for (i in 1:nr) for (j in 1:nc) {
+    val  <- mat[i, j]
+    txt_col <- if (val > 0.55) "white" else "black"
+    text(j, nr - i + 1, sprintf("%.2f", val),
+         col = txt_col, cex = 0.85)
+  }}
+
+matrix_freq <- styrke_resultater[, , "freq"]
+matrix_sev <- styrke_resultater[, , "sev"]
+matrix_global <- styrke_resultater[, , "global"]
+
+plot_heatmap(matrix_freq, expression("Frekvens teststyrke"))
+plot_heatmap(matrix_sev, expression("Severity teststyrke"))
+plot_heatmap(matrix_global, expression("Global teststyrke"))
+
+```
+
+```{r fig.width = 10, fig.height = 6, dpi = 300}
+
+# Fordelinger af d_i og H_i under H0 og H1 (D1, D2) ved T = 250
+set.seed(2026)
+T_demo <- 250
+n_demo <- 5000
+
+saml_d <- function(sim_fn, T, alpha, n) {
+  out_list <- vector("list", n)
+  for (i in 1:n) out_list[[i]] <- sim_fn(T, alpha)$d
+  unlist(out_list, use.names = FALSE)
+}
+saml_H <- function(sim_fn, T, alpha, n) {
+  out_list <- vector("list", n)
+  for (i in 1:n) out_list[[i]] <- sim_fn(T, alpha)$H
+  unlist(out_list, use.names = FALSE)
+}
+
+d_H0 <- saml_d(sim_H0, T_demo, alpha, n_demo)
+d_D2 <- saml_d(sim_D2, T_demo, alpha, n_demo)
+H_H0 <- saml_H(sim_H0, T_demo, alpha, n_demo)
+H_D1 <- saml_H(sim_D1, T_demo, alpha, n_demo)
+
+
+# Plot
+col_H0 <- "darkcyan"
+col_H1 <- "deeppink3"
+
+# d_i fordeling
+d_combined <- c(d_H0, d_D2)
+d_upper <- ceiling(quantile(d_combined, 0.99))
+d_max_all <- max(d_combined)
+bins_d <- seq(1, d_max_all + 2, by = 2)
+
+h_H0 <- hist(d_H0, breaks = bins_d, plot = FALSE)
+h_D2 <- hist(d_D2, breaks = bins_d, plot = FALSE)
+
+y_max_d <- max(h_H0$density, h_D2$density) * 1.05
+
+plot(h_H0, freq = FALSE,
+     col = adjustcolor(col_H0, alpha.f = 0.5),
+     border = col_H0,
+     xlim = c(0, d_upper),
+     ylim = c(0, y_max_d),
+     xlab = expression(d[i]),
+     ylab = "Tæthed",
+     main = expression("Fordeling af "*d[i]*" ved T = 250 | " * alpha * " = 0.025"),
+     las = 1)
+plot(h_D2, freq = FALSE,
+     col = adjustcolor(col_H1, alpha.f = 0.5),
+     border = col_H1,
+     add = TRUE)
+legend("topright",
+       legend = c(expression(H[0]*": Geom(" * alpha * ")"),
+                  expression(D[2]*": NB((1-" * alpha * ")/" * alpha * ", 0.5)")),
+       fill = c(adjustcolor(col_H0, alpha.f = 0.5),
+                adjustcolor(col_H1, alpha.f = 0.5)),
+       border = c(col_H0, col_H1),
+       bty = "n")
+
+
+# H_i fordeling
+bins_H <- seq(0, 1, by = 0.025)
+
+h_H0_H <- hist(H_H0, breaks = bins_H, plot = FALSE)
+h_D1_H <- hist(H_D1, breaks = bins_H, plot = FALSE)
+
+y_max_H <- max(h_H0_H$density, h_D1_H$density) * 1.1
+
+plot(h_H0_H, freq = FALSE,
+     col = adjustcolor(col_H0, alpha.f = 0.5),
+     border = col_H0,
+     xlim = c(0, 1),
+     ylim = c(0, y_max_H),
+     xlab = expression(H[i]),
+     ylab = "Tæthed",
+     main = expression("Fordeling af "*H[i]*" ved T = 250"),
+     las = 1)
+plot(h_D1_H, freq = FALSE,
+     col = adjustcolor(col_H1, alpha.f = 0.5),
+     border = col_H1,
+     add = TRUE)
+legend("topright",
+       legend = c(expression(H[0]*": U(0, 1)"),
+                  expression(D[1]*": U(0.2, 0.8)")),
+       fill = c(adjustcolor(col_H0, alpha.f = 0.5),
+                adjustcolor(col_H1, alpha.f = 0.5)),
+       border = c(col_H0, col_H1),
+       bty = "n")
+
+```
+
+```{r fig.width = 10, fig.height = 6, dpi = 300}
+# Halefordeling af negative afkast (tab vist som negative afkast)
+alpha <- 0.025
+nu <- 10
+
+H_to_loss <- function(H, alpha, nu) {
+  u <- alpha * (1 - H)
+  -qt(u, df = nu) * sqrt((nu - 2)/nu)}
+
+loss_density <- function(loss, nu) {
+  z <- -loss * sqrt(nu/(nu - 2))
+  dt(z, df = nu) * sqrt(nu/(nu - 2))}
+
+# Risikomål
+VaR <- -qt(alpha, nu) * sqrt((nu - 2)/nu)
+q_a <- qt(alpha, nu)
+ES <- sqrt((nu - 2)/nu) * (dt(q_a, nu)/alpha) * (nu + q_a^2)/(nu - 1)
+
+loss_lower_D1 <- H_to_loss(0.2, alpha, nu)
+loss_upper_D1 <- H_to_loss(0.8, alpha, nu)
+loss_max_vis <- H_to_loss(0.99, alpha, nu)
+
+loss_grid <- seq(VaR, loss_max_vis, length.out = 1000)
+dens_H0 <- loss_density(loss_grid, nu)
+
+dens_D1 <- ifelse(
+  loss_grid >= loss_lower_D1 & loss_grid <= loss_upper_D1,
+  loss_density(loss_grid, nu) / 0.6,
+  0
+)
+
+# Konvetering til negative afkast
+ret_grid <- -loss_grid
+ret_VaR <- -VaR
+ret_ES <- -ES
+ret_lower_D1 <- -loss_upper_D1
+ret_upper_D1 <- -loss_lower_D1
+ret_min_vis <- -loss_max_vis
+
+# Plot
+col_H0 <- "darkcyan"
+col_D1 <- "deeppink3"
+
+plot(ret_grid, dens_H0,
+     type = "n",
+     xlim = c(ret_min_vis, ret_VaR),
+     ylim = c(0, max(c(dens_H0, dens_D1)) * 1.05),
+     xlab = expression("Realiseret afkast "*X[t]),
+     ylab = "Tæthed",
+     main = expression("Halefordeling af afkast givet VaR-overskridelse"),
+     las = 1)
+
+# Skygge under H0-kurven
+polygon(c(ret_grid, rev(ret_grid)),
+        c(dens_H0, rep(0, length(ret_grid))),
+        col = adjustcolor(col_H0, alpha.f = 0.5),
+        border = NA)
+
+# Skygge under D1-kurven mellem grænserne 
+mask <- ret_grid >= ret_lower_D1 & ret_grid <= ret_upper_D1
+polygon(c(ret_grid[mask], rev(ret_grid[mask])),
+        c(dens_D1[mask], rep(0, sum(mask))),
+        col = adjustcolor(col_D1, alpha.f = 0.5),
+        border = NA)
+
+# Kurver
+lines(ret_grid, dens_H0, col = col_H0, lwd = 2)
+lines(ret_grid[mask], dens_D1[mask], col = col_D1, lwd = 2)
+
+# Grænser 
+abline(v = ret_lower_D1, col = col_D1, lty = 2, lwd = 2)
+abline(v = ret_upper_D1, col = col_D1, lty = 2, lwd = 2)
+
+legend("topleft",
+       legend = c(expression(H[0]*": "*H[i] %~% U(0,1)),
+                  expression(D[1]*": "*H[i] %~% U(0.2,0.8))),
+       fill   = c(adjustcolor(col_H0, alpha.f = 0.35),
+                  adjustcolor(col_D1, alpha.f = 0.45)),
+       border = c(col_H0, col_D1),
+       bty    = "n")
+
+```
