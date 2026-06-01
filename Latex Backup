@@ -88,6 +88,8 @@ Dato: & 4. juni 2026
 
 \section*{Abstract}
 
+Lorem ipsum
+
 
 \newpage
 
@@ -98,11 +100,20 @@ Dato: & 4. juni 2026
 
 \section{Indledning}
 
-I 2013 anbefalede Basel-komitéen at erstatte risikomålet Value-at-Risk (VaR) med risikomålet Expected Shortfall (ES), der fremover skulle være grundlag for de finansielle institutioners kapitalkrav (Basel Committee, 2013). Baggrunden for Basel-komitéens anbefaling var en række kendte svagheder ved VaR, herunder risikomålets manglende evne til at beskrive størrelsen af tab ud over VaR-tærsklen samt dets brud på subadditivitet. ES adresserer disse svagheder ved at tage højde for både størrelsen af tab og sandsynligheden for tab ud over et givent niveau. Under et kapitalkrav der baserer sig på VaR, er det 1\%-fraktilen af afkastfordelignen, der tages højde for, hvorimod ES baserer sig på gennemsnittet af de mest ekstreme tab, der overskrider 2.5\%-fraktilen. 
+I 2013 anbefalede Basel-komitéen at erstatte risikomålet Value-at-Risk (VaR) med risikomålet Expected Shortfall (ES), der fremover skulle være grundlag for de finansielle institutioners kapitalkrav (Basel Committee, 2013). Baggrunden for Basel-komitéens anbefaling var en række kendte svagheder ved VaR, herunder risikomålets manglende evne til at beskrive størrelsen af tab ud over VaR-tærsklen samt dets brud på subadditivitet. ES adresserer disse svagheder ved at tage højde for både størrelsen af tab og sandsynligheden for tab ud over et givent niveau. Under et kapitalkrav der baserer sig på VaR, er det 1\%-fraktilen af afkastfordelingen, der tages højde for, hvorimod ES baserer sig på gennemsnittet af de mest ekstreme tab, der overskrider 2.5\%-fraktilen. 
 
-Det regulatoriske skift fra VaR til ES rejser dog et metodisk problem, idet kapitalkrav er omkostningsfulde for finansielle institutioner, hvis risikoen overvurderes. Det er derfor nødvendigt at undersøge, om risikoen undervurderes. Denne procedure kaldes backtesting, som vurderer, om en prædiktiv risikomodel faktisk afspejler de realiserede tab. For VaR er backtesting forholdsvis ligetil, mens backtesting af ES er sværere. I en periode var man således i tvivl, om det overhovedet kunne lade sig gøre. Siden Basel-komitéens anbefaling i 2013 er der dog blevet udviklet flere konkurrerende metoder til backtesting af ES.
+Det regulatoriske skift fra VaR til ES rejser dog et metodisk problem, 
+idet kapitalkrav er omkostningsfulde for finansielle institutioner, der 
+derfor har incitament til at undervurdere risikoen. Det er således 
+nødvendigt at undersøge, om risikoen faktisk er korrekt estimeret. 
+Denne procedure kaldes backtesting og vurderer, om en prædiktiv 
+risikomodel afspejler de realiserede tab. For VaR er backtesting forholdsvis ligetil, mens backtesting af ES er sværere. I en periode var man således i tvivl, om det overhovedet kunne lade sig gøre. Siden Basel-komitéens anbefaling i 2013 er der dog blevet udviklet flere konkurrerende metoder til backtesting af ES.
 
-Formålet med dette projekt er at undersøge og sammenligne en række af disse ES-backtets. Projektet inddrager således de tre $Z$-teststørrelser fra Acerbi \& Szekely (2014), Exceedance Residuals-backtesten af McNeil \& Frey (2000), Conditional Calibration-backtesten af Nolde \& Ziegel (2017) samt Duration-Severity-backtesten af Hué et al. (2024), der foreslår en ny backtesting-metode, som muliggør diagnosticering af modelfejl.
+Formålet med dette projekt er at undersøge og sammenligne en række af disse ES-backtets. Projektet inddrager således de tre $Z$-teststørrelser fra Acerbi \& Szekely (2014), Exceedance Residuals-backtesten af McNeil \& Frey (2000), Conditional Calibration-backtesten af Nolde \& Ziegel (2017) samt Duration-Severity-backtesten af Hué et al. (2024), der foreslår en ny backtesting-metode, som muliggør diagnosticering af modelfejl. Hvor de øvrige backtests besvarer spørgsmålet om, hvorvidt en model skal 
+forkastes, åbner DS-backtesten for et supplerende spørgsmål om, hvor 
+fejlen ligger. Dette kan være i frekvensen af 
+VaR-overskridelser, i dybden af tabene givet en overskridelse, eller i 
+begge komponenter samtidig.
 
 Projektet undersøger styrken af de anvendte backtests, når Monte-Carlo simulerede afkast kommer fra en datagenerende proces, som er misspecificeret i forhold til den prædiktive model. Vi starter med i.i.d. $t$-fordelte afkast og udvider derefter den parametriske model til en GARCH(1,1)-proces estimeret på daglige log-afkast fra S\&P 500 i to volatilitetsregimer. Her undersøges testenes følsomhed under forskellige former for misspecifikation. Projektet undersøger yderligere de ikke-parametriske metoder, herunder historisk simulation (HS) og vægtet historisk simulation (WHS). Endelig anvendes Duration-Severity-backtesten både under kontrolleret misspecifikation og på faktiske markedsdata, for at undersøge om DS er brugbart i praksis.
 
@@ -609,13 +620,13 @@ r_{1,t} - r_{2,t} - \frac{1}{\alpha}\mathbf{1}_{\{X_t < -r_{1,t}\}}(r_{1,t} + X_
 \]
 som opfylder $\mathbb{E}[V(r_{1,t}, r_{2,t}, X_t) \mid \mathcal{F}_{t-1}] = 0$ hvis og
 kun hvis $(r_{1,t}, r_{2,t}) = (\mathrm{VaR}^{F}_{\alpha,t}, \mathrm{ES}^{F}_{\alpha,t})$,
-altså når de to komponenter svarer til det sande betingede risikopar, se appendiks A.2.
+altså når de to komponenter svarer til det sande betingede risikopar (se appendiks A.2).
 En model siges at være betinget kalibreret, når fejlene ikke udviser systematiske
 mønstre givet den tilgængelige information.
 
 For at gøre betingelsen testbar anvendes $\mathcal{F}_{t-1}$-målelige testfunktioner
 $h_t$, og vi sætter $Z_t = h_t V(r_{1,t}, r_{2,t}, X_t)$. Vi vælger den simpleste
-testfunktion $h_t = I$, hvor $I$ er $2\times 2$ identitetsmatricen, hvilket reducerer
+testfunktion $h_t = I_2$, hvilket reducerer
 den betingede kalibreringsbetingelse til den ubetingede momentbetingelse
 $\mathbb{E}[V(r_{1,t}, r_{2,t}, X_t)] = 0$. Dermed bliver $Z_t = V(r_{1,t}, r_{2,t}, X_t)$,
 og vi definerer
@@ -632,38 +643,39 @@ risikoparret korrekt kalibreret, mens den alternative hypotese dækker, at minds
 \begin{align*}
     H_0 &: (r_{1,t}, r_{2,t}) = (\mathrm{VaR}^{F}_{\alpha,t}, \mathrm{ES}^{F}_{\alpha,t}),
         \quad \forall t \\
-    H_1 &: \mathrm{VaR}^{F}_{\alpha,t} \geq \mathrm{VaR}_{\alpha,t} \ \text{og}\
-        \mathrm{ES}^{F}_{\alpha,t} \geq \mathrm{ES}_{\alpha,t}, \quad \forall t
+    H_1 &: \mathrm{VaR}^{F}_{\alpha,t} \geq r_{1,t} \ \text{og}\
+        \mathrm{ES}^{F}_{\alpha,t} \geq r_{2,t}, \quad \forall t
         \ \text{og} > \text{for mindst ét } t,
 \end{align*}
-
-
-
-Vi tester ensidigt for systematisk undervurdering af risiko:
-\[
-H_0:\ \mathbb{E}[Z_t] \geq 0,
-\qquad
-H_1:\ \mathbb{E}[Z_t] < 0.
-\]
+De to komponenter af $V$ reagerer modsat på undervurdering. For $r_1$-komponenten medfører
+undervurdering en overskridelsessandsynlighed større end $\alpha$, hvilket gør
+$\bar{Z}_{T,1}$ negativ. For $r_2$-komponenten gælder, når VaR er korrekt, at $\bar{Z}_{T,2}$
+har forventning lig sand ES minus forudsagt ES, så undervurdering af ES gør $\bar{Z}_{T,2}$
+positiv (se appendiks A.2). Hver komponent testes derfor i sin egen hale, $r_1$-komponenten i den venstre og
+$r_2$-komponenten i den højre.
 
 Teststørrelsen gives komponentvist ved
-\[
-T_n = \sqrt{n}\,\hat{\Omega}_n^{-1/2}\bar{Z}_n,
-\]
-som under $H_0$ er asymptotisk standardnormalfordelt. For hver komponent $i=1,2$ beregnes p-værdien som
-\[
-\pi_i
-=
-\Phi\left(
-\frac{\sqrt{n}\,\bar{Z}_{n,i}}{\sqrt{\hat{\Omega}_{n,ii}}}
-\right),
-\]
-hvor $\Phi$ er fordelingsfunktionen for standardnormalfordelingen.
-
-Da testen omfatter to komponenter, anvendes en Bonferroni-korrektion, således at nulhypotesen forkastes ved niveau $\eta$, hvis
-\[
-\min(\pi_1,\pi_2) < \frac{\eta}{2}.
-\]
+\begin{equation*}
+    \mathcal{T}_i = \sqrt{T}\,\hat{\Omega}_{T,ii}^{-1/2}\,\bar{Z}_{T,i},
+    \qquad i = 1, 2.
+\end{equation*}
+Nolde \& Ziegel (2017) viser, at hver komponent $\mathcal{T}_i$ asymptotisk er
+standardnormalfordelt under $H_0$. Dette kræver dog en lang testperiode, og da $T$ er
+begrænset i dette projekt, fastlægger vi i stedet fordelingen af $\mathcal{T}_1$ og
+$\mathcal{T}_2$ ved simulation under den korrekt specificerede model, i tråd med de øvrige
+teststørrelser.
+Lad $\hat{F}_i$ betegne den simulerede fordelingsfunktion for
+$\mathcal{T}_i$ under $H_0$. $p$-værdierne beregnes i den retning, der svarer til
+undervurdering,
+\begin{equation*}
+    \pi_1 = \hat{F}_1(\mathcal{T}_1), \qquad \pi_2 = 1 - \hat{F}_2(\mathcal{T}_2),
+\end{equation*}
+hvor $r_1$-komponenten vurderes i den nedre hale og $r_2$-komponenten i den øvre. Da testen
+omfatter to komponenter, anvendes en Bonferroni-korrektion, således at $H_0$ forkastes på
+niveau $\eta$, hvis
+\begin{equation*}
+    \min(\pi_1, \pi_2) < \frac{\eta}{2}.
+\end{equation*}
 
 \section{Analyse af Z-teststørrelser}
 
@@ -1025,96 +1037,45 @@ I forlængelse af stabilitetsanalysen i afsnit 4.3 undersøges det, om de kritis
 På tværs af Case 1, 2 og 3 ligger den kritiske 5\%-værdi for $Z_2$ stabilt omkring $-0.70$ i begge regimer, og afvigelserne overstiger ikke $0.02$. Det bekræfter konklusionen fra afsnit 4.3 om, at $Z_2$ kan implementeres uden lagring af de fulde prædiktive fordelinger $P_t$, hvilket er særligt værdifuldt under GARCH(1,1), hvor $P_t$ varierer over tid. For $Z_3$ tegner Case 1-3 indledningsvis et billede af stabilitet indenfor hvert regime, men en forskel mellem regimerne på ca.\ $0.04$. Tabel~\ref{tab:stab_case1inno} afdækker årsagen: når $\nu$ varieres med øvrige parametre fastholdt, ændres $Z_3$'s 5\%-fraktil fra $-0.49$ ved $\nu = 3$ til $-0.14$ ved $\nu = 100$.
 
 At $Z$-testene reagerer på $\nu$ og ikke på $\omega$, $\alpha$ eller $\beta$ skyldes, at de hver dag normaliserer med deres egen forudsagte $ES_{\alpha,t}$. Skiftet i skala, som GARCH-parametrene styrer via $\sigma_t$, forsvinder dermed, og kun haleformen står tilbage - og den styres af $\nu$. $Z_2$ er kun svagt følsom over for $\nu$ for moderate frihedsgrader, fordi normaliseringen sker dag for dag. $Z_3$ derimod baseres på et gennemsnit af de værste tab, som varierer kraftigt fra simulation til simulation når halen er tung, hvilket trækker dens 5\%-fraktil længere ud i den negative hale. Forskellen mellem regimerne i Case 1-3 afspejler derfor primært forskellen i estimerede frihedsgrader ($\nu = 8.8$ vs.\ $\nu = 17.5$). I praksis kræver $Z_3$ dermed en kritisk værdi tilpasset det aktuelle estimat af $\nu$, hvilket fortsat er mere beregningsbesparende end at gemme hele $P_t$.
-\vspace{0.5cm}
 
-\begin{figure}[H]
-\centering
 
-% Øverste række
-\begin{minipage}[t]{0.48\textwidth}
+\begin{table}[H]
 \centering
-\begin{tabular}{l cc cc}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}l l l cccc cccc@{}}
 \toprule
-& \multicolumn{2}{c}{Lav vol.} & \multicolumn{2}{c}{Høj vol.} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5}
-$c$ & $Z_2$ & $Z_3$ & $Z_2$ & $Z_3$ \\
+& & & \multicolumn{4}{c}{Lav volatilitetsregime} & \multicolumn{4}{c}{Høj volatilitetsregime} \\
+\cmidrule(lr){4-7} \cmidrule(lr){8-11}
+Case & & Misspecifikation & $Z_2$ & $Z_3$ & $\mathrm{CC}_1$ & $\mathrm{CC}_2$
+                          & $Z_2$ & $Z_3$ & $\mathrm{CC}_1$ & $\mathrm{CC}_2$ \\
 \midrule
-0.5 & -0.71 & -0.21 & -0.70 & -0.17 \\
-1   & -0.71 & -0.21 & -0.71 & -0.17 \\
-3.5 & -0.71 & -0.21 & -0.70 & -0.17 \\
-\bottomrule
-\end{tabular}
-%\captionof{table}{\small \textbf{\textit{Tabel x:}} Kritiske 5\%-værdier for $Z_2$ og $Z_3$ ved skalering af $\omega$ med faktor c (Case 1, afsnit 5.2.1).}
-\tabcap{Kritiske 5\%-værdier for $Z_2$ og $Z_3$ ved skalering af $\omega$ med faktor c (Case 1, afsnit 5.2.1).}{tab:stab_case1}
-\label{tab:stab_case1}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.48\textwidth}
-\centering
-\begin{tabular}{l cc cc}
-\toprule
-& \multicolumn{2}{c}{Lav vol.} & \multicolumn{2}{c}{Høj vol.} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5}
-$\alpha$ & $Z_2$ & $Z_3$ & $Z_2$ & $Z_3$ \\
+\multirow{3}{*}{\shortstack[l]{\textbf{Case 1}\\ skalering af $\omega$}}
+& & $\hat{\omega}/2$    & -0.71 & -0.21 & -1.46 & 1.12 & -0.70 & -0.17 & -1.21 & 1.10 \\
+& & $\hat{\omega}$      & -0.71 & -0.21 & -1.46 & 1.13 & -0.69 & -0.17 & -1.21 & 1.10 \\
+& & $3.5\,\hat{\omega}$ & -0.71 & -0.21 & -1.46 & 1.13 & -0.70 & -0.17 & -1.46 & 1.11 \\
 \midrule
-$\hat{\alpha}/4$ & -0.71 & -0.21 & -0.70 & -0.17 \\
-$\hat{\alpha}$   & -0.71 & -0.21 & -0.70 & -0.17 \\
-$2\hat{\alpha}$  & -0.71 & -0.21 & -0.70 & -0.17 \\
-\bottomrule
-\end{tabular}
-%\captionof{table}{\small \textbf{\textit{Tabel x:}} Kritiske 5\%-værdier for $Z_2$ og $Z_3$ ved skalering af $\alpha$ med $\alpha+\beta$ fast (Case 3, afsnit 5.2.3).}
-\tabcap{Kritiske 5\%-værdier for $Z_2$ og $Z_3$ ved skalering af $\alpha$ med $\alpha+\beta$ fast (Case 3, afsnit 5.2.3).}{tab:stab_case3}
-\label{tab:stab_case3}
-\end{minipage}
-
-\vspace{1.5em}
-
-% Nederste række
-\begin{minipage}[t]{0.48\textwidth}
-\centering
-\begin{tabular}{ll cc cc}
-\toprule
-& & \multicolumn{2}{c}{Lav vol.} & \multicolumn{2}{c}{Høj vol.} \\
-\cmidrule(lr){3-4} \cmidrule(lr){5-6}
-& $\alpha{+}\beta$ & $Z_2$ & $Z_3$ & $Z_2$ & $Z_3$ \\
+\multirow{4}{*}{\shortstack[l]{\textbf{Case 2}\\ variation af\\ $\alpha+\beta$}}
+& \multirow{2}{*}{Fast $\omega$}              & $\alpha+\beta = 0.75$ & -0.71 & -0.21 & -1.46 & 1.16 & -0.70 & -0.17 & -1.46 & 1.19 \\
+&                                             & $\alpha+\beta = 0.99$ & -0.70 & -0.21 & -1.21 & 1.01 & -0.70 & -0.17 & -1.46 & 1.12 \\
+\cmidrule(lr){2-11}
+& \multirow{2}{*}{Fast $\mathbb{E}[\sigma^2]$} & $\alpha+\beta = 0.75$ & -0.71 & -0.22 & -1.46 & 1.16 & -0.70 & -0.17 & -1.46 & 1.19 \\
+&                                             & $\alpha+\beta = 0.99$ & -0.71 & -0.21 & -1.46 & 1.01 & -0.70 & -0.17 & -1.46 & 1.12 \\
 \midrule
-\multirow{2}{*}{Fast $\omega$}
-& 0.75 & -0.70 & -0.21 & -0.70 & -0.17 \\
-& 0.99 & -0.71 & -0.21 & -0.70 & -0.17 \\
-\cmidrule(lr){2-6}
-\multirow{2}{*}{Fast $\mathbb{E}[\sigma^2]$}
-& 0.75 & -0.72 & -0.21 & -0.70 & -0.17 \\
-& 0.99 & -0.70 & -0.21 & -0.70 & -0.17 \\
-\bottomrule
-\end{tabular}
-%\captionof{table}{\small \textbf{\textit{Tabel x:}} Kritiske 5\%-værdier for $Z_2$ og $Z_3$ ved variation af $\alpha+\beta$ med hhv. fast $\omega$ (2a) og fast $\mathbb{E}[\sigma^2]$ (2b) (Case 2, afsnit 5.2.2).}
-\tabcap{Kritiske 5\%-værdier for $Z_2$ og $Z_3$ ved variation af $\alpha+\beta$ med hhv. fast $\omega$ (2a) og fast $\mathbb{E}[\sigma^2]$ (2b) (Case 2, afsnit 5.2.2).}{tab:stab_case2}
-\label{tab:stab_case2}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.48\textwidth}
-\centering
-\begin{tabular}{l cc cc}
-\toprule
-& \multicolumn{2}{c}{Lav vol.} & \multicolumn{2}{c}{Høj vol.} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5}
-$\nu$ & $Z_2$ & $Z_3$ & $Z_2$ & $Z_3$ \\
+\multirow{3}{*}{\shortstack[l]{\textbf{Case 3}\\ skalering af $\alpha$}}
+& & $\hat{\alpha}/4$ & -0.71 & -0.21 & -1.46 & 1.16 & -0.70 & -0.17 & -1.46 & 1.17 \\
+& & $\hat{\alpha}$   & -0.72 & -0.21 & -1.46 & 1.13 & -0.70 & -0.17 & -1.21 & 1.11 \\
+& & $2\hat{\alpha}$  & -0.71 & -0.21 & -1.46 & 1.08 & -0.71 & -0.17 & -1.46 & 1.06 \\
 \midrule
-3   & -0.81 & -0.49 & -0.81 & -0.49 \\
-5   & -0.73 & -0.30 & -0.73 & -0.30 \\
-10  & -0.70 & -0.20 & -0.71 & -0.20 \\
-100 & -0.69 & -0.14 & -0.69 & -0.15 \\
+\multirow{4}{*}{\shortstack[l]{\textbf{Frihedsgrader}\\ variation af $\nu$}}
+& & $\nu = 3$   & -0.81 & -0.49 & -1.46 & 1.02 & -0.81 & -0.49 & -1.46 & 0.96 \\
+& & $\nu = 5$   & -0.73 & -0.30 & -1.46 & 1.08 & -0.73 & -0.30 & -1.46 & 1.03 \\
+& & $\nu = 10$  & -0.70 & -0.20 & -1.46 & 1.13 & -0.71 & -0.20 & -1.46 & 1.08 \\
+& & $\nu = 100$ & -0.69 & -0.14 & -1.46 & 1.16 & -0.69 & -0.15 & -1.46 & 1.13 \\
 \bottomrule
-\end{tabular}
-%\captionof{table}{\small \textbf{\textit{Tabel x:}} Kritiske 5\%-værdier for $Z_2$ og $Z_3$ ved variation af $\nu$ i innovationerne. Øvrige parametre fastholdt fra Tabel~\ref{tab:EstimeredeGARCH} er fastholdt.}
-\tabcap{Kritiske 5\%-værdier for $Z_2$ og $Z_3$ ved variation af $\nu$ i innovationerne. Øvrige parametre fastholdt fra Tabel~\ref{tab:EstimeredeGARCH} er fastholdt.}{tab:stab_case1inno}
-\label{tab:stab_nu}
-\end{minipage}
-
-\end{figure}
-
-
-
+\end{tabular*}
+\tabcap{Empiriske kritiske 5\%-værdier for $Z_2$, $Z_3$ og CC-komponenterne under de fire misspecifikationer. $\mathrm{CC}_1$ aflæses i nedre hale og $\mathrm{CC}_2$ i øvre hale.}{tab:stab_samlet}
+\label{tab:stab_samlet}
+\end{table}
 
 \subsection{Delkonklusion}
 
@@ -1347,7 +1308,7 @@ betydning for afvisningsraternes niveau.
 
 For at vurdere om de eksisterende backtests kan opfange fejlene ved 
 HS og WHS, beregnes teststørrelserne $Z_2$, VaR-overskridelsestesten, 
-ER samt CC over $M = 10.000$ simulerede stier ved $m = 250$ og 
+ER samt CC over $M = 10000$ simulerede stier ved $m = 250$ og 
 $T = 250$ dage. 
 
 \begin{figure}[H]
@@ -1378,12 +1339,12 @@ $T = 250$ dage.
 \begin{subfigure}{0.32\textwidth}
 \centering
 \includegraphics[width=\linewidth]{Skærmbillede 2026-05-11 kl. 16.03.39.png}
-\caption{\small CC - 1. komponent}
+\caption{\small Tæthed af CC - 1. komponent}
 \end{subfigure}
 \begin{subfigure}{0.32\textwidth}
 \centering
-\includegraphics[width=\linewidth]{Skærmbillede 2026-05-11 kl. 16.04.26.png}
-\caption{\small CC - 2. komponent}
+\includegraphics[width=\linewidth]{Skærmbillede 2026-06-01 kl. 12.35.33.png}
+\caption{\small Tæthed af CC - 2. komponent}
 \end{subfigure}
 \addtocounter{figure}{-1}
 %\caption{\small \textbf{\textit{Figur xx:}} Tæthedsfunktioner og histogrammer for de fire teststørrelser (hvor CC splittes i to komponenter) under GARCH, HS og WHS for perioden med høj volatilitet (2021-2023). Den stiplede lodrette linje angiver den kritiske værdi bestemt under GARCH-antagelsen ved signifikansniveauet 0.0412. Beregnet ved $M=10000$ Monte Carlo-simulationer, $T=250$ dage, $m=250$, $\alpha=0.025$ og $\eta=0.99$.}
@@ -1403,18 +1364,18 @@ CC komponent 1 (d) tester selve hyppigheden af overskridelser, betinget
 på den tilgængelige information, og bekræfter frekvensproblemet for HS, 
 idet HS-fordelingen er markant mere højreskæv end GARCH og WHS.
 
-For ER-testen (c) er fordelingerne for HS og WHS forskudt mod 
-lavere teststørrelser sammenlignet med GARCH, hvilket indikerer 
-at begge metoder overestimerer ES givet en VaR-overskridelse. 
-CC komponent 2 (e) tester størrelsen af tabene givet en overskridelse 
-og bekræfter dette, idet fordelingerne for HS og WHS er forskudt mod 
-højere teststørrelser end GARCH, konsistent med at ES overestimeres.
+CC komponent 2 (e) tester størrelsen af haletabene givet en overskridelse. Som beskrevet
+i afsnit 3.6 svarer en forskydning mod højere teststørrelser til undervurdering
+af ES. Fordelingerne for HS og WHS er forskudt mod højre i forhold til GARCH.
 
-Disse observationer suppleres af Appendiks B.7. Her ses det, at HS og 
-WHS gennemsnitligt rammer GARCH's ES-niveau på de dage hvor deres 
-egen VaR overskrides, men at deres ES-estimat ligger højere end 
-GARCH's på de dage hvor $VaR_{2,5\%}^{GARCH}$ overskrides. Begge metoder 
-overestimerer dermed ES i de mest ekstreme situationer, imens deres egen VaR er for lav.
+For ER-testen (c) er fordelingerne for HS og WHS forskudt mod lavere teststørrelser
+sammenlignet med GARCH. (c) og (e) peger i hver sin retning, hvilket skal ses i lyset af,
+at ES ikke kan vurderes uafhængigt af VaR.
+
+Disse observationer suppleres af Appendiks B.7. Her ses det, at HS og WHS gennemsnitligt
+rammer GARCH's ES-niveau på de dage hvor deres egen VaR overskrides, men at deres
+ES-estimat ligger højere end GARCH's på de dage hvor $\mathrm{VaR}^{GARCH}_{2{,}5\%}$
+overskrides.
 
 
 
@@ -1650,7 +1611,7 @@ $Z_1$ udelades, idet teststørrelsen under et fast $VaR_{2.5\%}$ setup med konst
 
 \subsubsection{Styrke af teststørrelser}
 
-Figur~\ref{fig:7_3_sammenligning} viser teststyrkerne for alle otte teststørrelser ved $\nu \in \{3, \dots, 9\}$. Det tilsvarende heatmap findes i Appendiks B.xx.
+Figur~\ref{fig:7_3_sammenligning} viser teststyrkerne for alle otte teststørrelser ved $\nu \in \{3, \dots, 9\}$. Det tilsvarende heatmap findes i Appendiks B.10.
  
 \begin{figure}[H]
 \centering
@@ -1709,16 +1670,16 @@ Som tidligere diskuteret, jf. afsnit 5.2.2, reagerer $Z_2$, $VaR_{1\%}$-backtest
 
 Denne diagnostiske evne har dog en pris, idet $T_F$ først slår igennem ved relativt grov misspecifikation. I Case 2a har $T_F$ en markant lavere styrke end både $Z_2$, $VaR_{1\%}$-backtesten og CC. I Case 2b er $T_F$ i store træk på niveau med CC-backtesten, men ligger lavere, når persistensen nærmer sig 0.99. DS leverer altså en mere informativ dom i begge cases, men på bekostning af lavere følsomhed. Dette bliver centralt i diskussionen af DS-backtestens anvendelse i praksis.
 
-\subsection{DS på rigtige markedsdata}
-I de forrige afsnit har vi undersøgt DS-backtestens diagnostiske evne under kontrolleret misspecifikation, hvor den datagenererende proces er kendt på forhånd. Vi vender nu blikket mod rigtige markedsdata, hvor sandheden er ukendt. Formålet er at vurdere, hvordan DS-backtesten klarer sig i praksis sammenlignet med projektets øvrige backtests, samt om dens diagnostiske egenskaber realiseres i en empirisk anvendelse.
+\subsection{Empirisk anvendelse på C25 og Danske Bank}
+I de forrige afsnit har vi undersøgt DS-backtestens diagnostiske evne under kontrolleret misspecifikation, hvor den datagenererende proces er kendt på forhånd. Vi vender nu blikket mod empiriske data fra C25 og Danske Bank, hvor den sande fordeling af afkast er ukendt og stikprøvestørrelsen er begrænset. Formålet er at vurdere, hvordan DS-backtesten klarer sig i praksis sammenlignet med projektets øvrige backtests, samt om dens diagnostiske egenskaber realiseres i en empirisk anvendelse.
 
 \subsubsection{Data og prædiktiv model}
 
-Vi udvælger C25-indekset og Danske Bank-aktien til den empiriske analyse, hvor indekset repræsenterer en diversificeret portefølje med lavere risiko, og aktien repræsenterer en enkelt-aktie med højere risikoprofil. For hver af de to udvælges en in-sample-periode (IS) med relativt lav volatilitet og en efterfølgende out-of-sample-periode (OOS) med højere volatilitet. En GARCH(1,1)-model estimeres på IS-perioden og anvendes som prædiktiv model på OOS-perioden, hvor projektets øvrige backtests evalueres.
+Vi udvælger C25-indekset og Danske Bank-aktien til den empiriske analyse, hvor indekset repræsenterer en diversificeret portefølje med lavere risiko, og aktien repræsenterer en enkeltaktie med højere risikoprofil. For hver af de to udvælges en in-sample-periode (IS) med relativt lav volatilitet og en efterfølgende out-of-sample-periode (OOS) med højere volatilitet. En GARCH(1,1)-model estimeres på IS-perioden og anvendes som prædiktiv model på OOS-perioden, hvor projektets øvrige backtests også evalueres.
 
-Vi anvender $T_{\text{IS}} = 750$ handelsdage in-sample og $T_{\text{OOS}} = 500$ handelsdage out-of-sample for begge aktiver.\footnote{Periodernes start- og slutdatoer er valgt, så antallet af handelsdage rammer $T_{\text{IS}} = 750$ og $T_{\text{OOS}} = 500$ præcist. C25-indekset er desuden først tilgængeligt fra 23.12.2016, hvilket fastlægger starten på C25's IS-periode.} Hué et al.\ (2024) anvender ligeledes $T_{\text{IS}} = 750$, men $T_{\text{OOS}} = 250$ ved $\alpha = 0.05$ i deres empiriske analyse. Vi sætter $\alpha = 0.025$ konsistent med resten af projektet og fordobler derfor OOS-længden, således at det forventede antal overskridelser $T_{\text{OOS}}\cdot\alpha \approx 12.5$ matcher niveauet i Hué et al.\ (2024).
+Vi anvender $T_{\text{IS}} = 750$ handelsdage in-sample og $T_{\text{OOS}} = 500$ handelsdage out-of-sample for begge aktiver. Periodernes start- og slutdatoer er valgt, så antallet af handelsdage rammer $T_{\text{IS}} = 750$ og $T_{\text{OOS}} = 500$ præcist. C25-indekset er desuden først tilgængeligt fra 23.12.2016, hvilket fastlægger starten på C25's IS-periode. Hué et al.\ (2024) anvender ligeledes $T_{\text{IS}} = 750$, men $T_{\text{OOS}} = 250$ ved $\alpha = 0.05$ i deres empiriske analyse. Vi sætter $\alpha = 0.025$ konsistent med resten af projektet og fordobler derfor OOS-længden, således at det forventede antal overskridelser $T_{\text{OOS}}\cdot\alpha \approx 12.5$ matcher niveauet i Hué et al.\ (2024).
 
-For C25-indekset vælges IS-perioden 2017-2019, kendetegnet ved relativt rolig periode for indekset, mens OOS-perioden 2020-2022 indeholder COVID-chokket i marts 2020. For Danske Bank vælges IS-perioden 2015-2017, hvor aktien var forholdsvis stabil, mens OOS-perioden 2018-2019 indeholder hvidvask-skandalen, der medførte vedvarende kursudsving. Forholdet mellem den daglige stikprøvestandardafvigelse out-of-sample og in-sample, $\hat{\sigma}_{\text{OOS}}/\hat{\sigma}_{\text{IS}}$, er hhv.\ 1.64 for C25 og 1.32 for Danske Bank, hvilket bekræfter at overgangen mellem de to perioder udgør et volatilitetsregimeskift for begge aktiver. De estimerede GARCH-parametre fremgår af Tabel~\ref{tab:GARCH_7_5}.
+For C25-indekset vælges IS-perioden 2017-2019, kendetegnet ved relativt rolig periode for indekset, mens OOS-perioden 2020-2021 indeholder COVID-19-chokket i marts 2020. For Danske Bank vælges IS-perioden 2015-2017, hvor aktien var forholdsvis stabil, mens OOS-perioden 2018-2019 indeholder hvidvask-skandalen, der medførte vedvarende kursudsving. Forholdet mellem den daglige stikprøvestandardafvigelse out-of-sample og in-sample, $\hat{\sigma}_{\text{OOS}}/\hat{\sigma}_{\text{IS}}$, er hhv.\ 1.64 for C25 og 1.32 for Danske Bank, hvilket bekræfter at overgangen mellem de to perioder udgør et volatilitetsregimeskift for begge aktiver. De estimerede GARCH-parametre fremgår af Tabel~\ref{tab:GARCH_7_5}.
 
 \begin{table}[H]
 \centering
@@ -1736,13 +1697,13 @@ For C25-indekset vælges IS-perioden 2017-2019, kendetegnet ved relativt rolig p
   & OOS: 01.01.2018 - 08.01.2020 & $2{.}61\times 10^{-6}$ & 0.040 & 0.959 & 3.533 & 0.05213 \\
 \hline
 \end{tabular}
-\tabcap{Estimerede parametre i GARCH(1,1)-modellen for in-sample (IS) og out-of-sample (OOS) perioder, baseret på daglige log-afkast (i decimalform). IS-fittet anvendes som prædiktiv model, mens OOS-fittet anvendes som datagenererende proces under $H_1$. Frihedsgraden $\hat{\nu}$ fastholdes på IS-værdien under simulationen.}{tab:GARCH_7_5}
+\tabcap{Estimerede parametre i GARCH(1,1)-modellen for in-sample (IS) og out-of-sample (OOS) perioder, baseret på daglige log-afkast (i decimalform). IS-fittet anvendes som prædiktiv model, mens OOS-fittet anvendes som datagenererende proces under $H_1$.}{tab:GARCH_7_5}
 \end{table}
 
 
 \subsubsection{Observerede teststørrelser}
 
-Kritiske værdier for samtlige backtests kalibreres under $H_0$ via Monte-Carlo-simulationer af den IS-fittede GARCH(1,1)-model. Tabel~\ref{tab:DS_obs_7_5} viser de observerede teststørrelser sammenholdt med de kritiske værdier for begge aktiver.
+Kritiske værdier for samtlige backtests kalibreres under $H_0$ via Monte-Carlo-simulationer af den IS-fittede GARCH(1,1)-model. Tabel~\ref{tab:DS_obs_7_5} viser de observerede teststørrelser på baggrund af 500 OOS observationer sammenholdt med de kritiske værdier simuleret under $H_0$ for begge aktiver.
 
 
 
@@ -1794,11 +1755,11 @@ $T_G$              & 29.943  & 45.369 & Nej \\
 
 For C25 forkaster $\text{VaR}_{1\%}$-backtesten, $Z_2$, $Z_3$, CC og frekvenskomponenten $T_F$, mens $\text{ER}$ samt DS-backtestens $T_S$ og $T_G$ ikke forkaster. DS-backtesten peger dermed på frekvensen af overskridelser, ikke deres dybde, som årsagen til modelfejlen.
 
-DS-backtestens severity-diagnose understøttes desuden af parameterændringerne mellem IS og OOS. For Danske Bank falder $\hat{\nu}$ fra 5.836 til 3.533, hvilket netop indikerer tungere haler. For C25 stiger $\hat{\nu}$ fra 8.398 til 23.21, så halen bliver lettere, hvilket forklarer hvorfor severity-testene ikke forkaster.
+DS-backtestens severity-diagnose understøttes desuden af parameterændringerne mellem IS og OOS. For Danske Bank falder $\hat{\nu}$ fra 5.836 til 3.533, hvilket netop indikerer tungere haler. For C25 stiger $\hat{\nu}$ fra 8.398 til 23.21, så halen bliver lettere, hvilket kan forklare hvorfor severity-testen ikke forkaster.
 
 For Danske Bank forkastes den prædiktive model bredt, men her er DS-mønsteret omvendt. Severitykomponenten $T_S$ forkaster, mens $T_F$ ikke gør, om end den ligger tæt på den kritiske værdi. DS peger dermed på dybden af tabene som årsagen til modelfejlen.
 
-Globalkomponenten $T_G$ forkaster ikke for nogen af de to aktiver, hvilket afspejler at den samler både univariate og bivariate momenter og derved fortynder det specifikke signal fra $T_F$ og $T_S$. Dette er konsistent med observationen i afsnit 7.3.
+Globalkomponenten $T_G$ forkaster ikke for nogen af de to aktiver, hvilket afspejler at den samler både univariate og bivariate momenter og derved fortynder det specifikke signal fra $T_F$ og $T_S$. Dette er konsistent med observationerne under den kontrollerede misspecifikation i hhv. afsnit 7.2 og 7.3.
 
 \begin{figure}[H]
 \centering
@@ -1825,7 +1786,7 @@ Globalkomponenten $T_G$ forkaster ikke for nogen af de to aktiver, hvilket afspe
 \addtocounter{figure}{-1}
 \figcap{Empiriske tætheder af $d_i$ og $H_i$ baseret på de observerede VaR-overskridelser i OOS-perioderne for C25 og Danske Bank, sammenlignet med $H_0$-referencefordelingerne Geom$(\alpha)$ og U$(0,1)$. $\alpha = 0.025$.}{fig:DS_valid_7_5}
 \end{figure}
-Figur~\ref{fig:DS_valid_7_5} illustrerer de fordelinger af $d_i$ og $H_i$ som DS-backtestens teststørrelser er beregnet på, og giver dermed visuel indsigt i hvad der ligger bag afvisningsmønstret. For C25 ses en markant overrepræsentation af korte durations $d_i$. Fordelingen af $H_i$ ligger derimod tæt på den uniforme reference, dog med en moderat overrepræsentation for $H_i \geq 0.6$. Dette peger på frekvensen, ikke dybden, som kilden til modelfejlen.
+Figur~\ref{fig:DS_valid_7_5} illustrerer de fordelinger af $d_i$ og $H_i$ som DS-backtestens teststørrelser er beregnet på, og giver dermed visuel indsigt i, hvad der ligger bag afvisningsmønstret. For C25 ses en markant overrepræsentation af korte durations $d_i$. Fordelingen af $H_i$ ligger derimod tæt på den uniforme reference, dog med en moderat overrepræsentation for $H_i \geq 0.6$. Dette peger på frekvensen, ikke dybden, som kilden til modelfejlen.
 
 For Danske Bank ligger den observerede $d_i$-fordeling med en koncentration af durations omkring $d_i \approx 15-20$. Dette er konsistent med at frekvenskomponenten $T_F = 8.222$ ligger tæt på den kritiske værdi 8.738, dog uden at forkaste. Den væsentligste afvigelse findes for $H_i$, hvor fordelingen er tom for $H_i\leq0.2$. Dette indikerer at de realiserede tab systematisk ligger dybere i halen end den prædiktive model forudsiger, da overskridelser ikke er observeret tæt på VaR-grænsen. 
 
@@ -1850,7 +1811,7 @@ $T_S$              & 0.041 & 0.478 \\
 $T_G$              & 0.042 & 0.342 \\
 \bottomrule
 \end{tabular}
-\tabcap{Styrke af teststørrelserne under $H_1$ givet ved OOS-fittet GARCH-dynamik. Signifikansniveau $0.0412$, $\alpha = 0.025$, $M = 10000$.}{tab:DS_power_7_5}
+\tabcap{Størrelseskorrigerede teststyrker under OOS-fittet GARCH(1,1)-proces som $H_1$ på baggrund af estimater fra Tabel~\ref{tab:GARCH_7_5}. Signifikansniveau $0.0412$, $\alpha = 0.025$, $M = 10000$.}{tab:DS_power_7_5}
 \end{table}
 
 For C25 opnår $Z_2$, CC og $\text{VaR}_{1\%}$-backtesten den højeste styrke, og frekvenskomponenten $T_F$ ligger på 0.480. Severitykomponenten $T_S$ ligger derimod på niveau med signifikansniveauet, og $\text{ER}$ aktiveres heller ikke, da halens form ikke afviger væsentligt mellem IS og OOS.
@@ -1863,26 +1824,89 @@ Et gennemgående mønster er, at DS-backtestens komponenter generelt opnår lave
 
 \subsubsection{Diagnostisk fortolkning}
 
-Resultaterne viser, at DS-backtesten dekomponerer modelfejlen forskelligt for de to cases. For C25 peger DS entydigt på frekvensen af overskridelser, mens billedet for Danske Bank er mere nuanceret. Den observerede teststørrelse $T_S$ forkaster, mens $T_F$ ligger lige under den kritiske værdi. Styrkeanalysen viser, at $T_F$ ville have moderat styrke under OOS-fittet, hvilket indikerer at modellen reelt har problemer med både frekvens og dybde, men at frekvensafvigelsen på den specifikke OOS-realisation ikke var stærk nok til at $T_F$ ramte tærsklen.
+Resultaterne viser, at DS-backtesten dekomponerer modelfejlen forskelligt for de to empiriske cases. For C25 peger DS entydigt på frekvensen af overskridelser, mens billedet for Danske Bank er mere nuanceret. Den observerede teststørrelse $T_S$ forkaster, mens $T_F$ ligger lige under den kritiske værdi. Styrkeanalysen viser, at $T_F$ ville have moderat styrke under OOS-fittede $H_1$ simulationer, hvilket indikerer at modellen reelt har problemer med både frekvens og dybde, men at frekvensafvigelsen på den specifikke OOS-realisation ikke var stærk nok til at $T_F$ ramte tærsklen.
 
 Metoden har dog en række begrænsninger. Perioderne er strategisk udvalgt, så IS og OOS adskilles ved et markant volatilitetsregimeskift, og resultaterne afspejler dermed ekstreme tilfælde snarere end typiske markedsforhold. $H_1$ er estimeret fra en enkelt OOS-realisation, og styrken gælder derfor kun for denne konkrete proces. Resultaterne kan naturligvis ikke generaliseres bredt, da kun to aktiver er undersøgt. 
 
-DS-backtesten opnår generelt lavere styrke end de klassiske backtests og bør anvendes som komplement til, frem for erstatning af disse, hvilket er i tråd med fundene i afsnit 7.4.
+DS-backtestens lavere styrke peger på, at den med fordel kan anvendes som komplement til de øvrige backtests, hvilket er i tråd med fundene i afsnit 7.4.
 
-Noter
 
 
 \subsection{Delkonklusion}
 
-kapitel 7's stærkeste pointe netop er, at DS-backtesten ser anderledes ud afhængigt af om man måler den på (a) idealiseret kontrolleret misspecifikation, (b) parametrisk severity-misspecifikation, (c) parametrisk frekvens-misspecifikation, eller (d) rigtig data. Den progression er en pointe i sig selv, og den fortjener at blive samlet op.
+Dette kapitel har undersøgt Duration-Severity-backtesten fra tre vinkler, 
+herunder kontrolleret misspecifikation, parametrisk sammenligning med 
+projektets øvrige backtests og empirisk anvendelse på C25 og Danske Bank.
+
+Under kontrolleret misspecifikation demonstrerede $T_F$ og $T_S$ en klar 
+diagnostisk egenskab, hvor hver komponent isolerede typen af fejl under den misspecificerede DGP. Under parametrisk severity-misspecifikation 
+diagnosticerede DS fejlen via $T_S$, mens $T_F$ netop lå ved signifikansniveauet. 
+De øvrige backtests forkastede uden at skelne mellem disse modelfejl. Under 
+frekvens-misspecifikation via GARCH(1,1)-processen var det $T_F$ der entydigt pegede på de tidslige VaR-overskridelser som kilden til modelfejl.
+
+Den empiriske anvendelse på C25 og Danske Bank bekræftede det diagnostiske mønster vi så i de tidligere afsnit. For C25 forkastede $T_F$ den prædiktive model og $T_S$ lå under den kritiske værdi, konsistent med frekvensfejl. For Danske Bank var mønsteret omvendt, som er konsistent med severityfejl, der delvist kan forklares af et fald i $\hat{\nu}$ fra 5.836 til 3.533 fra IS til OOS. Et centralt fund på tværs af undersøgelserne er, at DS-backtestens diagnostiske egenskab 
+har en pris i form af lavere styrke end projektets øvrige backtests, og at 
+den globale teststørrelse $T_G$ ikke leverer den styrke man kunne håbe på som samlet test.
 
 \section{Diskussion}
 
-Trække syntese-tabellen op (hvilken backtest under hvilken misspecifikation) som jeg foreslog tidligere
-Adressere estimationsrisiko som delvist håndteret via 7.5-designet, men ikke fuldt
-Tage en kort, ærlig sætning om signifikansniveau 0.0412
-Reflektere over DS-backtestens praktiske trade-off (diagnose vs. styrke) — særligt vigtigt nu hvor 7.5 har vist begge sider
-Pege fremad mod naturlige videreudvikling (asymmetriske GARCH, formel håndtering af estimationsstøj, andre haleform-tests)
+Dette projekt har undersøgt og sammenlignet en række metoder til 
+backtesting af Expected Shortfall. For at sætte DS-backtesten i perspektiv 
+har projektet først etableret de klassiske backtests under forskellige former 
+for misspecifikation, hvilket har dannet grundlag for det centrale 
+spørgsmål: kan Duration-Severity-backtesten diagnosticere typen af 
+modelfejl i situationer, hvor klassiske ES-backtests blot afviser modellen 
+uden at pege på, hvor fejlen ligger?
+
+Undersøgelserne finder, at DS-backtesten kan diagnosticere typen af modelfejl, 
+men ikke uden klare forbehold. DS-backtesten diagnosticerer modelfejl 
+med høj præcision under kontrollerede misspecificerede datagenererende processer og leverer også et væsentligt diagnostisk signal i praksis under empirisk anvendelse. Prisen for denne diagnostiske egenskab er konsekvent lavere styrke end de klassiske backtests, som projektet etablerer i samme setup. Den globale teststørrelse $T_G$ fortyndes typisk alligevel, da styrken afhænger af signaler fra både $T_F$ og $T_S$. Den diagnostiske gevinst er altså reel, men bestemt ikke gratis.
+
+Analyserne fra de tidligere kapitler viser derudover, hvilke 
+backtests der egner sig bedst under forskellige situationer. $Z_3$ er den mest robuste test under ren halemisspecifikation i et i.i.d.-setup og opnår konsekvent 
+høj styrke, når halen er tungere end den prædiktive modellen forudsiger, jf. afsnit 4.2 og Figur~\ref{Acerbistyrker}. 
+
+$Z_2$ opnår en kritisk værdi på $\sim -0.70$ uafhængigt af 
+haleformen i den prædiktive model, jf. afsnit 4.2. For en finansiel 
+institution er dette fordelagtigt i praksis, da testen kan anvendes 
+uden at kende den præcise prædiktive fordeling, hvilket 
+forenkler implementeringen i et regulatorisk setup. Det er teststørrelsen selv der ændrer sig med de realiserede tab, og $Z_2$ forkaster netop når tabene i halen systematisk overstiger det prædikterede ES, uafhængig af den fordeling der ligger bag.
+
+CC-backtesten er den eneste
+i projektet, der fanger misspecifikation i persistens med fast ubetinget 
+varians, jf. Case 2b. Ingen af projektets klassiske backtests detekterer misspecifikation, der ikke flytter risikoniveauet systematisk, hvilket Case 3 illustrerede. HS og WHS udviste desuden et særligt mønster, hvor VaR undervurderes 
+samtidig med at ES overvurderes givet en overskridelse, et mønster der 
+kun delvist opfanges af de eksisterende backtests og som understøttede 
+motivationen for undersøgelsen af DS-backtesten.
+
+En vigtig pointe for DS-backtestens diagnostiske evne er, at det forudsætter, 
+at der overhovedet er noget at diagnosticere. Det er altså afgørende, at modellen fejler på en måde, der faktisk flytter på fordelingen af durations eller severity. Under Case 3 i afsnit 5.2.3, hvor misspecifikationen alene påvirker 
+volatilitetsdynamikken uden at ændre det ubetingede risikoniveau, 
+forkastede ingen af projektets klassiske backtests. Der er derfor grund til at 
+forvente, at DS-backtesten ville fejle på tilsvarende vis. $T_F$ og $T_S$ er 
+konstrueret til at detektere afvigelser i fordelingen af 
+durations og severity givet en VaR-overskridelse. Når 
+misspecifikationen ikke systematisk flytter risikoen, påvirkes 
+hverken det forventede antal VaR-overskridelser eller dybden af tabene, og dermed har komponenterne intet signal at reagere på.
+
+Ydermere viser projektets resultater, at DS-backtestens styrke er lavere end de 
+klassiske backtests, når misspecifikationer flytter 
+risikoforudsigelsen, hvilket yderligere understøtter denne forventning. Dette 
+er ikke en svaghed ved DS, men specielt en grundlæggende egenskab ved 
+alle backtests, der er momentbaserede. Det understreger samtidig, at backtesting af ES ikke direkte erstatter en udførlig modelvalidering, idet Case 3 netop illustrerer en grænse for backtestenes følsomhed i et GARCH(1,1) setup.
+
+Estimationsrisiko udgør en generel begrænsning for enhver momentbaseret backtest 
+undersøgt i dette projekt. I finansiel praksis er modelparametrene ikke kendte men estimerede fra markedsdata, og denne usikkerhed påvirker testproceduren, da de 
+kritiske værdier er kalibreret under en estimeret model frem for en 
+sand. Det empiriske scenarie i afsnit 7.5 forsøger at afspejle et realistisk setup og adresserer estimationsrisikoen delvist, idet 
+kritiske værdier kalibreres under den IS-fittede model og styrken estimeres 
+under den OOS-fittede model, hvilket netop afspejler parameterusikkerheden, 
+der opstår ved et volatilitetsregimeskift.
+
+DS-backtestens praktiske anvendelighed afhænger dermed af, om den bruges som 
+erstatning for de klassiske backtests, eller om den bruges som en komplement. Fundene i dette projekt peger entydigt på det sidste. En risikomanager i en finansiel institution, der alene 
+baserer sin vurdering på $T_F$ og $T_S$, risikerer altså at overse 
+en given misspecifikation, som $Z_2$ eller CC ville have detekteret. Omvendt understøtter resultaterne, at DS-backtesten bidrager med en diagnostisk dimension, som de klassiske backtests ikke kan levere. DS-backtesten kan således være særligt værdifuld, når en forkastelse af en prædiktiv model skal danne grundlag for en konkret beslutning om, hvilken del af modellen der skal revideres, frem for blot at konstatere at modellen fejler. I praksis kræver dette dog en relativt grov misspecifikation, da $T_F$ og $T_S$ først begynder at reagere, når de klassiske backtests allerede har forkastet modellen.
 
 
 \section{Konklusion}
@@ -2052,7 +2076,7 @@ r_{1,t} - r_{2,t} - \frac{1}{\alpha}\mathbf{1}_{\{X_t < -r_{1,t}\}}(r_{1,t} + X_
 Vi ønsker at vise at:
 
 \[
-\mathbb{E}\big[V(r_{1,t},r_{2,t},X_t)\mid \mathcal F_{t-1}\big]=0
+\mathbb{E}\big[V(r_{1,t},r_{2,t},X_t)\big]=0
 \iff 
 (r_{1,t},r_{2,t})=
 (\mathrm{VaR}_{\alpha,t}, \mathrm{ES}_{\alpha,t})
@@ -2067,11 +2091,13 @@ Vi ser nu at der pr. linearitet af forventning samt identiteten fra (Le Gall sid
     E\big[r_{1,t} - r_{2,t} - \frac{1}{\alpha}\mathbf{1}_{\{X_t < -r_{1,t}\}}(r_{1,t} + X_t)\big]
     &= r_{1,t} - r_{2,t} - \frac{1}{\alpha}P(X_t < -r_{1,t})\big(r_{1,t}+E[X_t\mid X_t<-r_{1,t}]\big)
 \end{align}
-Vi lader nu $(r_{1,t},r_{2,t})=
+Vi ser at $P(X_t < - r_{1,t})=\alpha$ og $E[X_t\mid X_t<-r_{1,t}]=-ES_{\alpha,t}$ pr. def. Fra overstående har vi at $r_{1,t}=VaR_{\alpha,t}$
+Dermed får vi fra (9.1) at
+$$\mathrm{VaR}_{\alpha,t} - r_{2,t} - (\mathrm{VaR}_{\alpha,t}-\mathrm{ES}_{\alpha,t}) = \mathrm{ES}_{\alpha,t} - r_{2,t}=0\iff  r_{2,t}=\mathrm{ES}_{\alpha,t}$$
+
+lader nu $(r_{1,t},r_{2,t})=
 (\mathrm{VaR}_{\alpha,t}, \mathrm{ES}_{\alpha,t})
-$ og ser at $P(X_t < - r_{1,t})=\alpha$ og $E[X_t\mid X_t<-r_{1,t}]=ES_{\alpha,t}$ pr. def. 
-Dermed får vi fra (6.1) at
-$$\mathrm{VaR}_{\alpha,t} - \mathrm{ES}_{\alpha,t} - (\mathrm{VaR}_{\alpha,t}+\mathrm{ES}_{\alpha,t})=0$$
+$ og 
 Dermed har vi vist det ønskede
 
 \newpage
@@ -2422,7 +2448,7 @@ Ikke-parametrisk (WHS)         & 6.35 & 6.39 & 6.52 & 6.65 \\
 \end{subfigure}
 \begin{subfigure}{0.32\textwidth}
 \centering
-\includegraphics[width=\linewidth]{Skærmbillede 2026-05-22 kl. 00.43.10.png}
+\includegraphics[width=\linewidth]{Skærmbillede 2026-06-01 kl. 13.40.06.png}
 \caption{\small CC - 2. komponent}
 \end{subfigure}
 \addtocounter{figure}{-1}
@@ -2468,7 +2494,7 @@ Ikke-parametrisk (WHS)         & 6.35 & 6.39 & 6.52 & 6.65 \\
 \end{subfigure}
 \begin{subfigure}{0.32\textwidth}
 \centering
-\includegraphics[width=\linewidth]{Skærmbillede 2026-05-22 kl. 01.25.24.png}
+\includegraphics[width=\linewidth]{Skærmbillede 2026-06-01 kl. 13.43.45.png}
 \caption{\small CC - 2. komponent}
 \end{subfigure}
 \addtocounter{figure}{-1}
@@ -2513,7 +2539,7 @@ $\alpha=0.025$ og $\eta=0.99$.}{høj m=125}
 \end{subfigure}
 \begin{subfigure}{0.32\textwidth}
 \centering
-\includegraphics[width=\linewidth]{Skærmbillede 2026-05-22 kl. 01.25.50.png}
+\includegraphics[width=\linewidth]{Skærmbillede 2026-06-01 kl. 13.42.36.png}
 \caption{\small CC - 2. komponent}
 \end{subfigure}
 \addtocounter{figure}{-1}
@@ -2560,7 +2586,7 @@ $\alpha=0.025$ og $\eta=0.99$.}{høj m=500}
 \end{subfigure}
 \begin{subfigure}{0.32\textwidth}
 \centering
-\includegraphics[width=\linewidth]{Skærmbillede 2026-05-22 kl. 01.27.10.png}
+\includegraphics[width=\linewidth]{Skærmbillede 2026-06-01 kl. 13.41.00.png}
 \caption{\small CC - 2. komponent}
 \end{subfigure}
 \addtocounter{figure}{-1}
