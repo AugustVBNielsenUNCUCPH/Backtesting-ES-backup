@@ -1123,7 +1123,7 @@ n_paths <- 10
 # Afkastfordeling, lav volatilitet
 hist(as.vector(sim_H0_low$X),
      breaks = 500,
-     col = "cyan4",
+     col = adjustcolor("darkcyan", alpha.f = 0.7),
      border = "white",
      main = "Prædiktive afkast | Lav volatilitet",
      xlab = "Afkast",
@@ -1149,7 +1149,7 @@ axis(2,
      las = 1)
 for (i in 1:n_paths) {
   lines(1:T, sim_H0_low$sigma[i, ],
-        col = adjustcolor("cyan4", alpha.f = 0.8), lwd = 1)
+        col = adjustcolor("darkcyan", alpha.f = 0.7), lwd = 1)
 }
 abline(h = sqrt(E_sigma2_low), col = "grey20", lwd = 2, lty = 2)
 legend("topright",
@@ -1159,7 +1159,7 @@ legend("topright",
 # Afkastfordeling, høj volatilitet
 hist(as.vector(sim_H0_high$X),
      breaks = 500,
-     col = "deeppink4",
+     col = adjustcolor("deeppink3", alpha.f = 0.7),
      border = "white",
      main = "Prædiktive afkast | Høj volatilitet",
      xlab = "Afkast",
@@ -1185,7 +1185,7 @@ axis(2,
      las = 1)
 for (i in 1:n_paths) {
   lines(1:T, sim_H0_high$sigma[i, ],
-        col = adjustcolor("deeppink4", alpha.f = 0.8), lwd = 1)
+        col = adjustcolor("deeppink3", alpha.f = 0.7), lwd = 1)
 }
 abline(h = sqrt(E_sigma2_high), col = "grey20", lwd = 2, lty = 2)
 legend("topright",
@@ -1193,5 +1193,3 @@ legend("topright",
        col = "grey20", lty = 2, lwd = 2, bty = "n")
 
 ```
-
-
